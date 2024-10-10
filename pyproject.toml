@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=40.6.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+
+[tool.bandit]
+skips = ["B101", "B105", "B104"]
+targets = ["agronext_api"]
+exclude_dirs = [".venv", "venv"]
+recursive = true
+
+[tool.black]
+line-length = 120
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.vscode
+  | __pycache__
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+line_length = 120
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+
+
+[tool.pylint]
+max-line-length = 120
+
+[tool.pylint."MASTER"]
+disable = """
+        missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+"""
+ignore-paths = []
+
+[tool.pylint."messages_control"]
+disable = [
+    "too-many-instance-attributes",
+    "too-few-public-methods",
+    "invalid-name"
+]
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+    'E231', 
+    'E241',
+    "E203", # whitespace before ':'
+    "E501", # line too long (let black handle it)
+    "W503", # line break before binary operator
+]
+per-file-ignores = ['__init__.py:F401']
+exclude = [
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__",
+    ".git",
+    ".pytest_cache",
+]
+count = true
+
+
+
+[tool.mypy]
+exclude = []
+plugins = [
+  "pydantic.mypy"
+]
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+show_error_codes = true
+pretty = false
+no_implicit_optional=false
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
