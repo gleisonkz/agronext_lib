@@ -18,7 +18,7 @@ class ProcessTimeMiddleware(BaseHTTPMiddleware):
         process_time_ms = round(process_time_ms, 2)
         response.headers["X-Process-Time"] = str(process_time_ms)
         middleware_logger.info(
-            f"Request took {process_time_ms} milliseconds",
+            f"Request {request.method} {request.url._url[:-1]}{request.url.path} from {request.client.host} took {process_time_ms} milliseconds",
             extra={"request": request.url.path},
         )
         return response

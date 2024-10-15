@@ -8,7 +8,7 @@ from agronext_api.config.settings import api_settings
 # from .database import close_db, init_db
 from .exceptions import init_error_handling
 from .extensions import init_extensions
-from .integrations import close_integrations, init_integrations
+# from .integrations import close_integrations, init_integrations
 from .logger import close_logger, get_logger, init_logger
 from .middlewares import init_middlewares
 from .security import init_security
@@ -44,7 +44,7 @@ class AgronextAPI:
 
         self._app = app
         self._routers: list[APIRouter] = []
-        self._additional_lifespan_funcs: list[callable[[FastAPI], AsyncGenerator]] = []
+        self._additional_lifespan_funcs: list[callable] = []
         self._wrap_lifespan()
 
     @asynccontextmanager
@@ -59,19 +59,19 @@ class AgronextAPI:
         #     lifespan_logger.error(f"Error initializing database: {type(e).__name__}")
         #     raise e
 
-        await init_integrations()
+        # await init_integrations()
 
         yield
 
-        close_integrations()
-        lifespan_logger.info("Integrations closed")
+        # close_integrations()
+        # lifespan_logger.info("Integrations closed")
 
         # await close_db()
         # lifespan_logger.info("Database ORM closed")
 
         close_logger()
 
-    def add_lifespan(self, lifespan_func: callable[[FastAPI], AsyncGenerator]):
+    def add_lifespan(self, lifespan_func: callable):
         """
         Adds an additional lifespan function that extends the existing one.
 
@@ -106,7 +106,8 @@ class AgronextAPI:
         """
         return self._app
 
-    def create_router(self, prefix: str = "", tags: Optional[list[str]] = None, **kwargs) -> APIRouter:
+    @staticmethod
+    def create_router(prefix: str = "", tags: Optional[list[str]] = None, **kwargs) -> APIRouter:
         """
         Creates a new APIRouter instance and registers it with the app.
 
@@ -115,7 +116,7 @@ class AgronextAPI:
         :return: An APIRouter instance.
         """
         router = APIRouter(prefix=prefix, tags=tags, **kwargs)
-        self.include_router(router)
+        
         return router
     
     def include_router(self, router: APIRouter) -> None:

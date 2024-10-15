@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse
 
-from .database import QueryError, ResourceAlreadyExists, ResourceNotFound
+from agronext_database.database.agronext_database.exceptions import QueryError, ResourceAlreadyExists, ResourceNotFound
 from .auth import Forbidden, Unauthorized
 from .http import BadRequest, Conflict
 from ..logger import get_logger

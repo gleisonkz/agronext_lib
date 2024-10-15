@@ -7,7 +7,7 @@ LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
-        "non_error_filter": {"()": "api.logger.filters.NonErrorFilter"},
+        "non_error_filter": {"()": "agronext_api.logger.filters.NonErrorFilter"},
     },
     "formatters": {
         "simple": {
@@ -19,7 +19,7 @@ LOGGING_CONFIG = {
             "datefmt": "%Y-%m-%dT%H:%M:%S%z",
         },
         "json": {
-            "()": "api.logger.formatters.JSONFormatter",
+            "()": "agronext_api.logger.formatters.JSONFormatter",
             "fmt_keys": {
                 "severity": "levelname",
                 "message": "message",
