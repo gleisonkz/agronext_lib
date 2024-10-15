@@ -17,14 +17,14 @@ from .schemas.base_model import BaseModel
 class AgronextAPI:
     def __init__(self, **kwargs) -> None:
         """
-        Initializes the FastAPIWrapper with optional FastAPI arguments.
+        Initializes the FastAPI Wrapper with optional FastAPI arguments.
         """
         log_level = "DEBUG" if api_settings.DEBUG else api_settings.LOG_LEVEL
         init_logger(log_level)
 
         app = FastAPI(
-            title="Hygiawork Backend",
-            description="Backend for Hygiawork Platform",
+            title="Agronext Backend",
+            description="Backend for Agronext Platform",
             version=api_settings.API_VERSION,
             lifespan=self.__lifespan,
             **kwargs
