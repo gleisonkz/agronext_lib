@@ -1,67 +1,137 @@
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from contextlib import asynccontextmanager, AsyncExitStack
+from typing import AsyncGenerator, Optional
 
 from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status
 
-from agronext_api.config.settings import settings
+from agronext_api.config.settings import api_settings
 
-from .database import close_db, init_db
+# from .database import close_db, init_db
 from .exceptions import init_error_handling
 from .extensions import init_extensions
 from .integrations import close_integrations, init_integrations
 from .logger import close_logger, get_logger, init_logger
-from .messaging import close_messaging, init_messaging
 from .middlewares import init_middlewares
 from .security import init_security
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator:
-    lifespan_logger = get_logger("lifespan")
-
-    await init_messaging(app)
-    lifespan_logger.info("Messaging integration initialized")
-
-    try:
-        await init_db()
-        lifespan_logger.info("Database ORM initialized")
-    except BaseException as e:
-        lifespan_logger.error(f"Error initializing database: {type(e).__name__}")
-        raise e
-
-    await init_integrations()
-
-    yield
-
-    close_integrations()
-    lifespan_logger.info("Integrations closed")
-
-    await close_db()
-    lifespan_logger.info("Database ORM closed")
-
-    close_messaging()
-    lifespan_logger.info("Messaging closed")
-
-    close_logger()
+from .schemas.base_model import BaseModel
 
 class AgronextAPI:
-    def create_app(self, routers: list[FastAPI]) -> FastAPI:
-        log_level = "DEBUG" if settings.DEBUG else settings.LOG_LEVEL
+    def __init__(self, **kwargs) -> None:
+        """
+        Initializes the FastAPIWrapper with optional FastAPI arguments.
+        """
+        log_level = "DEBUG" if api_settings.DEBUG else api_settings.LOG_LEVEL
         init_logger(log_level)
 
         app = FastAPI(
-            title="Agronext Backend",
-            description="Backend for Agronext Platform",
-            version=settings.API_VERSION,
-            lifespan=lifespan,
+            title="Hygiawork Backend",
+            description="Backend for Hygiawork Platform",
+            version=api_settings.API_VERSION,
+            lifespan=self.__lifespan,
+            **kwargs
         )
 
         init_error_handling(app)
         init_security(app)
         init_extensions(app)
         init_middlewares(app)
-        
-        for router in routers:
-            app.add_router(router)
 
-        return app
+        class HealthCheckResponse(BaseModel):
+            status: str
+
+        @app.get("/", response_model=HealthCheckResponse, status_code=status.HTTP_200_OK, tags=["Health Check"])
+        async def health_check() -> dict:
+            return {"status": "ok"}
+
+        self._app = app
+        self._routers: list[APIRouter] = []
+        self._additional_lifespan_funcs: list[callable[[FastAPI], AsyncGenerator]] = []
+        self._wrap_lifespan()
+
+    @asynccontextmanager
+    async def __lifespan(self, app: FastAPI) -> AsyncGenerator:
+        lifespan_logger = get_logger("lifespan")
+
+
+        # try:
+        #     await init_db()
+        #     lifespan_logger.info("Database ORM initialized")
+        # except BaseException as e:
+        #     lifespan_logger.error(f"Error initializing database: {type(e).__name__}")
+        #     raise e
+
+        await init_integrations()
+
+        yield
+
+        close_integrations()
+        lifespan_logger.info("Integrations closed")
+
+        # await close_db()
+        # lifespan_logger.info("Database ORM closed")
+
+        close_logger()
+
+    def add_lifespan(self, lifespan_func: callable[[FastAPI], AsyncGenerator]):
+        """
+        Adds an additional lifespan function that extends the existing one.
+
+        :param lifespan_func: An async generator function that yields control back to FastAPI.
+        """
+        self._additional_lifespan_funcs.append(lifespan_func)
+        self._wrap_lifespan()
+
+    def _wrap_lifespan(self):
+        existing_lifespan = self._app.router.lifespan_context
+
+        @asynccontextmanager
+        async def combined_lifespan(app: FastAPI):
+            async with AsyncExitStack() as stack:
+                # Enter existing lifespan context if it exists
+                if existing_lifespan:
+                    await stack.enter_async_context(existing_lifespan(app))
+
+                # Enter additional lifespan contexts
+                for lifespan_func in self._additional_lifespan_funcs:
+                    await stack.enter_async_context(lifespan_func(app))
+
+                yield  # Control is handed over to FastAPI for handling requests
+
+        self._app.router.lifespan_context = combined_lifespan
+
+    def get_app(self) -> FastAPI:
+        """
+        Returns the FastAPI app instance.
+
+        :return: The encapsulated FastAPI app.
+        """
+        return self._app
+
+    def create_router(self, prefix: str = "", tags: Optional[list[str]] = None, **kwargs) -> APIRouter:
+        """
+        Creates a new APIRouter instance and registers it with the app.
+
+        :param prefix: A string to be added to all route paths in the router.
+        :param tags: A list of strings for tagging routes.
+        :return: An APIRouter instance.
+        """
+        router = APIRouter(prefix=prefix, tags=tags, **kwargs)
+        self.include_router(router)
+        return router
+    
+    def include_router(self, router: APIRouter) -> None:
+        """
+        Includes an existing APIRouter into the FastAPI app.
+
+        :param router: An APIRouter instance.
+        """
+        self._app.include_router(router)
+        self._routers.append(router)
+
+    def get_routers(self) -> list[APIRouter]:
+        """
+        Returns a list of all registered routers.
+
+        :return: A list of APIRouter instances.
+        """
+        return self._routers
+    
