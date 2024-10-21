@@ -1,18 +1,20 @@
 from contextlib import asynccontextmanager, AsyncExitStack
 from typing import AsyncGenerator, Optional
 
-from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status
+from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status, Query  # noqa
 
-from agronext_api.config.settings import api_settings
+from .config.settings import api_settings
 
 # from .database import close_db, init_db
 from .exceptions import init_error_handling
 from .extensions import init_extensions
+
 # from .integrations import close_integrations, init_integrations
 from .logger import close_logger, get_logger, init_logger
 from .middlewares import init_middlewares
 from .security import init_security
-from .schemas.base_model import BaseModel
+from .apps.health_check.router import router as health_check_router
+
 
 class AgronextAPI:
     def __init__(self, **kwargs) -> None:
@@ -23,11 +25,11 @@ class AgronextAPI:
         init_logger(log_level)
 
         app = FastAPI(
-            title="Agronext Backend",
+            title="Agronext Backend API",
             description="Backend for Agronext Platform",
             version=api_settings.API_VERSION,
             lifespan=self.__lifespan,
-            **kwargs
+            **kwargs,
         )
 
         init_error_handling(app)
@@ -35,12 +37,7 @@ class AgronextAPI:
         init_extensions(app)
         init_middlewares(app)
 
-        class HealthCheckResponse(BaseModel):
-            status: str
-
-        @app.get("/", response_model=HealthCheckResponse, status_code=status.HTTP_200_OK, tags=["Health Check"])
-        async def health_check() -> dict:
-            return {"status": "ok"}
+        app.include_router(health_check_router)
 
         self._app = app
         self._routers: list[APIRouter] = []
@@ -50,7 +47,6 @@ class AgronextAPI:
     @asynccontextmanager
     async def __lifespan(self, app: FastAPI) -> AsyncGenerator:
         lifespan_logger = get_logger("lifespan")
-
 
         # try:
         #     await init_db()
@@ -107,7 +103,9 @@ class AgronextAPI:
         return self._app
 
     @staticmethod
-    def create_router(prefix: str = "", tags: Optional[list[str]] = None, **kwargs) -> APIRouter:
+    def create_router(
+        prefix: str = "", tags: Optional[list[str]] = None, **kwargs
+    ) -> APIRouter:
         """
         Creates a new APIRouter instance and registers it with the app.
 
@@ -116,9 +114,9 @@ class AgronextAPI:
         :return: An APIRouter instance.
         """
         router = APIRouter(prefix=prefix, tags=tags, **kwargs)
-        
+
         return router
-    
+
     def include_router(self, router: APIRouter) -> None:
         """
         Includes an existing APIRouter into the FastAPI app.
@@ -135,4 +133,3 @@ class AgronextAPI:
         :return: A list of APIRouter instances.
         """
         return self._routers
-    
