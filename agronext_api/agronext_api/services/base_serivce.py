@@ -1,4 +1,6 @@
-from agronext_database.database.agronext_database.repositories.base_repository.base_repository import TortoiseRepository
+from agronext_database.repositories.base_repository.base_repository import (
+    TortoiseRepository,
+)
 
 
 class BaseService[T: TortoiseRepository, D]:
