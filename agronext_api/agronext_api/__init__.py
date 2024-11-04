@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager, AsyncExitStack
 from typing import AsyncGenerator, Optional
 
-from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status, Query  # noqa
+from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status, Query, Depends  # noqa
 
 from .config.settings import api_settings
 
