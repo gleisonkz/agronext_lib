@@ -12,6 +12,8 @@ uvicorn = "^0.32.0"
 pydantic-settings = "^2.6.0"
 pydantic = "^2.9.2"
 fastapi-pagination = "^0.12.31"
+msal = "^1.31.0"
+pyjwt = "^2.9.0"
 
 
 [build-system]
