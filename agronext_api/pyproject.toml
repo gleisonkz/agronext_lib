@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.1"
+version = "0.0.2"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
@@ -13,6 +13,11 @@ pydantic-settings = "^2.6.0"
 pydantic = "^2.9.2"
 fastapi-pagination = "^0.12.31"
 
+
+[[tool.poetry.source]]
+name = "artifactory"
+url = "http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi"
+priority = "primary"
 
 [build-system]
 requires = ["poetry-core"]
