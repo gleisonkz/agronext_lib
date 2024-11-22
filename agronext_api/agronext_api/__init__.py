@@ -17,7 +17,13 @@ from .apps.health_check.router import router as health_check_router
 
 
 class AgronextAPI:
-    def __init__(self, **kwargs) -> None:
+    def __init__(
+        self,
+        title="Agronext Backend API",
+        description="Backend for Agronext Platform",
+        version=api_settings.API_VERSION,
+        **kwargs,
+    ) -> None:
         """
         Initializes the FastAPI Wrapper with optional FastAPI arguments.
         """
@@ -25,9 +31,9 @@ class AgronextAPI:
         init_logger(log_level)
 
         app = FastAPI(
-            title="Agronext Backend API",
-            description="Backend for Agronext Platform",
-            version=api_settings.API_VERSION,
+            title=title,
+            description=description,
+            version=version,
             lifespan=self.__lifespan,
             **kwargs,
         )

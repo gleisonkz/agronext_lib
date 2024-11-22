@@ -17,7 +17,7 @@ fastapi-pagination = "^0.12.31"
 [[tool.poetry.source]]
 name = "artifactory"
 url = "http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi"
-priority = "primary"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
