@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.1"
+version = "0.0.4"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
@@ -13,7 +13,9 @@ pydantic-settings = "^2.6.0"
 pydantic = "^2.9.2"
 fastapi-pagination = "^0.12.31"
 msal = "^1.31.0"
-pyjwt = "^2.9.0"
+fastapi-azure-auth = "^5.0.1"
+pytest = "^8.3.4"
+pytest-mock = "^3.14.0"
 
 
 [build-system]

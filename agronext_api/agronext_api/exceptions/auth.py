@@ -16,6 +16,13 @@ class AuthenticationError(BaseHTTPException):
         super().__init__(status_code=self.status_code, message=self.message)
 
 
+class UnauthorizedError(BaseHTTPException):
+    def __init__(self, message: str = "") -> None:
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.message = f"Unauthorized Error - {message}" if message else "Unauthorized Error"
+        super().__init__(status_code=self.status_code, message=self.message)
+
+
 class InternalServerError(BaseHTTPException):
     def __init__(self, message: str = "") -> None:
         self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
