@@ -1,0 +1,38 @@
+trigger:
+  branches:
+    include:
+      - development
+  paths:
+    exclude:
+      - tests/**
+
+variables:
+  PACKAGE: "api"
+
+stages:
+  - stage: CacheDependencies
+    displayName: "Cache and Install Dependencies"
+    jobs:
+      - job: InstallDependencies
+        displayName: "Install Python Dependencies"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - checkout: self
+            displayName: "Checkout Code"
+
+          - task: UsePythonVersion@1
+            inputs:
+              versionSpec: "3.x"
+              addToPath: true
+            displayName: "Set Python Version"
+
+          - script: |
+              python -m pip install --upgrade pip
+              python -m pip install --upgrade poetry
+            displayName: "Install Poetry"
+
+          - script: |
+              poetry install
+            displayName: "Install Application Dependencies"
+            workingDirectory: ./agronext_api

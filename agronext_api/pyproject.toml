@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.3"
+version = "0.0.4"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
@@ -12,6 +12,7 @@ uvicorn = "^0.32.0"
 pydantic-settings = "^2.6.0"
 pydantic = "^2.9.2"
 fastapi-pagination = "^0.12.31"
+httpx = "^0.28.1"
 
 
 [[tool.poetry.source]]
