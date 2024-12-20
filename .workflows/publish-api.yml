@@ -1,30 +1,56 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# Pipeline to upload wheel to Artifactory
 
 trigger:
-- main
+- none
 
 pool:
-  name: default
-strategy:
-  matrix:
-    Python312:
-      python.version: '3.7'
+  name: 'DAS-SGLA'
+
+variables:
+- group: ArtifactoryCredentials
 
 steps:
-- task: UsePythonVersion@0
+
+- task: UseDotNet@2
   inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+    packageType: 'sdk'
+    version: '6.x'  # Specify the version of .NET Core you need
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
+    python -m pip install --upgrade pip --root-user-action=ignore
+    python -m pip install uv --root-user-action=ignore
+    python -m pip install poetry==1.8.3 --root-user-action=ignore
+    uv python install 3.11.5
+    uv python list
+    uv python find
+    poetry env use /root/.local/share/uv/python/cpython-3.11.5-linux-x86_64-gnu/bin/python3
+    echo "pip install done"
+    poetry source add scor http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple --priority=primary
+    poetry lock
+    poetry install
   displayName: 'Install dependencies'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+    poetry build
+  displayName: 'Build package'
+
+# # The following code works, but since we cannot publish the documentation to Artifactory,
+# # it doesn't make sense to generate it here
+# - script: |
+#     poetry run pdoc pyrestating -o docs -d google
+#   displayName: 'Generate documentation'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'dist'
+    ArtifactName: 'python-package'
+    publishLocation: 'Container'
+
+- script: |
+    pip install twine
+    twine upload --repository-url http://artifactory-7.eu.scor.local/artifactory/api/pypi/pypi-local-slas-pricing dist/*
+  displayName: 'Upload package to Artifactory'
+  env:
+    TWINE_USERNAME: $(ARTIFACTORY_USERNAME)
+    TWINE_PASSWORD: $(ARTIFACTORY_PASSWORD)
