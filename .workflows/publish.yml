@@ -29,7 +29,7 @@ steps:
   displayName: "Test"
 
 - script: |
-    poetry config http-basic.artifactory ${ARTIFACTORY_USER} ${ARTIFACTORY_PASSWORD}
+    poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
     poetry version patch
     poetry publish --build --repository artifactory
   displayName: "Publish Package"
