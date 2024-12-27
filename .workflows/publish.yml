@@ -9,7 +9,7 @@ pool:
 steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '3.12.4'
+      versionSpec: '3.11'
     displayName: 'Use Python 3.12.4'
  
   - script: |
