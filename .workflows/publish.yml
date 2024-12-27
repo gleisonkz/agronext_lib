@@ -33,3 +33,16 @@ steps:
     poetry version patch
     poetry publish --build --repository artifactory
   displayName: "Publish Package"
+  workingDirectory: './agronext_api'
+
+- script: |
+      git config user.name "CI Pipeline"
+      git config user.email "noreply@azuredevops.com"
+ 
+      git add pyproject.toml
+      git commit -m "Bump version with poetry version patch"
+ 
+      git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name)/_git/$(Build.Repository.Name)HEAD:$(Build.SourceBranch)
+  displayName: 'Commit and Push Changes to pyproject.toml'
+  env:
+    System.AccessToken: $(System.AccessToken)
