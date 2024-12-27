@@ -17,12 +17,22 @@ steps:
     uv python list
     uv python find
     poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-    echo "pip install done"
-  displayName: 'Configure Python'
+    poetry config http-basic.artifactory ${ARTIFACTORY_USER} ${ARTIFACTORY_PASSWORD}
+  displayName: 'Configure Python and Poetry'
 
 - script: |
     poetry source add artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple --priority=primary
     poetry lock
     poetry install
-  workingDirectory: ./agronext-api
+  workingDirectory: ./agronext_api
   displayName: "Install Dependencies"
+
+- script: |
+    pytest .
+  workingDirectory: './agronext_api'
+  displayName: "PyTest"
+
+- script: |
+    poetry version patch
+    poetry publish --build --repository artifactory
+  displayName: "Publish Package"
