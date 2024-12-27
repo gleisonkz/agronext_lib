@@ -16,7 +16,7 @@ steps:
 
 - script: |
     poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-    poetry source add artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple --priority=primary
+    poetry source add --priority=supplemental artifactory http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi
     poetry lock
     poetry install
   workingDirectory: ./agronext_api
