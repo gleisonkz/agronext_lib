@@ -15,7 +15,6 @@ steps:
 
   - script: |
     python -m pip install --upgrade pip --root-user-action=ignore
-    python -m pip install uv --root-user-action=ignore
     python -m pip install poetry==1.8.4 --root-user-action=ignore
     echo "pip install done"
     poetry lock
