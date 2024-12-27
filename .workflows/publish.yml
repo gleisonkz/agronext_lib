@@ -6,10 +6,6 @@ pool:
 
 steps:
 - script: |
-    python --version
-  displayName: 'Python Version'
-
-- script: |
     python -m pip install --upgrade pip --root-user-action=ignore
     python -m pip install uv --root-user-action=ignore
     python -m pip install poetry==1.8.4 --root-user-action=ignore
@@ -27,9 +23,10 @@ steps:
   displayName: "Install Dependencies"
 
 - script: |
+    pip install pytest pytest-azurepipelines
     pytest .
   workingDirectory: './agronext_api'
-  displayName: "PyTest"
+  displayName: "Test"
 
 - script: |
     poetry config http-basic.artifactory ${ARTIFACTORY_USER} ${ARTIFACTORY_PASSWORD}
