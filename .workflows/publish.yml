@@ -29,7 +29,7 @@ steps:
   - script: |
     poetry version patch
 
-  - script: |
-      poetry publish --build --repository artifactory
-    displayName: 'Build and Push package'
+  # - script: |
+  #     poetry publish --build --repository artifactory
+  #   displayName: 'Build and Push package'
   
