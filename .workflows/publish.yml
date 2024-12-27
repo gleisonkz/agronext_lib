@@ -8,3 +8,17 @@ steps:
 - script: |
     python --version
   displayName: 'Python Version'
+
+- script: |
+    python -m pip install --upgrade pip --root-user-action=ignore
+    python -m pip install uv --root-user-action=ignore
+    python -m pip install poetry==1.8.4 --root-user-action=ignore
+    uv python install 3.12.4
+    uv python list
+    uv python find
+    poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
+    echo "pip install done"
+    poetry source add artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple --priority=primary
+    poetry lock
+    poetry install
+  displayName: 'Install dependencies'
