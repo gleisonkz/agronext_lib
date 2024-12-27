@@ -17,7 +17,6 @@ steps:
     uv python list
     uv python find
     poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-    poetry config http-basic.artifactory ${ARTIFACTORY_USER} ${ARTIFACTORY_PASSWORD}
   displayName: 'Configure Python and Poetry'
 
 - script: |
@@ -33,6 +32,7 @@ steps:
   displayName: "PyTest"
 
 - script: |
+    poetry config http-basic.artifactory ${ARTIFACTORY_USER} ${ARTIFACTORY_PASSWORD}
     poetry version patch
     poetry publish --build --repository artifactory
   displayName: "Publish Package"
