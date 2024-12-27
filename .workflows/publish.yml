@@ -1,34 +1,32 @@
 trigger:
-  - main
-
+  branches:
+    include:
+      - main
+ 
 pool:
-  name: "DAS-SGLA"
-
+  name: DAS-SGLA
+ 
 variables:
-- group: ArtifactoryCredentials
-
+  - group: ArtifactoryCredentials
+ 
 steps:
   - task: UsePythonVersion@0
     inputs:
-      version: 3.12.4
+      versionSpec: '3.12.4'
     displayName: 'Use Python 3.12.4'
-
+ 
   - script: |
-    python -m pip install --upgrade pip --root-user-action=ignore
-    python -m pip install poetry==1.8.4 --root-user-action=ignore
-    echo "pip install done"
-    poetry lock
-    poetry install
-  displayName: 'Install dependencies'
-
+      python -m pip install --upgrade pip --root-user-action=ignore
+      python -m pip install poetry==1.8.4 --root-user-action=ignore
+      echo "pip install done"
+      poetry lock
+      poetry install
+    displayName: 'Install dependencies'
+ 
   - script: |
-     poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
-  displayName: 'Configure Artifactory credentials'
-  
+      poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
+    displayName: 'Configure Artifactory credentials'
+ 
   - script: |
-    poetry version patch
-
-  # - script: |
-  #     poetry publish --build --repository artifactory
-  #   displayName: 'Build and Push package'
-  
+      poetry version patch
+    displayName: 'Bump Poetry version'
