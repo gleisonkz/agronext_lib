@@ -16,10 +16,10 @@ steps:
     uv python install 3.12.4
     uv python list
     uv python find
-    poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-  displayName: 'Configure Python and Poetry'
+  displayName: 'Configure Python'
 
 - script: |
+    poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
     poetry source add artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple --priority=primary
     poetry lock
     poetry install
