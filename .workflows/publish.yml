@@ -1,31 +1,26 @@
 trigger:
-  branches:
-    include:
-      - main
- 
+- main
+
 pool:
-  name: DAS-SGLA
-  
+  name: 'DAS-SGLA'
+strategy:
+  matrix:
+    Python37:
+      python.version: '3.7'
+    Python38:
+      python.version: '3.8'
+    Python39:
+      python.version: '3.9'
+    Python310:
+      python.version: '3.10'
+    Python311:
+      python.version: '3.11'
+    Python312:
+      python.version: '3.12'
+
+
 steps:
-  - task: UsePythonVersion@0
- 
-  - script: |
-      python -m pip install --upgrade pip --root-user-action=ignore
-      python -m pip install uv --root-user-action=ignore
-      python -m pip install poetry==1.8.4 --root-user-action=ignore
-      uv python install 3.12.4
-      uv python list
-      uv python find
-      poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-      echo "pip install done"
-      poetry lock
-      poetry install
-    displayName: 'Install dependencies'
- 
-  - script: |
-      poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
-    displayName: 'Configure Artifactory credentials'
- 
-  - script: |
-      poetry version patch
-    displayName: 'Bump Poetry version'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
