@@ -6,7 +6,6 @@ def to_camel(string: str) -> str:
     return parts[0] + ''.join(word.capitalize() for word in parts[1:])
 
 
-
 class BaseModel(PydanticBaseModel):
     model_config = ConfigDict(
         extra='forbid', 

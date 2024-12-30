@@ -16,6 +16,8 @@ msal = "^1.31.0"
 fastapi-azure-auth = "^5.0.1"
 pytest = "^8.3.4"
 pytest-mock = "^3.14.0"
+okta-jwt-verifier = "^0.2.7"
+pytest-asyncio = "^0.24.0"
 
 
 [build-system]
