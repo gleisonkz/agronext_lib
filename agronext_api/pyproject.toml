@@ -18,7 +18,13 @@ pytest = "^8.3.4"
 pytest-mock = "^3.14.0"
 okta-jwt-verifier = "^0.2.7"
 pytest-asyncio = "^0.24.0"
+httpx = "^0.28.1"
 
+
+[[tool.poetry.source]]
+name = "artifactory"
+url = "http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core"]
