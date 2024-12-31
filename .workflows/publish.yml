@@ -43,7 +43,7 @@ steps:
       git add ./agronext_api/pyproject.toml
       git commit -m "Bump version with poetry version patch"
 
-      git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name/_git/$(Build.Repository.NameHEAD:refs/heads/$(Build.SourceBranch) HEAD:$(Build.SourceBranch)
+      git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name)/_git/$(Build.Repository.Name)HEAD:refs/heads/$(Build.SourceBranch) HEAD:$(Build.SourceBranch)
     displayName: "Commit and Push Changes to pyproject.toml"
     env:
       System.AccessToken: $(System.AccessToken)
