@@ -17,7 +17,7 @@ httpx = "^0.28.1"
 
 [[tool.poetry.source]]
 name = "artifactory"
-url = "http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi"
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
 priority = "supplemental"
 
 [build-system]

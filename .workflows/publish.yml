@@ -1,48 +1,47 @@
 trigger:
-- main
+  - main
 
 pool:
-  name: 'DAS-SGLA'
+  name: "DAS-SGLA"
 
 steps:
-- script: |
-    python -m pip install --upgrade pip --root-user-action=ignore
-    python -m pip install uv --root-user-action=ignore
-    python -m pip install poetry==1.8.4 --root-user-action=ignore
-    uv python install 3.12.4
-    uv python list
-    uv python find
-  displayName: 'Configure Python'
+  - script: |
+      python -m pip install --upgrade pip --root-user-action=ignore
+      python -m pip install uv --root-user-action=ignore
+      python -m pip install poetry==1.8.4 --root-user-action=ignore
+      uv python install 3.12.4
+      uv python list
+      uv python find
+    displayName: "Configure Python"
 
-- script: |
-    poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-    poetry source add --priority=supplemental artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
-    poetry lock
-    poetry install
-  workingDirectory: ./agronext_api
-  displayName: "Install Dependencies"
+  - script: |
+      poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
+      poetry source add --priority=supplemental artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
+      poetry install
+    workingDirectory: ./agronext_api
+    displayName: "Install Dependencies"
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest .
-  workingDirectory: './agronext_api'
-  displayName: "Test"
+  - script: |
+      pip install pytest pytest-azurepipelines
+      pytest .
+    workingDirectory: "./agronext_api"
+    displayName: "Test"
 
-- script: |
-    poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
-    poetry version patch
-    poetry publish --build --repository artifactory
-  displayName: "Publish Package"
-  workingDirectory: './agronext_api'
+  - script: |
+      poetry config http-basic.artifactory ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
+      poetry version patch
+      poetry publish --build --repository artifactory
+    displayName: "Publish Package"
+    workingDirectory: "./agronext_api"
 
-- script: |
+  - script: |
       git config user.name "CI Pipeline"
       git config user.email "noreply@azuredevops.com"
- 
+
       git add pyproject.toml
       git commit -m "Bump version with poetry version patch"
- 
+
       git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name)/_git/$(Build.Repository.Name)HEAD:$(Build.SourceBranch)
-  displayName: 'Commit and Push Changes to pyproject.toml'
-  env:
-    System.AccessToken: $(System.AccessToken)
+    displayName: "Commit and Push Changes to pyproject.toml"
+    env:
+      System.AccessToken: $(System.AccessToken)
