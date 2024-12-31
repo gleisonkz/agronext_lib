@@ -16,8 +16,8 @@ steps:
 
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-      poetry source add --priority=supplemental artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
-      export POETRY_HTTP_DISABLE_SSL=1
+      poetry source add --priority=primary artifactory http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
+      poetry config certificates.artifactory.cert false
       poetry install
     workingDirectory: ./agronext_api
     displayName: "Install Dependencies"
