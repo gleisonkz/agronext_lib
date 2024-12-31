@@ -28,6 +28,10 @@ steps:
     workingDirectory: "./agronext_api"
     displayName: "Test"
 
+  - script: }
+      echo ${ARTIFACTORY_USERNAME}
+    displayName: "Print Artifactory Username"
+
   - script: |
       poetry source add --priority=primary artifactory-publish http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
       poetry config http-basic.artifactory-publish ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
