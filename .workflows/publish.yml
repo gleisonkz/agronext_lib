@@ -16,8 +16,8 @@ steps:
 
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
-      poetry source add --priority=primary artifactory-publish http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
       poetry config certificates.artifactory.cert false
+      poetry lock
       poetry install -vvv
     workingDirectory: ./agronext_api
     displayName: "Install Dependencies"
@@ -29,6 +29,7 @@ steps:
     displayName: "Test"
 
   - script: |
+      poetry source add --priority=primary artifactory-publish http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
       poetry config http-basic.artifactory-publish ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
       poetry version patch
       poetry publish --build --repository artifactory
