@@ -17,8 +17,8 @@ httpx = "^0.28.1"
 
 [[tool.poetry.source]]
 name = "artifactory"
-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
-priority = "supplemental"
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
+priority = "primary"
 
 [build-system]
 requires = ["poetry-core"]
