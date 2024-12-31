@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.5"
+version = "0.0.6"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
@@ -18,6 +18,12 @@ httpx = "^0.28.1"
 [[tool.poetry.source]]
 name = "artifactory"
 url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
+priority = "primary"
+
+
+[[tool.poetry.source]]
+name = "artifactory-publish"
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
 priority = "primary"
 
 [build-system]
