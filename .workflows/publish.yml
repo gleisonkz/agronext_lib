@@ -5,6 +5,9 @@ pool:
   name: "DAS-SGLA"
 
 steps:
+  - checkout: self
+    persistCredentials: true
+
   - script: |
       python -m pip install --upgrade pip --root-user-action=ignore
       python -m pip install uv --root-user-action=ignore
@@ -40,12 +43,10 @@ steps:
       git config user.name "CI Pipeline"
       git config user.email "noreply@azuredevops.com"
 
-      # git checkout $(Build.SourceBranch)
-
       git add ./agronext_api/pyproject.toml
       git commit -m "Bump version with poetry version patch"
 
-      git push https://$(System.AccessToken)@azuredevops.eu.scor.local/SGPC-ESSOR/AGRO-Next-Generation-Platform/_git/agronext_backend HEAD:$(Build.SourceBranch)
+      git push
     displayName: "Commit and Push Changes to pyproject.toml"
     env:
       System.AccessToken: $(System.AccessToken)
