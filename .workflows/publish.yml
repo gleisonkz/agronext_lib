@@ -46,7 +46,7 @@ steps:
       git add ./agronext_api/pyproject.toml
       git commit -m "Bump version with poetry version patch"
 
-      git push
+      git push origin HEAD:$(Build.SourceBranchName)
     displayName: "Commit and Push Changes to pyproject.toml"
     env:
       System.AccessToken: $(System.AccessToken)
