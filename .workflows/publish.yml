@@ -29,14 +29,10 @@ steps:
     displayName: "Test"
 
   - script: |
-      echo $(ARTIFACTORY_USERNAME)
-    displayName: "Print Artifactory Username"
-
-  - script: |
       poetry source add --priority=primary artifactory-publish http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
       poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
       poetry version patch
-      poetry publish --build --repository artifactory-publish
+      # poetry publish --build --repository artifactory-publish
     displayName: "Publish Package"
     workingDirectory: "./agronext_api"
 
@@ -44,10 +40,10 @@ steps:
       git config user.name "CI Pipeline"
       git config user.email "noreply@azuredevops.com"
 
-      git add pyproject.toml
+      git add ./agronext_api/pyproject.toml
       git commit -m "Bump version with poetry version patch"
 
-      git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name)/_git/$(Build.Repository.Name)HEAD:$(Build.SourceBranch)
+      git push https://$(System.AccessToken)@dev.azure.com/$(Build.Repository.Name/_git/$(Build.Repository.NameHEAD:refs/heads/$(Build.SourceBranch) HEAD:$(Build.SourceBranch)
     displayName: "Commit and Push Changes to pyproject.toml"
     env:
       System.AccessToken: $(System.AccessToken)
