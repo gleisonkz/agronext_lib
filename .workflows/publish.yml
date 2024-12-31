@@ -32,7 +32,7 @@ steps:
       poetry source add --priority=primary artifactory-publish http://artifactory.eu.scor.local/artifactory/api/pypi/pypi
       poetry config http-basic.artifactory-publish ${ARTIFACTORY_USERNAME} ${ARTIFACTORY_PASSWORD}
       poetry version patch
-      poetry publish --build --repository artifactory
+      poetry publish --build --repository artifactory-publish
     displayName: "Publish Package"
     workingDirectory: "./agronext_api"
 
