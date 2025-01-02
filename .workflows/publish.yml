@@ -44,7 +44,7 @@ steps:
       git config user.email "noreply@azuredevops.com"
 
       git add ./agronext_api/pyproject.toml
-      git commit -m "Bump version with poetry version patch"
+      git commit -m "Bump version with [skip ci]"
 
       git push origin HEAD:$(Build.SourceBranchName)
     displayName: "Commit and Push Changes to pyproject.toml"
