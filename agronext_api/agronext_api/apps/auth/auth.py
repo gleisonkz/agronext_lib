@@ -21,7 +21,7 @@ app_msal = msal.ConfidentialClientApplication(
 
 auth_scheme = SingleTenantAzureAuthorizationCodeBearer(
     app_client_id=auth_settings.CLIENT_ID,
-    tenant_id=auth_settings.TENENT_ID,
+    tenant_id=auth_settings.TENANT_ID,
     scopes=auth_settings.USER_SCOPE,
 
 )

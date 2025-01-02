@@ -6,13 +6,13 @@ from pydantic import Field
 class AuthSettings(BaseSettings):
     CLIENT_ID: str = Field(default="", description="client id")
     CLIENT_SECRET: str = Field(default="", description="client secret")
-    TENENT_ID: str = Field(default="", description="Tenent ID")
+    TENANT_ID: str = Field(default="", description="Tenant ID")
     GROUP_USERS_ID: str = Field(default="", description="Id do Grupo de usuários")
     CLIENT_OKTA_ID: str = Field(default="", description="Okta Client iD")
 
     @property
     def GET_AUTHORITY(self) -> str:
-        return f"https://login.microsoftonline.com/{self.TENENT_ID}"
+        return f"https://login.microsoftonline.com/{self.TENANT_ID}"
 
     @property
     def OPENAPI_AUTHORIZATION_URL(self) -> str:
