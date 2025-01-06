@@ -46,7 +46,6 @@ steps:
       pytest .
     workingDirectory: "$(package_path)"
     displayName: "Test"
-    workingDirectory: $(package_path)
 
   - script: |
       poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
