@@ -18,7 +18,7 @@ steps:
     displayName: "Configure Python"
 
   - script: |
-      poetry env use /root/.local/share/uv/python/cpython-3.12.4-linux-x86_64-gnu/bin/python3
+      poetry env use /root/.local/share/uv/python/cpython-3.12.7-linux-x86_64-gnu/bin/python3
       poetry config certificates.artifactory.cert false
       poetry lock
       poetry install -vvv
