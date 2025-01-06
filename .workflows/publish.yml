@@ -5,8 +5,8 @@ pool:
   name: "DAS-SGLA"
 
 variables:
-  - package_path: './agronext_api'
-  - python_version: 3.12.7
+  package_path: './agronext_api'
+  python_version: '3.12.7'
 
 steps:
   - checkout: self
@@ -34,7 +34,6 @@ steps:
       pytest .
     workingDirectory: "$(package_path)"
     displayName: "Test"
-    workingDirectory: $(package_path)
 
   - script: |
       poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
