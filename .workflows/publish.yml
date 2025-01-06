@@ -4,45 +4,62 @@ trigger:
 pool:
   name: "DAS-SGLA"
 
+parameters:
+  - package_path:
+    type: string
+    default: './agronext_api'
+  - python_version:
+    type: string
+    default: '3.12.7'
+
+variables:
+  - package_path: './agronext_api'
+  - python_version: '3.12.7'
+
 steps:
   - checkout: self
     persistCredentials: true
 
   - script: |
+      echo Package Path: '${{ parameters.package_path }}'
+      echo Python Version: '${{ parameters/python_version }}'
+
+  - script: |
       python -m pip install --upgrade pip --root-user-action=ignore
       python -m pip install uv --root-user-action=ignore
       python -m pip install poetry==1.8.4 --root-user-action=ignore
-      uv python install 3.12.7
+      uv python install $(python_version)
       uv python list
       uv python find
     displayName: "Configure Python"
 
   - script: |
-      poetry env use /root/.local/share/uv/python/cpython-3.12.7-linux-x86_64-gnu/bin/python3
+      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
       poetry config certificates.artifactory.cert false
       poetry lock
-      poetry install -vvv
-    workingDirectory: ./agronext_api
+      poetry install -vvv --with test
+    workingDirectory: $(package_path)
     displayName: "Install Dependencies"
 
   - script: |
-      pip install pytest pytest-azurepipelines
+      pip install pytest-azurepipelines --root-user-action=ignore
       pytest .
-    workingDirectory: "./agronext_api"
+    workingDirectory: "$(package_path)"
     displayName: "Test"
+    workingDirectory: $(package_path)
 
   - script: |
       poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
       poetry version patch
       poetry publish --build --repository artifactory-publish
     displayName: "Publish Package"
-    workingDirectory: "./agronext_api"
+    workingDirectory: "$(package_path)"
 
   - script: |
       git config user.name "CI Pipeline"
       git config user.email "noreply@azuredevops.com"
 
-      git add ./agronext_api/pyproject.toml
+      git add $(package_path)/pyproject.toml
       git commit -m "Bump version with [skip ci]"
 
       git push origin HEAD:$(Build.SourceBranchName)
