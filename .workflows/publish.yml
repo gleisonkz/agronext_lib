@@ -1,27 +1,16 @@
 trigger:
   - main
-pool:
-  name: DAS-SGLA
 
-# parameters:
-#   - package_path:
-#     type: string
-#     default: ./agronext_api
-#   - python_version:
-#     type: string
-#     default: 3.12.7
+pool:
+  name: "DAS-SGLA"
 
 variables:
-  - package_path: ./agronext_api
+  - package_path: './agronext_api'
   - python_version: 3.12.7
 
 steps:
   - checkout: self
     persistCredentials: true
-
-  # - script: |
-  #     echo Package Path: '${{ parameters.package_path }}'
-  #     echo Python Version: '${{ parameters/python_version }}'
 
   - script: |
       python -m pip install --upgrade pip --root-user-action=ignore
@@ -30,32 +19,30 @@ steps:
       uv python install $(python_version)
       uv python list
       uv python find
-    displayName: Configure Python
-  - script: >
-      poetry env use
-      /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
+    displayName: "Configure Python"
 
+  - script: |
+      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
       poetry config certificates.artifactory.cert false
-
       poetry lock
-
       poetry install -vvv --with test
     workingDirectory: $(package_path)
-    displayName: Install Dependencies
+    displayName: "Install Dependencies"
+
   - script: |
       pip install pytest-azurepipelines --root-user-action=ignore
       pytest .
+    workingDirectory: "$(package_path)"
+    displayName: "Test"
     workingDirectory: $(package_path)
-    displayName: Test
-  - script: >
-      poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME)
-      $(ARTIFACTORY_PASSWORD)
 
+  - script: |
+      poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
       poetry version patch
-
       poetry publish --build --repository artifactory-publish
-    displayName: Publish Package
-    workingDirectory: $(package_path)
+    displayName: "Publish Package"
+    workingDirectory: "$(package_path)"
+
   - script: |
       git config user.name "CI Pipeline"
       git config user.email "noreply@azuredevops.com"
@@ -64,6 +51,6 @@ steps:
       git commit -m "Bump version with [skip ci]"
 
       git push origin HEAD:$(Build.SourceBranchName)
-    displayName: Commit and Push Changes to pyproject.toml
+    displayName: "Commit and Push Changes to pyproject.toml"
     env:
       System.AccessToken: $(System.AccessToken)
