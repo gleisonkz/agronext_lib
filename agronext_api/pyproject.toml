@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.4"
+version = "0.0.5"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
@@ -16,16 +16,22 @@ msal = "^1.31.0"
 fastapi-azure-auth = "^5.0.1"
 httpx = "^0.28.1"
 
-[tool.poetry.dev-dependencies]
-pytest = "^8.3.4"
-pytest-mock = "^3.14.0"
-pytest-asyncio = "^0.24.0"
-
 
 [[tool.poetry.source]]
 name = "artifactory"
-url = "http://artifactory.eu.scor.local:8081/artifactory/api/pypi/pypi"
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
 priority = "supplemental"
+
+
+[[tool.poetry.source]]
+name = "artifactory-publish"
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
+priority = "primary"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-mock = "^3.14.0"
+pytest-asyncio = "^0.25.1"
 
 [build-system]
 requires = ["poetry-core"]
