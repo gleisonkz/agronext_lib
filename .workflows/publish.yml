@@ -3,6 +3,7 @@ trigger:
 
 pool:
   name: "DAS-SGLA"
+  
 
 parameters:
   - package_path:
