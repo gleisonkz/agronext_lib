@@ -2,22 +2,27 @@ trigger:
   - main
 pool:
   name: DAS-SGLA
-parameters:
-  - package_path: null
-    type: string
-    default: ./agronext_api
-  - python_version: null
-    type: string
-    default: 3.12.7
+
+# parameters:
+#   - package_path:
+#     type: string
+#     default: ./agronext_api
+#   - python_version:
+#     type: string
+#     default: 3.12.7
+
 variables:
   - package_path: ./agronext_api
   - python_version: 3.12.7
+
 steps:
   - checkout: self
     persistCredentials: true
-  - script: |
-      echo Package Path: '${{ parameters.package_path }}'
-      echo Python Version: '${{ parameters/python_version }}'
+
+  # - script: |
+  #     echo Package Path: '${{ parameters.package_path }}'
+  #     echo Python Version: '${{ parameters/python_version }}'
+
   - script: |
       python -m pip install --upgrade pip --root-user-action=ignore
       python -m pip install uv --root-user-action=ignore
