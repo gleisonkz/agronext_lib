@@ -1,6 +1,8 @@
+from typing import Dict, List, Optional
+
+from pydantic import ConfigDict, Field
+
 from ..config.base_settings import BaseSettings
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Any, Dict, List, Optional, Union
 
 
 class FilterConfig(BaseSettings):

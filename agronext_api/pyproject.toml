@@ -41,7 +41,100 @@ isort = "^5.13.2"
 black = "^24.10.0"
 flake8 = "^7.1.1"
 mypy = "^1.14.1"
+ruff = "^0.8.6"
+types-pyyaml = "^6.0.12.20241230"
+types-ujson = "^5.10.0.20240515"
+
+
+[tool.poetry.group.security.dependencies]
+bandit = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+## Code Checks
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.bandit]
+skips = ["B101", "B105", "B104"]
+targets = ["agronext_api"]
+exclude_dirs = [".venv", "venv", ]
+recursive = true
+
+[tool.mypy]
+exclude = []
+plugins = [
+  "pydantic.mypy"
+]
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+show_error_codes = true
+pretty = false
+no_implicit_optional=false
+ 
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[tool.pylint]
+max-line-length = 120
+ 
+[tool.pylint."MASTER"]
+disable = """
+        missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+"""
+ignore-paths = []
+ 
+[tool.pylint."messages_control"]
+disable = [
+    "too-many-instance-attributes",
+    "too-few-public-methods",
+    "invalid-name"
+]
+
+[tool.ruff]
+# Line length configuration (matches Black, Flake8, and others)
+line-length = 120
+
+[tool.ruff.lint]
+# Add additional linting categories (equivalent to Bandit, Pylint, etc.)
+select = ["E", "F", "W", "I"]
+
+# Select codes equivalent to Flake8 and other tools
+ignore = [
+    "E231",  # Avoid conflicts with Black
+    "E241",  # Avoid conflicts with Black
+    "E501",  # Line too long (Black handles this)
+]
+ 
+# Per-file ignores
+per-file-ignores = {"__init__.py" = ["F401"]}
+ 
+# Exclude specific directories
+exclude = [
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "__pycache__",
+    ".git",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".vscode",
+]
+ 
+# Enable autofix for selected linting categories
+fixable = ["ALL"] 
+

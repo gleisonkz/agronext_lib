@@ -1,37 +1,35 @@
-import functools
+from typing import Dict, List, Optional
 
+import httpx
 import msal
+from fastapi import Request
+from fastapi.security import SecurityScopes
 from fastapi_azure_auth import SingleTenantAzureAuthorizationCodeBearer
 from fastapi_azure_auth.user import User as UserAuth
-from .user import User
-from fastapi import Request, Depends
-from fastapi.security import SecurityScopes
-from .auth_settings import auth_settings
+
 from ...exceptions.auth import AuthenticationError, UnauthorizedError
-from .profiles import resource_permissions, SystemFeature, Role
-from okta_jwt_verifier import BaseJWTVerifier
-from typing import Dict, List, Optional
-import httpx
+from .auth_settings import auth_settings
+from .profiles import Role, SystemFeature, resource_permissions
+from .user import User
 
 app_msal = msal.ConfidentialClientApplication(
     client_id=auth_settings.CLIENT_ID,
     authority=auth_settings.GET_AUTHORITY,
-    client_credential=auth_settings.CLIENT_SECRET
+    client_credential=auth_settings.CLIENT_SECRET,
 )
 
 auth_scheme = SingleTenantAzureAuthorizationCodeBearer(
     app_client_id=auth_settings.CLIENT_ID,
     tenant_id=auth_settings.TENANT_ID,
     scopes=auth_settings.USER_SCOPE,
-
 )
 
 
-#jwt_verifier = BaseJWTVerifier(
+# jwt_verifier = BaseJWTVerifier(
 #    issuer=auth_settings.ISSUER_OKTA,
 #    audience=auth_settings.AUDIENCE_OKTA,
 #    client_id=auth_settings.CLIENT_OKTA_ID
-#)
+# )
 
 
 def verify_additional_rules(user_roles, method, additional_roles: List[Dict[str, list]]) -> bool:
@@ -78,8 +76,8 @@ class check_permissions:
 #                return User(id=id, email=email)
 #            raise UnauthorizedError("You don't have access to this endpoint")
 
-class AuthenticatorSDK:
 
+class AuthenticatorSDK:
     @staticmethod
     def get_access_token():
         result = app_msal.acquire_token_for_client(scopes=auth_settings.SCOPE_DEFAULT)
@@ -97,8 +95,10 @@ class AuthenticatorSDK:
                 users = response.json()
                 users_response.extend([User(email=user["mail"]) for user in users["value"]])
                 while users.get("@odata.nextLink"):
-                    response = await client.get(users.get("@odata.nextLink"),
-                                                headers={"Authorization": f"Bearer {token}"})
+                    response = await client.get(
+                        users.get("@odata.nextLink"),
+                        headers={"Authorization": f"Bearer {token}"},
+                    )
                     users = response.json()
                     users_response.extend([User(email=user["mail"]) for user in users["value"]])
 

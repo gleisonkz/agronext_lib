@@ -1,8 +1,17 @@
-from contextlib import asynccontextmanager, AsyncExitStack
+from contextlib import AsyncExitStack, asynccontextmanager
 from typing import AsyncGenerator, Optional
 
-from fastapi import FastAPI, APIRouter, BackgroundTasks, Response, status, Query, Depends  # noqa
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    FastAPI,  # noqa
+    Query,
+    Response,
+    status,
+)
 
+from .apps.health_check.router import router as health_check_router
 from .config.settings import api_settings
 
 # from .database import close_db, init_db
@@ -13,7 +22,6 @@ from .extensions import init_extensions
 from .logger import close_logger, get_logger, init_logger
 from .middlewares import init_middlewares
 from .security import init_security
-from .apps.health_check.router import router as health_check_router
 
 
 class AgronextAPI:
@@ -109,9 +117,7 @@ class AgronextAPI:
         return self._app
 
     @staticmethod
-    def create_router(
-        prefix: str = "", tags: Optional[list[str]] = None, **kwargs
-    ) -> APIRouter:
+    def create_router(prefix: str = "", tags: Optional[list[str]] = None, **kwargs) -> APIRouter:
         """
         Creates a new APIRouter instance and registers it with the app.
 

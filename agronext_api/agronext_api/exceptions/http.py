@@ -1,4 +1,5 @@
 from fastapi import status
+
 from .base import BaseHTTPException
 
 
@@ -50,7 +51,9 @@ class GatewayTimeout(BaseHTTPException):
         self.message = f"Gateway Timeout - {message}" if message else "Gateway Timeout"
         super().__init__(status_code=self.status_code, message=self.message)
 
+
 ## Auth
+
 
 class Unauthorized(BaseHTTPException):
     def __init__(self, message: str = "") -> None:

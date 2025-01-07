@@ -1,5 +1,6 @@
 from ..config.base_settings import BaseSettings
 
+
 class DatabaseSettings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
@@ -13,5 +14,5 @@ class DatabaseSettings(BaseSettings):
         "aerich.models",
     ]
 
-database_settings = DatabaseSettings()
 
+database_settings = DatabaseSettings()

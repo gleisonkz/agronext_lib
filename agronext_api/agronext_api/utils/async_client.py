@@ -1,7 +1,15 @@
 import logging
 from typing import Any, Literal, Optional, TypeVar
 
-from httpx import URL, AsyncClient, BasicAuth, HTTPError, HTTPStatusError, RequestError, Response, codes  # noqa: F401
+from httpx import (
+    AsyncClient,
+    HTTPError,  # noqa: F401
+    HTTPStatusError,
+    RequestError,
+    Response,
+    codes,
+)
+
 from ..logger import get_logger
 
 logger = get_logger("async_client")

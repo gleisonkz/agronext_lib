@@ -1,6 +1,8 @@
 from typing import List
-from ...config.base_settings import BaseSettings
+
 from pydantic import Field
+
+from ...config.base_settings import BaseSettings
 
 
 class AuthSettings(BaseSettings):
@@ -30,11 +32,9 @@ class AuthSettings(BaseSettings):
     def GRAPH_URL(self) -> str:
         return "https://graph.microsoft.com/v1.0/users"
 
-
     @property
     def GROUP_URL(self) -> str:
         return f"https://graph.microsoft.com/v1.0/groups/{self.GROUP_USERS_ID}/members"
-
 
     @property
     def USER_SCOPE(self) -> str:

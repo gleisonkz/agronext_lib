@@ -1,7 +1,8 @@
+from typing import Optional
+
 from pydantic import Field
 
 from ...schemas import BaseModel
-from typing import Optional
 
 
 class User(BaseModel):

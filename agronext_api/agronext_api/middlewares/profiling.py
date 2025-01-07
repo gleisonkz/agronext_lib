@@ -22,5 +22,3 @@ class ProcessTimeMiddleware(BaseHTTPMiddleware):
             extra={"request": request.url.path},
         )
         return response
-
-

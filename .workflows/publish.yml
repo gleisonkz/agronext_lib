@@ -25,15 +25,9 @@ steps:
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
       poetry config certificates.artifactory.cert false
       poetry lock
-      poetry install -vvv --with test
+      poetry install -vvv --without test,quality
     workingDirectory: $(package_path)
     displayName: "Install Dependencies"
-
-  - script: |
-      pip install pytest-azurepipelines --root-user-action=ignore
-      pytest .
-    workingDirectory: "$(package_path)"
-    displayName: "Test"
 
   - script: |
       poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)

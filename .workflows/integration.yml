@@ -1,0 +1,74 @@
+trigger:
+  - none
+
+pr: 
+  - main
+
+pool:
+  name: "DAS-SGLA"
+
+variables:
+  package_path: './agronext_api'
+  python_version: '3.12.7'
+  coverage_threshold: '80'
+  lint_threshold: '9.5'
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+  - script: |
+      python -m pip install --upgrade pip --root-user-action=ignore
+      python -m pip install uv --root-user-action=ignore
+      python -m pip install poetry==1.8.4 --root-user-action=ignore
+      uv python install $(python_version)
+      uv python list
+      uv python find
+    displayName: "Configure Python"
+
+  - script: |
+      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
+      poetry config certificates.artifactory.cert false
+      poetry lock
+      poetry install -vvv --with test,security,quality
+    workingDirectory: $(package_path)
+    displayName: "Install Dependencies"
+
+  - script: |
+      bandit -r $(package_path) -f bandit.json -o json -s B105,B104
+    workingDirectory: "$(package_path)"
+    displayName: "Security"
+
+  - script: |
+      ruff check --fix ./$(package_path)
+      ruff format
+    workingDirectory: "$(package_path)"
+    displayName: Sort and Format
+
+  - script: |
+      pylint --recursive=y ./$(package_path) --fail-under=$(lint_threshold) || true
+    workingDirectory: "$(package_path)"
+    displayName: Lint
+
+  - script: |
+      mypy ./$(package_path) || true
+    workingDirectory: "$(package_path)"
+    displayName: TypeCheck
+
+  - script: |
+      pip install pytest-azurepipelines --root-user-action=ignore
+      pytest ./tests --junitxml test-output.xml --cov=./tests --cov-report xml:coverage.xml --cov-fail-under=$(coverage_threshold)
+    workingDirectory: "$(package_path)"
+    displayName: "Test"
+
+  # - script: |
+  #     git config user.name "CI Pipeline"
+  #     git config user.email "noreply@azuredevops.com"
+
+  #     git add $(package_path)/pyproject.toml
+  #     git commit -m "Bump version with [skip ci]"
+
+  #     git push origin HEAD:$(Build.SourceBranchName)
+  #   displayName: "Commit and Push Changes to pyproject.toml"
+  #   env:
+  #     System.AccessToken: $(System.AccessToken)
