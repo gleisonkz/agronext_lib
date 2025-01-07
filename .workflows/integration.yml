@@ -35,7 +35,7 @@ steps:
     displayName: "Install Dependencies"
 
   - script: |
-      bandit -r $(package_path) -f bandit.json -o json -s B105,B104
+      bandit -r $(package_path) -f json -o bandit.json -s B104,B105
     workingDirectory: "$(package_path)"
     displayName: "Security"
 
