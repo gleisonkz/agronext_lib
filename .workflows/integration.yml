@@ -33,36 +33,39 @@ steps:
       poetry install -vvv --with test,security,quality
     workingDirectory: $(package_path)
     displayName: "Install Dependencies"
-
+  
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run bandit -r $(package_path) -f json -o bandit.json -s B104,B105 || true
-    workingDirectory: "$(package_path)"
-    displayName: "Security"
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run ruff check --fix ./$(package_path) || true
-      poetry run ruff format || true
+      poetry run ruff check --fix ./$(package_path)
+      poetry run ruff format
     workingDirectory: "$(package_path)"
     displayName: Sort and Format
 
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run pylint --recursive=y ./$(package_path) --fail-under=$(lint_threshold) || true
+      poetry run bandit -r $(package_path) -f json -o bandit.json -s B104,B105
+    workingDirectory: "$(package_path)"
+    displayName: "Security"
+    continueOnError: true
+  
+  - script: |
+      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
+      poetry run pylint --recursive=y ./$(package_path) --fail-under=$(lint_threshold)
     workingDirectory: "$(package_path)"
     displayName: Lint
+    continueOnError: true
 
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run mypy ./$(package_path) || true
+      poetry run mypy ./$(package_path)
     workingDirectory: "$(package_path)"
     displayName: TypeCheck
+    continueOnError: true
 
   - script: |
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
       pip install pytest-azurepipelines --root-user-action=ignore
-      poetry run pytest ./tests --junitxml=test-output.xml --cov=./ --cov-report=xml:coverage.xml --cov-fail-under=$(coverage_threshold) || true
+      poetry run pytest ./tests --junitxml=test-output.xml --cov=./ --cov-report=xml:coverage.xml --cov-fail-under=$(coverage_threshold)
     workingDirectory: "$(package_path)"
     displayName: "Test"
 
