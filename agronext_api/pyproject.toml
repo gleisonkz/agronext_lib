@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agronext-api"
-version = "0.0.5"
+version = "0.0.6"
 description = "Agronext FastAPI Wrapper"
 authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
 readme = "README.md"
