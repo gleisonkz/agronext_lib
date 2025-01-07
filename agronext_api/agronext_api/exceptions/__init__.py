@@ -1,11 +1,11 @@
 import traceback
 from datetime import datetime
 
-from agronext_database.exceptions import (
-    QueryError,
-    ResourceAlreadyExists,
-    ResourceNotFound,
-)
+# from agronext_database.exceptions import (
+#     QueryError,
+#     ResourceAlreadyExists,
+#     ResourceNotFound,
+# )
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse
@@ -38,13 +38,13 @@ def init_error_handling(app: FastAPI) -> None:
     async def conflict_exception_handler(request: Request, exc: Conflict) -> JSONResponse:
         return __user_friendly_json(status.HTTP_409_CONFLICT, str(exc))
 
-    @app.exception_handler(ResourceNotFound)
-    async def resource_not_found_exception_handler(request: Request, exc: ResourceNotFound) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_404_NOT_FOUND, str(exc))
+    # @app.exception_handler(ResourceNotFound)
+    # async def resource_not_found_exception_handler(request: Request, exc: ResourceNotFound) -> JSONResponse:
+    #     return __user_friendly_json(status.HTTP_404_NOT_FOUND, str(exc))
 
-    @app.exception_handler(ResourceAlreadyExists)
-    async def resource_already_exists_exception_handler(request: Request, exc: ResourceAlreadyExists) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_409_CONFLICT, str(exc))
+    # @app.exception_handler(ResourceAlreadyExists)
+    # async def resource_already_exists_exception_handler(request: Request, exc: ResourceAlreadyExists) -> JSONResponse:
+    #     return __user_friendly_json(status.HTTP_409_CONFLICT, str(exc))
 
     @app.exception_handler(Exception)
     async def custom_http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
