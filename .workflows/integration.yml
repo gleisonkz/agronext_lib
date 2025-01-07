@@ -38,6 +38,15 @@ steps:
       poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
       poetry run ruff check --fix ./$(package_path)
       poetry run ruff format
+      
+      git config user.name "CI Pipeline"
+      git config user.email "noreply@azuredevops.com"
+      git add $(package_path)
+
+      if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "Auto-format code"
+          git push origin HEAD
+      fi
     workingDirectory: "$(package_path)"
     displayName: Sort and Format
 
@@ -69,14 +78,4 @@ steps:
     workingDirectory: "$(package_path)"
     displayName: "Test"
 
-  # - script: |
-  #     git config user.name "CI Pipeline"
-  #     git config user.email "noreply@azuredevops.com"
 
-  #     git add $(package_path)/pyproject.toml
-  #     git commit -m "Bump version with [skip ci]"
-
-  #     git push origin HEAD:$(Build.SourceBranchName)
-  #   displayName: "Commit and Push Changes to pyproject.toml"
-  #   env:
-  #     System.AccessToken: $(System.AccessToken)

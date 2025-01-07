@@ -1,5 +1,5 @@
 from ..config.base_settings import BaseSettings
-
+import os
 
 class Settings(BaseSettings):
     DEBUG: bool = True
