@@ -7,7 +7,7 @@ pr:
 pool:
   name: "DAS-SGLA"
 
-resoureces:
+resources:
   repositories:
     - repository: agronext_workflows
       type: git
