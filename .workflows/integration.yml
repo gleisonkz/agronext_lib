@@ -7,75 +7,13 @@ pr:
 pool:
   name: "DAS-SGLA"
 
-variables:
-  package_path: './agronext_api'
-  python_version: '3.12.7'
-  coverage_threshold: '80'
-  lint_threshold: '9.5'
+resoureces:
+  repositories:
+    - repository: agronext_workflows
+      type: git
+      name: workflows
 
-steps:
-  - checkout: self
-    persistCredentials: true
-
-  - script: |
-      python -m pip install --upgrade pip --root-user-action=ignore
-      python -m pip install uv --root-user-action=ignore
-      python -m pip install poetry==1.8.4 --root-user-action=ignore
-      uv python install $(python_version)
-      uv python list
-      uv python find
-    displayName: "Configure Python"
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry config certificates.artifactory.cert false
-      poetry lock
-      poetry install -vvv --with test,security,quality
-    workingDirectory: $(package_path)
-    displayName: "Install Dependencies"
-  
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run ruff check --fix ./$(package_path)
-      poetry run ruff format
-      
-      git config user.name "CI Pipeline"
-      git config user.email "noreply@azuredevops.com"
-      git add $(package_path)
-
-      if [ -n "$(git status --porcelain)" ]; then
-          git commit -m "Auto-format code"
-          git push origin HEAD
-      fi
-    workingDirectory: "$(package_path)"
-    displayName: Sort and Format
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run bandit -r $(package_path) -f json -o bandit.json -s B104,B105
-    workingDirectory: "$(package_path)"
-    displayName: "Security"
-    continueOnError: true
-  
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run pylint --recursive=y ./$(package_path) --fail-under=$(lint_threshold)
-    workingDirectory: "$(package_path)"
-    displayName: Lint
-    continueOnError: true
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry run mypy ./$(package_path)
-    workingDirectory: "$(package_path)"
-    displayName: TypeCheck
-    continueOnError: true
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      pip install pytest-azurepipelines --root-user-action=ignore
-      poetry run pytest ./tests --junitxml=test-output.xml --cov=./ --cov-report=xml:coverage.xml --cov-fail-under=$(coverage_threshold)
-    workingDirectory: "$(package_path)"
-    displayName: "Test"
-
-
+jobs:
+  template: integration@workflows
+  parameters:
+    package_path: './agronext_api'
