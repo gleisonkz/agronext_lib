@@ -9,9 +9,9 @@ pool:
 
 resources:
   repositories:
-    - repository: agronext_workflows
+    - repository: workflows
       type: git
-      name: workflows
+      name: agronext_workflows
 
 jobs:
   - template: integration.yml@workflows
