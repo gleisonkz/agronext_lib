@@ -1,49 +1,28 @@
 trigger:
-  - main
+  - none
+
+pr: 
+  branches:
+    include:
+      - main
+      - development
+  paths:
+    exclude:
+      - './workflows/**'
 
 pool:
   name: "DAS-SGLA"
 
+resources:
+  repositories:
+    - repository: workflows
+      type: git
+      name: agronext_workflows
+
 variables:
-  package_path: './agronext_api'
-  python_version: '3.12.7'
+  - group: Credentials
 
-steps:
-  - checkout: self
-    persistCredentials: true
-
-  - script: |
-      python -m pip install --upgrade pip --root-user-action=ignore
-      python -m pip install uv --root-user-action=ignore
-      python -m pip install poetry==1.8.4 --root-user-action=ignore
-      uv python install $(python_version)
-      uv python list
-      uv python find
-    displayName: "Configure Python"
-
-  - script: |
-      poetry env use /root/.local/share/uv/python/cpython-$(python_version)-linux-x86_64-gnu/bin/python3
-      poetry config certificates.artifactory.cert false
-      poetry lock
-      poetry install -vvv
-    workingDirectory: $(package_path)
-    displayName: "Install Dependencies"
-
-  - script: |
-      poetry config http-basic.artifactory-publish $(ARTIFACTORY_USERNAME) $(ARTIFACTORY_PASSWORD)
-      poetry version patch
-      poetry publish --build --repository artifactory-publish
-    displayName: "Publish Package"
-    workingDirectory: "$(package_path)"
-
-  - script: |
-      git config user.name "CI Pipeline"
-      git config user.email "noreply@azuredevops.com"
-
-      git add $(package_path)/pyproject.toml
-      git commit -m "Bump version with [skip ci]"
-
-      git push origin HEAD:$(Build.SourceBranchName)
-    displayName: "Commit and Push Changes to pyproject.toml"
-    env:
-      System.AccessToken: $(System.AccessToken)
+jobs:
+  - template: publish.yml@workflows
+    parameters:
+      package_path: './agronext_api'
