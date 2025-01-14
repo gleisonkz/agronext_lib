@@ -22,7 +22,25 @@ resources:
 variables:
   - group: Credentials
 
-jobs:
-  - template: publish.yml@workflows
-    parameters:
-      package_path: './agronext_api'
+stages:
+  - stage: Publish
+    displayName: Publish Package
+    jobs:
+      - template: publish.yml@workflows
+        parameters:
+          package_path: './agronext_api'
+
+  - Stage: Trigger Dependents to Bump Version
+    dependsOn: Publish
+    condition: succeeded()
+    jobs:
+      - job: Bump Dependents
+        displayName: Trigger Dependent
+        strategy:
+          matrix:
+            acquisition_service:
+              service_path: 'agronext_service'
+            support_service:
+              service_path: 'support_service'
+        steps:
+          - script: echo "Trigerring $(service_path)..."
