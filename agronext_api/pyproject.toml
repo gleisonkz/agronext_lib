@@ -1,140 +1,25 @@
-[tool.poetry]
+[project]
 name = "agronext-api"
 version = "0.0.9"
-description = "Agronext FastAPI Wrapper"
-authors = ["Cristovam Silva <cristovam.lage@essor.com.br>"]
+description = "Add your description here"
 readme = "README.md"
+authors = [{ name = "Cristovam Silva", email = "cristovam.silva@icloud.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi-pagination>=0.13.1",
+    "fastapi[standard]>=0.115.12",
+    "pydantic-settings>=2.9.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.115.2"
-uvicorn = "^0.32.0"
-pydantic-settings = "^2.6.0"
-pydantic = "^2.9.2"
-fastapi-pagination = "^0.12.31"
-msal = "^1.31.0"
-fastapi-azure-auth = "^5.0.1"
-httpx = "^0.28.1"
-
-
-[[tool.poetry.source]]
-name = "artifactory"
-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
-priority = "primary"
-
-
-[[tool.poetry.source]]
-name = "artifactory-publish"
-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
-priority = "explicit"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.4"
-pytest-mock = "^3.14.0"
-pytest-asyncio = "^0.25.1"
-pytest-cov = "^6.0.0"
-
-
-[tool.poetry.group.quality.dependencies]
-pylint = "^3.3.3"
-isort = "^5.13.2"
-black = "^24.10.0"
-flake8 = "^7.1.1"
-mypy = "^1.14.1"
-ruff = "^0.8.6"
-types-pyyaml = "^6.0.12.20241230"
-types-ujson = "^5.10.0.20240515"
-
-
-[tool.poetry.group.security.dependencies]
-bandit = "^1.8.0"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-## Code Checks
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
-filterwarnings = ["ignore::DeprecationWarning"]
-
-[tool.bandit]
-skips = ["B101", "B105", "B104"]
-targets = ["agronext_api"]
-exclude_dirs = [".venv", "venv", ]
-recursive = true
-
-[tool.mypy]
-exclude = []
-plugins = [
-  "pydantic.mypy"
-]
-check_untyped_defs = true
-ignore_missing_imports = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-show_error_codes = true
-pretty = false
-no_implicit_optional=false
- 
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-
-[tool.pylint]
-max-line-length = 120
- 
-[tool.pylint."MASTER"]
-disable = """
-        missing-module-docstring,
-        missing-class-docstring,
-        missing-function-docstring,
-"""
-ignore-paths = []
- 
-[tool.pylint."messages_control"]
-disable = [
-    "too-many-instance-attributes",
-    "too-few-public-methods",
-    "invalid-name"
-]
-
-[tool.ruff]
-# Line length configuration (matches Black, Flake8, and others)
-line-length = 120
-
-[tool.ruff.lint]
-# Add additional linting categories (equivalent to Bandit, Pylint, etc.)
-select = ["E", "F", "W", "I"]
-
-# Select codes equivalent to Flake8 and other tools
-ignore = [
-    "E231",  # Avoid conflicts with Black
-    "E241",  # Avoid conflicts with Black
-    "E501",  # Line too long (Black handles this)
-]
- 
-# Per-file ignores
-per-file-ignores = {"__init__.py" = ["F401"]}
- 
-# Exclude specific directories
-exclude = [
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    "__pycache__",
-    ".git",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".vscode",
-]
- 
-# Enable autofix for selected linting categories
-fixable = ["ALL"] 
-
+[tool.uv]
+[[tool.uv.index]]
+name = "artifactory"
+default = true
+allow-insecure = true
+url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
+publish-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"

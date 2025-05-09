@@ -1,0 +1,27 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - agronext_api/**
+
+pool:
+  name: "DAS-SGLA"
+
+variables:
+  - group: Credentials
+  - name: "package_path"
+    value: "agronext_api"
+
+resources:
+  repositories:
+    - repository: workflows
+      type: git
+      name: agronext_workflows
+
+jobs:
+  - template: publish.yml@workflows
+    parameters:
+      package_path: "$(package_path)"
+      patch: true
