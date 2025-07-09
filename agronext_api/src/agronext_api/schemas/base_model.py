@@ -9,7 +9,7 @@ def to_camel(string: str) -> str:
 
 class BaseModel(PydanticBaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="ignore",
         frozen=True,
         populate_by_name=True,
         use_enum_values=True,
