@@ -1,0 +1,447 @@
+{
+    "data": {
+        "safra": 2025,
+        "numeroProposta": "17533012436798",
+        "codigoBacenMunicipioCliente": "52412",
+        "codigoProduto": 576,
+        "dataBaseCalculo": "2025-07-23",
+        "tipoApolice": 2,
+        "codigoTipoEndosso": null,
+        "textoLivreEndosso": null,
+        "idEndossoRelacionado": null,
+        "textoLivreEndossoRelacionado": null,
+        "valorIpf": 0.0,
+        "pessoas": [
+            {
+                "nome": "John Doe",
+                "tipoPessoa": 1,
+                "informarNomeSocial": false,
+                "nomeSocial": null,
+                "cpfCnpj": "10020020015",
+                "detalhes": {
+                    "isCpfProprio": true,
+                    "nomeFantasia": null,
+                    "dataNascimento": "1994-03-24",
+                    "genero": null,
+                    "estadoCivil": null
+                },
+                "papeis": [
+                    {
+                        "codigoPapel": 4,
+                        "percentualParticipacao": 80.0,
+                        "descricaoPapel": "Beneficiário"
+                    },
+                    {
+                        "codigoPapel": 2,
+                        "percentualParticipacao": null,
+                        "descricaoPapel": "Cliente"
+                    }
+                ],
+                "meiosComunicacao": [
+                    {
+                        "codigo": 4,
+                        "descricao": "xtvm@test.com",
+                        "ddd": null
+                    },
+                    {
+                        "codigo": 3,
+                        "descricao": "999112233",
+                        "ddd": 51
+                    }
+                ],
+                "enderecos": [
+                    {
+                        "cep": 90000000,
+                        "bairro": "Test Neighborhood",
+                        "cidade": "Arambaré",
+                        "numero": "123",
+                        "codigoUf": 23,
+                        "endereco": "Test Street",
+                        "complemento": "Apt 456",
+                        "tipoEndereco": 1,
+                        "enderecoPrincipal": true
+                    }
+                ]
+            },
+            {
+                "nome": "Jane Doe",
+                "tipoPessoa": 1,
+                "informarNomeSocial": false,
+                "nomeSocial": null,
+                "cpfCnpj": "10020020015",
+                "detalhes": {
+                    "isCpfProprio": true,
+                    "nomeFantasia": null,
+                    "dataNascimento": "1994-03-24",
+                    "genero": null,
+                    "estadoCivil": null
+                },
+                "papeis": [
+                    {
+                        "codigoPapel": 4,
+                        "percentualParticipacao": 20.0,
+                        "descricaoPapel": "Beneficiário"
+                    }
+                ],
+                "meiosComunicacao": [
+                    {
+                        "codigo": 4,
+                        "descricao": "xtvm@test.com",
+                        "ddd": null
+                    },
+                    {
+                        "codigo": 3,
+                        "descricao": "999112233",
+                        "ddd": 51
+                    }
+                ],
+                "enderecos": null
+            }
+        ],
+        "locais": [
+            {
+                "codigo": 4,
+                "utilizacao": "Residencial",
+                "nome": "Test Property",
+                "numero": 123,
+                "valorFranquia": 52905.6,
+                "endereco": {
+                    "cep": 90000000,
+                    "logradouro": "Test Street",
+                    "bairro": "Test Neighborhood",
+                    "municipio": "Arambaré",
+                    "estado": "RS",
+                    "uf": "RS",
+                    "codigoUf": 23,
+                    "complemento": "Apt 456",
+                    "codigoBacenMunicipio": "52412"
+                },
+                "questionario": {
+                    "coeficiente": 0.0,
+                    "tipoResposta": "Alfanumerico",
+                    "perguntas": [
+                        {
+                            "codigo": 101,
+                            "descricao": "Deseja aderir ao Programa de Subvenção ao Prêmio de Seguro Rural do Governo Federal?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": "No entanto, se por qualquer motivo não for possível receber a subvenção, responsabilizo-me pelo pagamento integral do prêmio.",
+                                    "descricao": null,
+                                    "codigo": 1
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": 108,
+                            "descricao": "Deseja aderir ao Programa de Subvenção ao Prêmio de Seguro Rural do Governo Estadual?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": "No entanto, se por qualquer motivo não for possível receber a subvenção, responsabilizo-me pelo pagamento integral do prêmio.",
+                                    "descricao": null,
+                                    "codigo": 1
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": 103,
+                            "descricao": "As áreas declaradas nas unidades seguradas da proposta representam toda a área cultivada desta cultura na propriedade?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": null,
+                                    "descricao": null,
+                                    "codigo": 2
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": 109,
+                            "descricao": "Existem danos de pelo menos um dos eventos cobertos na safra atual?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": null,
+                                    "descricao": null,
+                                    "codigo": 2
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": 106,
+                            "descricao": "O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": null,
+                                    "descricao": null,
+                                    "codigo": 2
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": 107,
+                            "descricao": "O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
+                            "resposta": [
+                                {
+                                    "pontuacao": 0,
+                                    "justificativa": null,
+                                    "descricao": null,
+                                    "codigo": 2
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "geo": {
+                    "latidude": {
+                        "grau": -30,
+                        "minuto": 0,
+                        "segundo": 0.0,
+                        "posicao": "S"
+                    },
+                    "longitude": {
+                        "grau": -50,
+                        "minuto": 0,
+                        "segundo": 0.0,
+                        "posicao": "W"
+                    }
+                },
+                "itens": [
+                    {
+                        "tipo": "Agricola",
+                        "cultura": {
+                            "codigo": "0011283005",
+                            "nome": "Pera",
+                            "codigoSubCultura": 396,
+                            "variedade": {
+                                "nome": "Yalli",
+                                "codigo": 1234,
+                                "codigoCiclo": 14
+                            }
+                        },
+                        "coberturas": [
+                            {
+                                "codigo": 101,
+                                "indicadorFacultativa": false,
+                                "indicadorGratuita": false,
+                                "valorPremioBasico": 0.0,
+                                "verbas": [
+                                    {
+                                        "codigo": 100,
+                                        "isContratada": true,
+                                        "franquia": {
+                                            "valor": 52905.6,
+                                            "codigo": 100,
+                                            "tabela": null
+                                        },
+                                        "importanciaSegurada": {
+                                            "valor": 264528.0,
+                                            "taxa": 15.0
+                                        },
+                                        "premio": {
+                                            "valorLiquido": 39679.2,
+                                            "valorTotal": 39679.2,
+                                            "valorTarifario": 39679.2,
+                                            "percentualDesconto": 0.0,
+                                            "percentualAgravamento": 0.0,
+                                            "valorDesconto": 0.0,
+                                            "valorAgravamento": 0.0,
+                                            "percentualCarregamento": 0.0,
+                                            "taxaComercial": 15.0,
+                                            "taxaPura": 15.0
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "vigencia": {
+                            "tipoVigencia": 1,
+                            "dataInicio": "2025-07-23",
+                            "dataFim": "2026-07-30"
+                        },
+                        "listaCoordenadas": {
+                            "poligonos": {
+                                "numero": 0
+                            },
+                            "coordenadas": [
+                                {
+                                    "numeroGrauLatitude": -51,
+                                    "numeroMinutoLatitude": 19,
+                                    "numeroSegundoLatitude": 39.30556797363977,
+                                    "csOrientacaoLatitude": "S",
+                                    "numeroGrauLongitude": -26,
+                                    "numeroMinutoLongitude": 25,
+                                    "numeroSegundoLongitude": 12.97616458903974,
+                                    "csOrientacaoLongitude": "W"
+                                },
+                                {
+                                    "numeroGrauLatitude": -51,
+                                    "numeroMinutoLatitude": 19,
+                                    "numeroSegundoLatitude": 21.53861545899133,
+                                    "csOrientacaoLatitude": "S",
+                                    "numeroGrauLongitude": -26,
+                                    "numeroMinutoLongitude": 25,
+                                    "numeroSegundoLongitude": 11.730932709625108,
+                                    "csOrientacaoLongitude": "W"
+                                },
+                                {
+                                    "numeroGrauLatitude": -51,
+                                    "numeroMinutoLatitude": 19,
+                                    "numeroSegundoLatitude": 25.555491679694455,
+                                    "csOrientacaoLatitude": "S",
+                                    "numeroGrauLongitude": -26,
+                                    "numeroMinutoLongitude": 25,
+                                    "numeroSegundoLongitude": 29.57889939689835,
+                                    "csOrientacaoLongitude": "W"
+                                },
+                                {
+                                    "numeroGrauLatitude": -51,
+                                    "numeroMinutoLatitude": 19,
+                                    "numeroSegundoLatitude": 39.30556797363977,
+                                    "csOrientacaoLatitude": "S",
+                                    "numeroGrauLongitude": -26,
+                                    "numeroMinutoLongitude": 25,
+                                    "numeroSegundoLongitude": 12.97616458903974,
+                                    "csOrientacaoLongitude": "W"
+                                }
+                            ]
+                        },
+                        "produtividadeGarantida": 5878.4,
+                        "codigo": 0,
+                        "area": 13.36,
+                        "valorTonelada": 45.0,
+                        "valorRendimentoTonelada": 45.0,
+                        "valorRendimentoEstimado": 45.0,
+                        "valorToneladaCultura": 45.0,
+                        "descricao": null,
+                        "indicadorCobertura": true,
+                        "dataSemeadura": null,
+                        "valorPaf": null,
+                        "valorSeguradoHa": 0.0,
+                        "idade": 0,
+                        "numeroFrutoGarantido": 0,
+                        "espacamento": "X"
+                    }
+                ]
+            }
+        ],
+        "vigenciaSeguro": {
+            "tipoVigencia": 1,
+            "dataInicio": "2025-07-23",
+            "dataFim": "2026-07-30"
+        },
+        "subvencao": {
+            "indicadorSubvencaoFederal": true,
+            "valorSubvencaoFederal": 15871.68,
+            "indicadorSubvencaoEstadual": false,
+            "valorSubvencaoEstadual": 0.0,
+            "indicadorSubvencaoSuspensa": false,
+            "indicadorAdiada": false
+        },
+        "premio": {
+            "valorLiquido": 39679.2,
+            "valorTotal": 39679.2,
+            "valorTarifario": 39679.2,
+            "percentualDesconto": 0.0,
+            "percentualAgravamento": 0.0,
+            "valorDesconto": 0.0,
+            "valorAgravamento": 0.0,
+            "percentualCarregamento": 0.0,
+            "valorIof": 0.0,
+            "valorJuros": 0.0,
+            "valorCustoApolice": 0.0,
+            "percentualIof": 0.0,
+            "valorCustoVistoria": 0.0,
+            "percentualJuros": 0.0
+        },
+        "cobranca": {
+            "idParcelamento": null,
+            "codigoFormaPagamento": 16,
+            "codigoModalidadeCobranca": 1,
+            "numeroDiaCobranca": null,
+            "parcelas": [
+                {
+                    "valorLiquido": 13226.4,
+                    "valorTotal": 13226.4,
+                    "valorTarifario": 13226.4,
+                    "percentualDesconto": 0.0,
+                    "percentualAgravamento": 0.0,
+                    "valorDesconto": 0.0,
+                    "valorAgravamento": 0.0,
+                    "percentualCarregamento": 0.0,
+                    "valorIof": 0.0,
+                    "valorJuros": 0.0,
+                    "valorCustoApolice": 0.0,
+                    "percentualIof": 0.0,
+                    "valorCustoVistoria": 0.0,
+                    "percentualJuros": 0.0,
+                    "numeroParcela": 1,
+                    "dataVencimento": "2025-08-10",
+                    "valorSubvencaoEstadual": 0.0,
+                    "valorSubvencaoFederal": 0.0,
+                    "valorSegurado": 13226.4
+                },
+                {
+                    "valorLiquido": 13226.4,
+                    "valorTotal": 13226.4,
+                    "valorTarifario": 13226.4,
+                    "percentualDesconto": 0.0,
+                    "percentualAgravamento": 0.0,
+                    "valorDesconto": 0.0,
+                    "valorAgravamento": 0.0,
+                    "percentualCarregamento": 0.0,
+                    "valorIof": 0.0,
+                    "valorJuros": 0.0,
+                    "valorCustoApolice": 0.0,
+                    "percentualIof": 0.0,
+                    "valorCustoVistoria": 0.0,
+                    "percentualJuros": 0.0,
+                    "numeroParcela": 2,
+                    "dataVencimento": "2025-09-09",
+                    "valorSubvencaoEstadual": 0.0,
+                    "valorSubvencaoFederal": 0.0,
+                    "valorSegurado": 13226.4
+                },
+                {
+                    "valorLiquido": 13226.4,
+                    "valorTotal": 13226.4,
+                    "valorTarifario": 13226.4,
+                    "percentualDesconto": 0.0,
+                    "percentualAgravamento": 0.0,
+                    "valorDesconto": 0.0,
+                    "valorAgravamento": 0.0,
+                    "percentualCarregamento": 0.0,
+                    "valorIof": 0.0,
+                    "valorJuros": 0.0,
+                    "valorCustoApolice": 0.0,
+                    "percentualIof": 0.0,
+                    "valorCustoVistoria": 0.0,
+                    "percentualJuros": 0.0,
+                    "numeroParcela": 3,
+                    "dataVencimento": "2025-10-09",
+                    "valorSubvencaoEstadual": 0.0,
+                    "valorSubvencaoFederal": 0.0,
+                    "valorSegurado": 13226.4
+                }
+            ]
+        },
+        "rolComissionamento": {
+            "percentual": 7.0,
+            "coeficienteComissao": 0.0,
+            "participantes": [
+                {
+                    "nome": "Broker XPTO",
+                    "lider": 1,
+                    "tipoPessoa": 1,
+                    "cpfCnpj": "10020020015",
+                    "percentualParticipacao": 100.0,
+                    "codigoTipoComissao": 2,
+                    "codigoInspetor": 1854
+                }
+            ]
+        },
+        "secao": "Seção 1"
+    }
+}
