@@ -26,9 +26,10 @@ class HTTPMethods(StrEnum):
 
 
 class ResponseError(HTTPError):
-    def __init__(self, message: str, *, response: Response) -> None:
+    def __init__(self, message: str, *, response: Response | None = None, exception: Exception | None = None,) -> None:
         super().__init__(message)
         self.response = response
+        self.exception = exception
 
 
 class RequestOptions(TypedDict, total=False):
@@ -93,10 +94,13 @@ class BaseAsyncClient(AsyncClient):
                 if isinstance(response_json, dict):
                     return response_model(**response_json)
                 return response_model(response_json)
-            except Exception:
+            except Exception as e:
+                print(e)
                 raise ResponseError(
-                    f"Failed to parse response to {response_model}", response
-                )
+                    f"Failed to parse response to {response_model}", 
+                    response=response,
+                    exception=e
+                ) from None
         return response
 
     async def _request(
@@ -141,12 +145,14 @@ class BaseAsyncClient(AsyncClient):
     async def get(
         self,
         endpoint: str | URL,
+        params: Optional[dict[str, Any]] = None,
         response_model: Optional[Type[T]] = None,
         options: Optional[RequestOptions] = None,
     ) -> Response | T:
         return await self._request(
             HTTPMethods.GET,
             endpoint=endpoint,
+            params=params,
             response_model=response_model,
             options=options,
         )

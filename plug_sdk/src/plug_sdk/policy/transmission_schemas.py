@@ -2,25 +2,13 @@ from datetime import date
 from enum import IntEnum, StrEnum
 from typing import Optional
 
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ConfigDict, Field, computed_field
+from plug_sdk.base_model import BaseModel, Field, computed_field
 
 LOCATION_CODE = 4
 PAYMENT_METHOD_CODE: int = 16
 BILLING_MODE_CODE: int = 1
 DEDUCTIBLE_TABLE_CODE: int = 100
 CLAUSE_CODE: int = 100
-
-
-class BaseModel(PydanticBaseModel):
-    model_config = ConfigDict(
-        extra="ignore",
-        frozen=True,
-        populate_by_name=True,
-        use_enum_values=True,
-        arbitrary_types_allowed=True,
-        from_attributes=True,
-    )
 
 
 class GeographicPositions(StrEnum):
@@ -154,10 +142,17 @@ class Subsidy(BaseModel):
 ### === VIGÊNCIA === ###
 
 
-class InsuranceTerm(BaseModel):
-    term_type: TermTypes = Field(alias="tipoVigencia", default=TermTypes.CLOSED)
+class BaseInsuranceTerm(BaseModel):
     start_date: date = Field(alias="dataInicio")
     end_date: date = Field(alias="dataFim")
+
+
+class InsuranceTerm(BaseInsuranceTerm):
+    term_type: TermTypes = Field(alias="tipoVigencia", default=TermTypes.CLOSED)
+
+
+class ItemTerm(BaseInsuranceTerm):
+    term_type: TermTypes = Field(alias="tipo", default=TermTypes.CLOSED)
 
 
 ### === COMISSIONAMENTO === ###
@@ -606,25 +601,3 @@ class TransmissionData(BaseModel):
     @property
     def section(self) -> str:
         return f"Seção {self.section_number}"
-
-
-#### === REQUEST === ###
-
-
-class TransmissionRequest(BaseModel):
-    data: TransmissionData
-
-
-#### === RESPONSE === ###
-
-
-class ResponseCodes(StrEnum):
-    SUCCESS = "0"
-    ERROR = "100036"
-
-
-class TransmissionResponse(BaseModel):
-    code: ResponseCodes = Field(alias="codigoRetorno")
-    message: str = Field(alias="mensagemRetorno")
-    error_description: Optional[str] = Field(alias="descricaoErro", default=None)
-    proposal_id: Optional[str] = Field(alias="idEndosso", default=None)

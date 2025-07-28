@@ -1,4 +1,4 @@
-from .schemas import (  # noqa: F401
+from .transmission_schemas import (  # noqa: F401
     AddressData,
     Answer,
     AnswerCodes,
@@ -18,6 +18,7 @@ from .schemas import (  # noqa: F401
     IdentificationDocument,
     Installment,
     InsuranceTerm,
+    ItemTerm,
     InsuredAmount,
     Item,
     Location,
@@ -29,10 +30,7 @@ from .schemas import (  # noqa: F401
     Premium,
     Question,
     Questionnaire,
-    ResponseCodes,
     TransmissionData,
-    TransmissionResponse,
-    TransmissionRequest,
     Variety,
     Coverage,
     Crop,
@@ -40,4 +38,9 @@ from .schemas import (  # noqa: F401
     Polygon,
     Subsidy,
     QuestionCodes,
+)
+from .schemas import (  # noqa: F401
+    ResponseCodes,
+    TransmissionResponse,
+    TransmissionRequest,
 )
