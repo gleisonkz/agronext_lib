@@ -26,7 +26,13 @@ class HTTPMethods(StrEnum):
 
 
 class ResponseError(HTTPError):
-    def __init__(self, message: str, *, response: Response | None = None, exception: Exception | None = None,) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        response: Response | None = None,
+        exception: Exception | None = None,
+    ) -> None:
         super().__init__(message)
         self.response = response
         self.exception = exception
@@ -96,11 +102,7 @@ class BaseAsyncClient(AsyncClient):
                 return response_model(response_json)
             except Exception as e:
                 print(e)
-                raise ResponseError(
-                    f"Failed to parse response to {response_model}", 
-                    response=response,
-                    exception=e
-                ) from None
+                raise ResponseError(f"Failed to parse response to {response_model}", response=response, exception=e) from None
         return response
 
     async def _request(
@@ -129,9 +131,7 @@ class BaseAsyncClient(AsyncClient):
             )
             response = self._handle_response(response, response_model)
         except HTTPStatusError as e:
-            logger.error(
-                f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
-            )
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
             raise
         except RequestError as e:
             logger.error(f"An error occurred while requesting {e.request.url!r}.")

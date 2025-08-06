@@ -1,27 +1,30 @@
 from typing import Optional
+
 from .async_client import BaseAsyncClient
 from .legal_entity.schemas import (
-    IndividualRequest,
-    IndividualResponse,
     CompanyRequest,
     CompanyResponse,
+    IndividualRequest,
+    IndividualResponse,
 )
-
 from .policy.schemas import (
-    TransmissionRequest,
-    TransmissionResponse,
-    RejectProposalRequest,
-    IssuePolicyRequest,
-    InstallmentRequest,
-    InstallmentResponse,
     BoletoRequest,
     BoletoResponse,
+    InstallmentRequest,
+    InstallmentResponse,
+    IssuePolicyRequest,
+    RejectProposalRequest,
     SubsidyLimitRequest,
     SubsidyLimitResponse,
+    TransmissionRequest,
+    TransmissionResponse,
 )
 from .validations.schemas import (
-    AddressLookupRequest,
-    AddressLookupResponse,
+    AddressSearchRequest,
+    AddressSearchResponse,
+    BaseAddressResponse,
+    PostalCodeSearchRequest,
+    PostalCodeSearchResponse,
     TechnicalRestrictionRequest,
     TechnicalRestrictionResponse,
 )
@@ -39,18 +42,14 @@ class PlugSDK:
 
     ## Procurement Methods
 
-    async def transmit_quotation(
-        self, data: TransmissionRequest
-    ) -> TransmissionResponse:
+    async def transmit_quotation(self, data: TransmissionRequest) -> TransmissionResponse:
         return await self.client.post(
             endpoint="/propostas/agro",
             payload=data.model_dump(mode="json", by_alias=True),
             response_model=TransmissionResponse,
         )
 
-    async def reject_proposal(
-        self, data: RejectProposalRequest
-    ) -> TransmissionResponse:
+    async def reject_proposal(self, data: RejectProposalRequest) -> TransmissionResponse:
         return await self.client.post(
             endpoint="/propostas/agro/recusar",
             payload=data.model_dump(mode="json", by_alias=True),
@@ -64,9 +63,7 @@ class PlugSDK:
             response_model=TransmissionResponse,
         )
 
-    async def get_subsidy_limit(
-        self, request: SubsidyLimitRequest
-    ) -> SubsidyLimitResponse:
+    async def get_subsidy_limit(self, request: SubsidyLimitRequest) -> SubsidyLimitResponse:
         return await self.client.get(
             endpoint="/v1/mapa/limite-financeiro",
             params={
@@ -94,9 +91,7 @@ class PlugSDK:
 
     ## Validation Methods
 
-    async def get_natural_person(
-        self, request: IndividualRequest
-    ) -> IndividualResponse:
+    async def get_natural_person(self, request: IndividualRequest) -> IndividualResponse:
         return await self.client.get(
             endpoint=f"/v1/pessoa/{request.cpf}",
             response_model=IndividualResponse,
@@ -108,17 +103,28 @@ class PlugSDK:
             response_model=CompanyResponse,
         )
 
-    async def get_address_lookup(
-        self, request: AddressLookupRequest
-    ) -> AddressLookupResponse:
+    async def search_postal_code(self, request: PostalCodeSearchRequest) -> PostalCodeSearchResponse:
         return await self.client.get(
             endpoint=f"/cep/v1/enderecos/{request.postal_code}",
-            response_model=AddressLookupResponse,
+            response_model=PostalCodeSearchResponse,
         )
 
-    async def get_technical_restriction(
-        self, request: TechnicalRestrictionRequest
-    ) -> TechnicalRestrictionResponse:
+    async def search_address(self, request: AddressSearchRequest) -> list[BaseAddressResponse]:
+        params = {
+            "uf": request.state,
+            "logradouro": request.street,
+            "localidade": request.city,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
+
+        response: AddressSearchResponse = await self.client.get(
+            endpoint="/cep/v1/enderecos",
+            params=params,
+            response_model=AddressSearchResponse,
+        )
+        return response.items or []
+
+    async def get_technical_restriction(self, request: TechnicalRestrictionRequest) -> TechnicalRestrictionResponse:
         url = "http://uatscap.essor.net/api/v1/restricao-tecnica"  # Example URL, replace with actual
         return await self.client.get(
             endpoint=url,

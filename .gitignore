@@ -1,7 +1,7 @@
 **/poetry.lock
 **/bandit.json
 .vscode/
-
+*.json
 bump_version.py
 
 # Byte-compiled / optimized / DLL files
