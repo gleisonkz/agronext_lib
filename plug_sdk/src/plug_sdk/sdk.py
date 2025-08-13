@@ -37,7 +37,7 @@ class PlugSDK:
         credentials: dict | None = None,
         headers: Optional[dict[str, str]] = None,
     ):
-        self.client = BaseAsyncClient(base_url=base_url, headers=headers)
+        self.client = BaseAsyncClient(base_url=base_url, headers=headers, timeout=45.0)
         self.credentials = credentials
 
     ## Procurement Methods
