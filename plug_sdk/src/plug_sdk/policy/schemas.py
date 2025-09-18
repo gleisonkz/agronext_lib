@@ -1,20 +1,8 @@
+from datetime import datetime
 from plug_sdk.base_model import BaseModel, Field
 from typing import Any, Optional
 from .transmission_schemas import TransmissionData
 from enum import StrEnum
-
-
-class TransmissionRequest(BaseModel):
-    data: TransmissionData
-
-
-class RejectProposalRequest(BaseModel):
-    proposal_id: int = Field(alias="idEndosso")
-    free_text: str = Field(alias="textoLivre")
-
-
-class IssuePolicyRequest(BaseModel):
-    proposal_id: int = Field(alias="idEndosso")
 
 
 class ResponseCodes(StrEnum):
@@ -22,68 +10,65 @@ class ResponseCodes(StrEnum):
     ERROR = "100036"
 
 
-class TransmissionResponse(BaseModel):
+class SubmitQuotationRequest(BaseModel):
+    data: TransmissionData
+
+
+class BaseERPResponse(BaseModel):
     code: str = Field(alias="codigoRetorno")
     message: str = Field(alias="mensagem")
+
+
+class SubmitQuotationResponse(BaseERPResponse):
     error_description: Optional[Any] = Field(alias="descricaoErro", default=None)
     proposal_id: Optional[str] = Field(alias="idEndosso", default=None)
 
 
-class InstallmentItem(BaseModel):
-    policy_code: Optional[int] = Field(None, alias="cd_apolice")
-    proposal_code: int = Field(..., alias="cd_proposta")
-    endorsement_id: int = Field(..., alias="id_endosso")
-    endorsement_number: int = Field(..., alias="nr_endosso")
-    installment_number: int = Field(..., alias="nr_parcela")
-    title: str = Field(..., alias="titulo")
-    status: str = Field(..., alias="situacao")
-    payment_date: str = Field(..., alias="dt_pagamento")
-    clearing_date: str = Field(..., alias="dt_baixa")
-    amount_received: str = Field(..., alias="valor_recebido")
-    premium_amount: str = Field(..., alias="vl_tarifario")
-    iof_value: str = Field(..., alias="vl_iof")
-    total_amount: str = Field(..., alias="vl_total")
-    representation_date: str = Field(..., alias="dt_representacao")
-    due_date: str = Field(..., alias="dt_vencimento")
+class GetProposalResponse(BaseModel):
+    status_id: int = Field(
+        ..., alias="cd_status", description="ID of the proposal and/or policy status"
+    )
+    status_name: str = Field(
+        ...,
+        alias="nm_status",
+        description="Description of the proposal and/or policy status",
+    )
+    proposal_number: int = Field(
+        ...,
+        alias="cd_proposta",
+        description="Proposal number corresponding to the queried proposal",
+    )
+    endorsement_id: int = Field(
+        ..., alias="id_endosso", description="Endorsement ID of the queried proposal"
+    )
+    policy_number: int = Field(
+        ...,
+        alias="cd_apolice",
+        description="Policy number corresponding to the queried proposal",
+    )
+    policy_id: int = Field(
+        ...,
+        alias="id_apolice",
+        description="Policy ID corresponding to the queried proposal",
+    )
+    issue_date: datetime = Field(
+        ..., alias="dt_emissao", description="Issue date in the ERP"
+    )
 
 
-class InstallmentResponse(BaseModel):
-    installments: list[InstallmentItem] = Field(..., alias="consulta_parcela")
+class RejectProposalRequest(BaseModel):
+    proposal_id: int = Field(alias="idEndosso")
+    description: str = Field(alias="textoLivre")
+    motive_code: int = Field(alias="codigoMotivoRecusa", default=1)
 
 
-class InstallmentRequest(BaseModel):
-    policy_id: str = Field(..., alias="idEndosso")
-    installment_number: str = Field(..., alias="numeroParcela")
+class RejectProposalResponse(BaseERPResponse):
+    pass
 
 
-class BoletoRequest(BaseModel):
-    policy_id: str = Field(..., alias="idEndosso")
-    installment_number: str = Field(..., alias="numeroParcela")
+class IssuePolicyRequest(BaseModel):
+    proposal_id: int = Field(alias="idEndosso")
 
 
-class BoletoResponse(BaseModel):
-    policy_id: str = Field(..., alias="idEndosso")
-    installment_number: str = Field(..., alias="parcela")
-    boleto_base64_pdf: str = Field(..., alias="boleto")
-
-
-class SubsidyLimitItem(BaseModel):
-    modality_description: str = Field(..., alias="dsModalidade")
-    committed_balance: float = Field(..., alias="vlSaldoComprometido")
-    available_balance: float = Field(..., alias="vlSaldoDisponivel")
-
-
-class SubsidyLimits(BaseModel):
-    insured_limits: list[SubsidyLimitItem] = Field(..., alias="limiteSegurado")
-
-
-class SubsidyLimitResponse(BaseModel):
-    insured_document: str = Field(..., alias="nrCpfCnpjSegurado")
-    insured_name: str = Field(..., alias="nmSegurado")
-    fiscal_year: str = Field(..., alias="anPeriodoExercicio")
-    insured_financial_limits: SubsidyLimits = Field(..., alias="limitesSegurado")
-
-
-class SubsidyLimitRequest(BaseModel):
-    cpf_cnpj: str
-    year: str
+class IssuePolicyResponse(BaseERPResponse):
+    policy_id: Optional[str] = Field(alias="numeroApolice", default=None)
