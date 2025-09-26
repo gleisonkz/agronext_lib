@@ -203,10 +203,10 @@ class PlugSDK:
     async def get_gis_report(
         self,
         polygons: list[list[tuple[float, float]]],
-    ) -> GISAllValidationsResponse:
+    ) -> list[GISAllValidationsResponse]:
         request = GISAllValidationsRequest(polygons)
         return await self.client.post(
             endpoint="/v1/gis/validations/all",
-            response_model=GISAllValidationsResponse,
+            response_model=list[GISAllValidationsResponse],
             payload=request.model_dump(mode="json", by_alias=True),
         )
