@@ -38,6 +38,10 @@ from .validations import (
     TechnicalRestrictionResponse,
 )
 from .notifications import EmailNotificationResponse, EmailNotificationRequest
+from .gis import (
+    GISAllValidationsRequest,
+    GISAllValidationsResponse,
+)
 
 
 class PlugSDK:
@@ -191,5 +195,18 @@ class PlugSDK:
         return await self.client.post(
             endpoint="/v1/notificacoes/email",
             response_model=EmailNotificationResponse,
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    ## GIS Methods
+
+    async def get_gis_report(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> str:
+        request = GISAllValidationsRequest(polygons)
+        return await self.client.post(
+            endpoint="/v1/gis/validations/all",
+            response_model=GISAllValidationsResponse,
             payload=request.model_dump(mode="json", by_alias=True),
         )
