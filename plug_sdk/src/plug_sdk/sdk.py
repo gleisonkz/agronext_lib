@@ -203,7 +203,7 @@ class PlugSDK:
     async def get_gis_report(
         self,
         polygons: list[list[tuple[float, float]]],
-    ) -> str:
+    ) -> GISAllValidationsResponse:
         request = GISAllValidationsRequest(polygons)
         return await self.client.post(
             endpoint="/v1/gis/validations/all",
