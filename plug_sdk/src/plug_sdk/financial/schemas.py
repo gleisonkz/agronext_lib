@@ -1,6 +1,6 @@
+from typing import Optional
+
 from plug_sdk.base_model import BaseModel, Field
-from typing import Any, Optional
-from enum import StrEnum
 
 
 class InstallmentItem(BaseModel):
@@ -11,8 +11,8 @@ class InstallmentItem(BaseModel):
     installment_number: int = Field(..., alias="nr_parcela")
     title: str = Field(..., alias="titulo")
     status: str = Field(..., alias="situacao")
-    payment_date: str = Field(..., alias="dt_pagamento")
-    clearing_date: str = Field(..., alias="dt_baixa")
+    payment_date: Optional[str] = Field(None, alias="dt_pagamento")
+    clearing_date: Optional[str] = Field(None, alias="dt_baixa")
     amount_received: str = Field(..., alias="valor_recebido")
     premium_amount: str = Field(..., alias="vl_tarifario")
     iof_value: str = Field(..., alias="vl_iof")
@@ -26,18 +26,18 @@ class InstallmentResponse(BaseModel):
 
 
 class InstallmentRequest(BaseModel):
-    policy_id: str = Field(..., alias="idEndosso")
-    installment: Optional[int] = Field(alias="numeroParcela", default=None)
+    proposal_id: int = Field(..., alias="idEndosso")
+    installment: int = Field(alias="numeroParcela", default=0)
 
 
 class BoletoRequest(BaseModel):
-    policy_id: str = Field(..., alias="idEndosso")
-    installment: str = Field(..., alias="numeroParcela")
+    proposal_id: int = Field(..., alias="idEndosso")
+    installment: int = Field(..., alias="numeroParcela")
 
 
 class BoletoResponse(BaseModel):
     policy_id: str = Field(..., alias="idEndosso")
-    installment_number: str = Field(..., alias="parcela")
+    installment_number: int = Field(..., alias="parcela")
     boleto_base64_pdf: str = Field(..., alias="boleto")
 
 
@@ -60,7 +60,7 @@ class SubsidyLimitResponse(BaseModel):
 
 class SubsidyLimitRequest(BaseModel):
     cpf_cnpj: str = Field(..., alias="cpfCnpj")
-    year: str = Field(..., alias="anoExercicio")
+    year: int = Field(..., alias="anoExercicio")
 
 
 class CadinRequest(BaseModel):
@@ -78,18 +78,10 @@ class CadinTransaction(BaseModel):
 
 
 class CadinInsured(BaseModel):
-    insured_document: str = Field(
-        ..., alias="nrCpfCnpjSegurado", description="CPF or CNPJ of the insured"
-    )
-    person_status: str = Field(
-        ..., alias="stPessoa", description="Status of the consulted CPF or CNPJ"
-    )
+    insured_document: str = Field(..., alias="nrCpfCnpjSegurado", description="CPF or CNPJ of the insured")
+    person_status: str = Field(..., alias="stPessoa", description="Status of the consulted CPF or CNPJ")
 
 
 class CadinResponse(BaseModel):
-    transaction: CadinTransaction = Field(
-        ..., alias="transacao", description="Object with transaction information"
-    )
-    insured: CadinInsured = Field(
-        ..., alias="segurado", description="Object with consulted insured information"
-    )
+    transaction: CadinTransaction = Field(..., alias="transacao", description="Object with transaction information")
+    insured: CadinInsured = Field(..., alias="segurado", description="Object with consulted insured information")

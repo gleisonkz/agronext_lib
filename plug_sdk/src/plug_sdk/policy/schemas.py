@@ -1,8 +1,15 @@
 from datetime import datetime
-from plug_sdk.base_model import BaseModel, Field
+from enum import IntEnum, StrEnum
 from typing import Any, Optional
+
+from plug_sdk.base_model import BaseModel, Field
+
 from .transmission_schemas import TransmissionData
-from enum import StrEnum
+
+
+class ReportType(IntEnum):
+    CROPS = 612
+    PASTURES = 1000253
 
 
 class ResponseCodes(StrEnum):
@@ -24,10 +31,12 @@ class SubmitQuotationResponse(BaseERPResponse):
     proposal_id: Optional[str] = Field(alias="idEndosso", default=None)
 
 
+class GetProposalRequest(BaseModel):
+    proposal_id: int = Field(alias="numeroProposta")
+
+
 class GetProposalResponse(BaseModel):
-    status_id: int = Field(
-        ..., alias="cd_status", description="ID of the proposal and/or policy status"
-    )
+    status_id: int = Field(..., alias="cd_status", description="ID of the proposal and/or policy status")
     status_name: str = Field(
         ...,
         alias="nm_status",
@@ -38,9 +47,7 @@ class GetProposalResponse(BaseModel):
         alias="cd_proposta",
         description="Proposal number corresponding to the queried proposal",
     )
-    endorsement_id: int = Field(
-        ..., alias="id_endosso", description="Endorsement ID of the queried proposal"
-    )
+    endorsement_id: int = Field(..., alias="id_endosso", description="Endorsement ID of the queried proposal")
     policy_number: int = Field(
         ...,
         alias="cd_apolice",
@@ -51,9 +58,7 @@ class GetProposalResponse(BaseModel):
         alias="id_apolice",
         description="Policy ID corresponding to the queried proposal",
     )
-    issue_date: datetime = Field(
-        ..., alias="dt_emissao", description="Issue date in the ERP"
-    )
+    issue_date: datetime = Field(..., alias="dt_emissao", description="Issue date in the ERP")
 
 
 class RejectProposalRequest(BaseModel):
@@ -72,3 +77,7 @@ class IssuePolicyRequest(BaseModel):
 
 class IssuePolicyResponse(BaseERPResponse):
     policy_id: Optional[str] = Field(alias="numeroApolice", default=None)
+
+
+class PolicyDocumentResponse(BaseModel):
+    report_base64_pdf: str = Field(..., alias="base64")

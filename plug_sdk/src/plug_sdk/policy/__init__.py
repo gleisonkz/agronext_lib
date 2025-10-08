@@ -43,9 +43,12 @@ from .schemas import (  # noqa: F401
     ResponseCodes,
     SubmitQuotationRequest,
     SubmitQuotationResponse,
+    GetProposalRequest,
     GetProposalResponse,
     RejectProposalRequest,
     RejectProposalResponse,
     IssuePolicyRequest,
     IssuePolicyResponse,
+    PolicyDocumentResponse,
+    ReportType,
 )

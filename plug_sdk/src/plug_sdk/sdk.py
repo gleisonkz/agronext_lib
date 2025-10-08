@@ -1,43 +1,46 @@
 from typing import Optional
+
 from .async_client import BaseAsyncClient
-
-from .legal_identity import (
-    NaturalPersonRequest,
-    NaturalPersonResponse,
-    LegalEntityRequest,
-    LegalEntityResponse,
-    BrokerRequest,
-    BrokerResponse,
-)
-
 from .financial import (
-    InstallmentResponse,
-    InstallmentRequest,
     BoletoRequest,
     BoletoResponse,
-    SubsidyLimitResponse,
-    SubsidyLimitRequest,
     CadinRequest,
     CadinResponse,
+    InstallmentRequest,
+    InstallmentResponse,
+    SubsidyLimitRequest,
+    SubsidyLimitResponse,
 )
-
+from .legal_identity import (
+    BrokerRequest,
+    BrokerResponse,
+    LegalEntityRequest,
+    LegalEntityResponse,
+    NaturalPersonRequest,
+    NaturalPersonResponse,
+)
+from .notifications import EmailNotificationRequest, EmailNotificationResponse
 from .policy import (
-    SubmitQuotationRequest,
-    SubmitQuotationResponse,
+    GetProposalRequest,
     GetProposalResponse,
-    RejectProposalRequest,
-    RejectProposalResponse,
     IssuePolicyRequest,
     IssuePolicyResponse,
+    PolicyDocumentResponse,
+    RejectProposalRequest,
+    RejectProposalResponse,
+    ReportType,
+    SubmitQuotationRequest,
+    SubmitQuotationResponse,
+    TransmissionData,
 )
 from .validations import (
     AddressLookupRequest,
-    PostalCodeLookupRequest,
     AddressLookupResponse,
+    PostalCodeLookupRequest,
+    PostalCodeLookupResponse,
     TechnicalRestrictionRequest,
     TechnicalRestrictionResponse,
 )
-from .notifications import EmailNotificationResponse, EmailNotificationRequest
 
 
 class PlugSDK:
@@ -52,64 +55,88 @@ class PlugSDK:
 
     ## Policy Lifecycle Methods
 
-    async def submit_quotation(
-        self, data: SubmitQuotationRequest
-    ) -> SubmitQuotationResponse:
+    async def submit_quotation(self, data: TransmissionData) -> SubmitQuotationResponse:
+        payload = SubmitQuotationRequest(data=data)
         return await self.client.post(
             endpoint="/v1/propostas/agricola",
-            payload=data.model_dump(mode="json", by_alias=True),
+            payload=payload.model_dump(mode="json", by_alias=True),
             response_model=SubmitQuotationResponse,
         )
 
     async def get_proposal(self, proposal_id: int) -> GetProposalResponse:
+        payload = GetProposalRequest(proposal_id=proposal_id)
         return await self.client.get(
             endpoint="/v1/propostas/situacao",
-            params={
-                "numeroProposta": proposal_id,
-            },
+            params=payload.model_dump(mode="json", by_alias=True),
             response_model=GetProposalResponse,
         )
 
     async def reject_proposal(
-        self, data: RejectProposalRequest
+        self,
+        proposal_id: int,
+        description: str,
+        motive_code: int,
     ) -> RejectProposalResponse:
+        payload = RejectProposalRequest(
+            proposal_id=proposal_id,
+            description=description,
+            motive_code=motive_code,
+        )
         return await self.client.post(
             endpoint="/v1/propostas/recusar",
-            payload=data.model_dump(mode="json", by_alias=True),
+            payload=payload.model_dump(mode="json", by_alias=True),
             response_model=RejectProposalResponse,
         )
 
-    async def issue_policy(self, request: IssuePolicyRequest) -> IssuePolicyResponse:
+    async def issue_policy(self, proposal_id: int) -> IssuePolicyResponse:
+        payload = IssuePolicyRequest(proposal_id=proposal_id)
         return await self.client.post(
             endpoint="/v1/apolices/emitir",
-            payload=request.model_dump(mode="json", by_alias=True),
+            payload=payload.model_dump(mode="json", by_alias=True),
             response_model=IssuePolicyResponse,
+        )
+
+    async def generate_policy_document(
+        self,
+        proposal_id: int,
+        report_type: ReportType = ReportType.CROPS,
+    ) -> PolicyDocumentResponse:
+        return await self.client.post(
+            endpoint=f"v1/formularios/{proposal_id}/documentos?relatorio_id={report_type}",
+            response_model=PolicyDocumentResponse,
         )
 
     ## Financial Methods
 
     async def get_installments(
-        self, request: InstallmentRequest
+        self,
+        proposal_id: str,
+        installment: int = 0,
     ) -> InstallmentResponse:
+        payload = InstallmentRequest(proposal_id=proposal_id, installment=installment)
         return await self.client.get(
             endpoint="/v1/cobrancas/parcelas/",
-            params=request.model_dump(mode="json", by_alias=True, exclude_none=True),
+            params=payload.model_dump(mode="json", by_alias=True, exclude_none=True),
             response_model=InstallmentResponse,
         )
 
-    async def get_boleto(self, request: BoletoRequest) -> BoletoResponse:
+    async def get_boleto(
+        self,
+        proposal_id: str,
+        installment: int,
+    ) -> BoletoResponse:
+        payload = BoletoRequest(proposal_id=proposal_id, installment=installment)
         return await self.client.get(
             endpoint="/v1/cobrancas/boletos",
-            params=request.model_dump(mode="json", by_alias=True),
+            params=payload.model_dump(mode="json", by_alias=True),
             response_model=BoletoResponse,
         )
 
-    async def get_federal_subsidy_limit(
-        self, request: SubsidyLimitRequest
-    ) -> SubsidyLimitResponse:
+    async def get_federal_subsidy_limit(self, cpf_cnpj: str, year: int) -> SubsidyLimitResponse:
+        payload = SubsidyLimitRequest(cpf_cnpj=cpf_cnpj, year=year)
         return await self.client.get(
             endpoint="/v1/pessoas/agricultura/subvencao-federal",
-            params=request.model_dump(mode="json", by_alias=True),
+            params=payload.model_dump(mode="json", by_alias=True),
             response_model=SubsidyLimitResponse,
         )
 
@@ -127,18 +154,18 @@ class PlugSDK:
     async def search_postal_code(
         self,
         postal_code: str,
-    ) -> AddressLookupResponse:
+    ) -> PostalCodeLookupResponse:
         request = PostalCodeLookupRequest(postal_code=postal_code)
         return await self.client.get(
             endpoint=f"/v1/enderecos/{request.postal_code}",
-            response_model=AddressLookupResponse,
+            response_model=PostalCodeLookupResponse,
         )
 
     async def search_address(
         self,
-        state: str,
         city: str,
-        street: str,
+        state: Optional[str] = None,
+        street: Optional[str] = None,
     ) -> AddressLookupResponse:
         request = AddressLookupRequest(state=state, city=city, street=street)
         return await self.client.get(
@@ -148,11 +175,11 @@ class PlugSDK:
         )
 
     # Parties
-    async def get_broker_details(self, cpf_cnpj: str) -> BrokerResponse:
-        request = BrokerRequest(cpf_cnpj=cpf_cnpj)
+    async def verify_technical_restriction(self, cpf_cnpj: str) -> TechnicalRestrictionResponse:
+        request = TechnicalRestrictionRequest(cpf_cnpj=cpf_cnpj)
         return await self.client.get(
-            endpoint=f"/v1/pessoas/corretores/{request.cpf_cnpj}",
-            response_model=BrokerResponse,
+            endpoint=f"/v1/pessoas/{request.cpf_cnpj}/restricao-tecnica",
+            response_model=TechnicalRestrictionResponse,
         )
 
     async def get_natural_person_details(self, cpf: str) -> NaturalPersonResponse:
@@ -169,20 +196,16 @@ class PlugSDK:
             response_model=LegalEntityResponse,
         )
 
-    async def verify_technical_restriction(
-        self, cpf_cpnj: str
-    ) -> TechnicalRestrictionResponse:
-        request = TechnicalRestrictionRequest(cpf_cnpj=cpf_cpnj)
+    async def get_broker_details(self, cpf_cnpj: str) -> BrokerResponse:
+        request = BrokerRequest(cpf_cnpj=cpf_cnpj)
         return await self.client.get(
-            endpoint=f"/v1/pessoas/{request.cpf_cnpj}/restricao-tecnica",
-            response_model=TechnicalRestrictionResponse,
+            endpoint=f"/v1/pessoas/corretores/{request.cpf_cnpj}",
+            response_model=BrokerResponse,
         )
 
     ## Notification Methods
 
-    async def send_email(
-        self, to: str, subject: str, body: EmailNotificationRequest
-    ) -> EmailNotificationResponse:
+    async def send_email(self, to: str, subject: str, body: EmailNotificationRequest) -> EmailNotificationResponse:
         request = EmailNotificationRequest(
             to=to,
             subject=subject,

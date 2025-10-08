@@ -1,7 +1,8 @@
 from .schemas import (
-    PostalCodeLookupRequest,
     AddressLookupRequest,
     AddressLookupResponse,
+    PostalCodeLookupRequest,
+    PostalCodeLookupResponse,
     TechnicalRestrictionRequest,
     TechnicalRestrictionResponse,
 )
