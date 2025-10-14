@@ -39,6 +39,10 @@ class NegativeCertificate(BaseModel):
     name: str = Field(alias="nome")
 
 
+class TaxHealthInfo(BaseModel):
+    negative_certificates: list[NegativeCertificate] = Field(alias="cnds", default_factory=list)
+
+
 class UnionDebt(BaseModel):
     registration_number: Optional[str] = Field(alias="inscricao")
     nature: Optional[str] = Field(alias="natureza")
@@ -48,10 +52,6 @@ class UnionDebt(BaseModel):
 class UnionDebtInfo(BaseModel):
     total_debts: Optional[float] = Field(alias="totalDividas")
     debts: list[UnionDebt] = Field(alias="dividas", description="list of debts in PGFN and DAU", default_factory=list)
-
-
-class TaxHealthInfo(BaseModel):
-    negative_certificates: list[NegativeCertificate] = Field(alias="cnds", default_factory=list)
 
 
 class StateRegistration(BaseModel):
