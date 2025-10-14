@@ -30,7 +30,19 @@ from .legal_identity import (
     PlugLegalEntityResponse,
     PlugNaturalPersonResponse,
 )
-from .notifications import EmailNotificationRequest, EmailNotificationResponse
+from .notifications import (
+    Applications,
+    AttachmentOptions,
+    Attachments,
+    Content,
+    EmailNotificationRequest,
+    EmailNotificationResponse,
+    EmailTemplateTypes,
+    MimeTypes,
+    NotificationTypes,
+    ProductCodes,
+    Recipient,
+)
 from .policy import (
     GetProposalRequest,
     GetProposalResponse,
@@ -270,14 +282,41 @@ class PlugSDK:
 
     ## Notification Methods
 
-    async def send_email(self, to: str, subject: str, body: EmailNotificationRequest) -> EmailNotificationResponse:
+    async def send_email(
+        self,
+        application: Applications,
+        template: EmailTemplateTypes,
+        subject: str,
+        description: str,
+        body: list[dict[str, str]],
+        to: list[dict[str, str]],
+        product_code: Optional[ProductCodes] = None,
+        cc: Optional[list[dict[str, str]]] = None,
+        bcc: Optional[list[dict[str, str]]] = None,
+        quotation_number: Optional[str] = None,
+        proposal_number: Optional[str] = None,
+        policy_number: Optional[str] = None,
+        proposal_id: Optional[str] = None,
+        attachments: Optional[list[dict[str, str]]] = None,
+    ) -> EmailNotificationResponse:
         request = EmailNotificationRequest(
-            to=to,
+            application=application,
+            template_type=template,
+            to=[Recipient(**recipient) for recipient in to],
+            cc=[Recipient(**recipient) for recipient in cc] if cc else None,
+            bcc=[Recipient(**recipient) for recipient in bcc] if bcc else None,
             subject=subject,
-            body=body,
+            description=description,
+            body=[Content(**content) for content in body],
+            product_code=product_code,
+            quotation_number=quotation_number,
+            proposal_number=proposal_number,
+            policy_number=policy_number,
+            proposal_id=int(proposal_id) if proposal_id else None,
+            attachments=[Attachments(**attachment) for attachment in attachments] if attachments else None,
         )
         return await self.client.post(
-            endpoint="/v1/notificacoes/email",
+            endpoint="/v1/notificacoes",
             response_model=EmailNotificationResponse,
-            payload=request.model_dump(mode="json", by_alias=True),
+            payload=request.model_dump(mode="json", by_alias=True, exclude_none=True),
         )

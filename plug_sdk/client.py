@@ -5,7 +5,7 @@ import traceback
 from plug_sdk.policy import (
     TransmissionData,
 )
-from plug_sdk.sdk import PlugSDK
+from plug_sdk.sdk import Applications, EmailTemplateTypes, PlugSDK
 
 
 async def test_submit_quotation(
@@ -84,8 +84,25 @@ async def test_get_legal_entity_details(sdk: PlugSDK, cnpj: str):
     return await sdk.get_legal_entity_details(cnpj=cnpj)
 
 
-async def test_create_user(sdk: PlugSDK, email: str, phone: str, name: str):
-    return await sdk.create_external_user(email, phone, name)
+async def test_send_email(sdk: PlugSDK):
+    return await sdk.send_email(
+        application=Applications.AGRONEXT,
+        template=EmailTemplateTypes.EXTERNAL,
+        subject="Test Email",
+        description="Email sent via PlugSDK",
+        body=[
+            {
+                "header": "Test Header",
+                "body": "Test Body",
+            }
+        ],
+        to=[
+            {
+                "name": "Test Recipient",
+                "email": "cristovam.lage@essor.com.br",
+            },
+        ],
+    )
 
 
 def capture_response_error(func):
@@ -216,6 +233,11 @@ async def main():
             "fn": plug.filter_external_users,
             "params": {"email": "cristovam.lage@essor.com.br"},
         },
+        {
+            "name": "send_email",
+            "fn": test_send_email,
+            "params": {"sdk": plug},
+        },
     ]
 
     skip_list = [
@@ -234,7 +256,8 @@ async def main():
         "get_natural_person_details",
         "get_legal_entity_details",
         "create_external_user",
-        # "filter_external_users",
+        "filter_external_users",
+        # "send_email",
     ]
 
     responses = {}
