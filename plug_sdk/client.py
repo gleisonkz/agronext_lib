@@ -84,6 +84,10 @@ async def test_get_legal_entity_details(sdk: PlugSDK, cnpj: str):
     return await sdk.get_legal_entity_details(cnpj=cnpj)
 
 
+async def test_create_user(sdk: PlugSDK, email: str, phone: str, name: str):
+    return await sdk.create_external_user(email, phone, name)
+
+
 def capture_response_error(func):
     async def wrapper(*args, **kwargs):
         try:
@@ -197,6 +201,21 @@ async def main():
             "fn": test_get_legal_entity_details,
             "params": {"sdk": plug, "cnpj": cnpj},
         },
+        {
+            "name": "create_external_user",
+            "fn": plug.create_external_user,
+            "params": {
+                # "sdk": plug,
+                "name": "Teste X",
+                "email": "teste_x@testx.com",
+                "phone": "+5551997182695",
+            },
+        },
+        {
+            "name": "filter_external_users",
+            "fn": plug.filter_external_users,
+            "params": {"email": "cristovam.lage@essor.com.br"},
+        },
     ]
 
     skip_list = [
@@ -213,7 +232,9 @@ async def main():
         "search_address",
         "verify_technical_restriction",
         "get_natural_person_details",
-        # "get_legal_entity_details",
+        "get_legal_entity_details",
+        "create_external_user",
+        # "filter_external_users",
     ]
 
     responses = {}

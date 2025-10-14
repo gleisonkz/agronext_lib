@@ -1,6 +1,15 @@
 from typing import Optional
 
 from .async_client import BaseAsyncClient
+from .external_users import (
+    CreateExternalUserRequest,
+    CreateExternalUserResponse,
+    ExternalUserResponse,
+    FilterExternalUsersRequest,
+    FilterExternalUsersResponse,
+    UpdateExternalUserRequest,
+    UpdateExternalUserResponse,
+)
 from .financial import (
     BoletoRequest,
     BoletoResponse,
@@ -55,6 +64,46 @@ class PlugSDK:
     ):
         self.client = BaseAsyncClient(base_url=base_url, headers=headers)
         self.credentials = credentials
+
+    ## External Users Methods
+    async def create_external_user(self, email: str, phone: str, name: str) -> CreateExternalUserResponse:
+        request = CreateExternalUserRequest(email=email, phone_number=phone, name=name)
+        return await self.client.post(
+            endpoint="/authentication-system/v1/users",
+            payload=request.model_dump(mode="json", by_alias=True),
+            response_model=CreateExternalUserResponse,
+        )
+
+    async def get_external_user(self, user_id: str) -> ExternalUserResponse:
+        return await self.client.get(
+            endpoint=f"/authentication-system/v1/users/{user_id}",
+            response_model=ExternalUserResponse,
+        )
+
+    async def update_external_user(self, user_id: str, user_data: UpdateExternalUserRequest) -> UpdateExternalUserResponse:
+        return await self.client.put(
+            endpoint=f"/authentication-system/v1/users/{user_id}",
+            payload=user_data.model_dump(mode="json", by_alias=True, exclude_none=True),
+            response_model=UpdateExternalUserResponse,
+        )
+
+    async def delete_external_user(self, user_id: str) -> None:
+        await self.client.delete(
+            endpoint=f"/authentication-system/v1/users/{user_id}",
+        )
+
+    async def filter_external_users(
+        self,
+        id: Optional[str] = None,
+        email: Optional[str] = None,
+        username: Optional[str] = None,
+    ) -> list[FilterExternalUsersResponse]:
+        filters = FilterExternalUsersRequest(id=id, email=email, username=username)
+        return await self.client.get(
+            endpoint="/authentication-system/v1/users",
+            params=filters.model_dump(mode="json", by_alias=True, exclude_none=True),
+            response_model=list[dict],
+        )
 
     ## Policy Lifecycle Methods
 

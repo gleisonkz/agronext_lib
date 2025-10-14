@@ -5,7 +5,10 @@ description = "Python SDK for Plug API"
 readme = "README.md"
 authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
 requires-python = ">=3.12"
-dependencies = ["httpx>=0.28.1", "pydantic>=2.11.7"]
+dependencies = [
+    "httpx>=0.28.1",
+ "pydantic[email]>=2.11.7",
+]
 
 [build-system]
 requires = ["hatchling"]
