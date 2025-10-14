@@ -1,8 +1,10 @@
 from .schemas import (
-    NaturalPersonRequest,
-    LegalEntityResponse,
-    NaturalPersonResponse,
-    LegalEntityRequest,
     BrokerRequest,
     BrokerResponse,
+    LegalEntityRequest,
+    LegalEntityResponse,
+    NaturalPersonRequest,
+    NaturalPersonResponse,
+    PlugLegalEntityResponse,
+    PlugNaturalPersonResponse,
 )

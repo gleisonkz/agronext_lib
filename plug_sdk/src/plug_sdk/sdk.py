@@ -18,6 +18,8 @@ from .legal_identity import (
     LegalEntityResponse,
     NaturalPersonRequest,
     NaturalPersonResponse,
+    PlugLegalEntityResponse,
+    PlugNaturalPersonResponse,
 )
 from .notifications import EmailNotificationRequest, EmailNotificationResponse
 from .policy import (
@@ -186,16 +188,28 @@ class PlugSDK:
 
     async def get_natural_person_details(self, cpf: str) -> NaturalPersonResponse:
         request = NaturalPersonRequest(cpf=cpf)
-        return await self.client.get(
-            endpoint=f"/v1/pessoa/{request.cpf}",
-            response_model=NaturalPersonResponse,
+        response = await self.client.get(
+            endpoint=f"/v1/pessoas/{request.cpf}/regularidade-pessoa-fisica",
+            response_model=PlugNaturalPersonResponse,
+        )
+        return NaturalPersonResponse(
+            cpf=response.cpf,
+            birth_date=response.birth_date,
+            name=response.person_info.name,
+            status=response.person_info.status,
         )
 
     async def get_legal_entity_details(self, cnpj: str) -> LegalEntityResponse:
         request = LegalEntityRequest(cnpj=cnpj)
-        return await self.client.get(
-            endpoint=f"/v1/pessoa/{request.cnpj}",
-            response_model=LegalEntityResponse,
+        response = await self.client.get(
+            endpoint=f"/v1/pessoas/{request.cnpj}/regularidade-pessoa-juridica",
+            response_model=PlugLegalEntityResponse,
+        )
+        return LegalEntityResponse(
+            cnpj=response.cnpj,
+            trade_name=response.legal_entity.name,
+            registration_date=response.legal_entity.registration_info.date,
+            status=response.legal_entity.registration_info.status,
         )
 
     async def get_broker_details(self, cpf_cnpj: str) -> BrokerResponse:

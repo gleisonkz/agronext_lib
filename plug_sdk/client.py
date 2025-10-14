@@ -76,6 +76,14 @@ async def test_verify_technical_restriction(sdk: PlugSDK, cpf_cnpj):
     return await sdk.verify_technical_restriction(cpf_cnpj=cpf_cnpj)
 
 
+async def test_get_natural_person_details(sdk: PlugSDK, cpf: str):
+    return await sdk.get_natural_person_details(cpf=cpf)
+
+
+async def test_get_legal_entity_details(sdk: PlugSDK, cnpj: str):
+    return await sdk.get_legal_entity_details(cnpj=cnpj)
+
+
 def capture_response_error(func):
     async def wrapper(*args, **kwargs):
         try:
@@ -103,7 +111,8 @@ async def main():
     quotation_id = "17604470749248"  # request_data["numeroProposta"]
     proposal_id = int(response_data["idEndosso"])
     policy_id = "xpto"
-    cpf_cnpj = "12345678909"
+    cpf = "01368766099"
+    cnpj = "49598227000170"
     year = 2025
     postal_code = "91760600"
     state = "RS"
@@ -156,12 +165,12 @@ async def main():
         {
             "name": "get_federal_subsidy_limit",
             "fn": test_get_federal_subsidy_limit,
-            "params": {"sdk": plug, "cpf_cnpj": cpf_cnpj, "year": year},
+            "params": {"sdk": plug, "cpf_cnpj": cpf, "year": year},
         },
         {
             "name": "cadin_lookup",
             "fn": test_cadin_lookup,
-            "params": {"sdk": plug, "cpf_cnpj": cpf_cnpj},
+            "params": {"sdk": plug, "cpf_cnpj": cpf},
         },
         {
             "name": "search_postal_code",
@@ -176,12 +185,20 @@ async def main():
         {
             "name": "verify_technical_restriction",
             "fn": test_verify_technical_restriction,
-            "params": {"sdk": plug, "cpf_cnpj": cpf_cnpj},
+            "params": {"sdk": plug, "cpf_cnpj": cpf},
+        },
+        {
+            "name": "get_natural_person_details",
+            "fn": test_get_natural_person_details,
+            "params": {"sdk": plug, "cpf": cpf},
+        },
+        {
+            "name": "get_legal_entity_details",
+            "fn": test_get_legal_entity_details,
+            "params": {"sdk": plug, "cnpj": cnpj},
         },
     ]
 
-    responses = {}
-    errors = {}
     skip_list = [
         "submit_quotation",
         "get_proposal",
@@ -195,7 +212,12 @@ async def main():
         "search_postal_code",
         "search_address",
         "verify_technical_restriction",
+        # "get_natural_person_details",
+        # "get_legal_entity_details",
     ]
+
+    responses = {}
+    errors = {}
 
     for test in test_funcs:
         name = test["name"]
