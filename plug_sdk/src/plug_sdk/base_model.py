@@ -1,5 +1,5 @@
-from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ConfigDict, Field, computed_field  # noqa: F401
+from pydantic import BaseModel as PydanticBaseModel  # noqa: F401
+from pydantic import ConfigDict, Field, RootModel, computed_field  # noqa: F401
 
 
 class BaseModel(PydanticBaseModel):

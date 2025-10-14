@@ -26,6 +26,7 @@ from .policy import (
     IssuePolicyRequest,
     IssuePolicyResponse,
     PolicyDocumentResponse,
+    ProposalStatus,
     RejectProposalRequest,
     RejectProposalResponse,
     ReportType,
@@ -63,13 +64,14 @@ class PlugSDK:
             response_model=SubmitQuotationResponse,
         )
 
-    async def get_proposal(self, proposal_id: int) -> GetProposalResponse:
-        payload = GetProposalRequest(proposal_id=proposal_id)
-        return await self.client.get(
+    async def get_proposal(self, quotation_id: int) -> ProposalStatus:
+        payload = GetProposalRequest(quotation_id=quotation_id)
+        response = await self.client.get(
             endpoint="/v1/propostas/situacao",
             params=payload.model_dump(mode="json", by_alias=True),
             response_model=GetProposalResponse,
         )
+        return response.root[0]
 
     async def reject_proposal(
         self,
@@ -99,9 +101,9 @@ class PlugSDK:
     async def generate_policy_document(
         self,
         proposal_id: int,
-        report_type: ReportType = ReportType.CROPS,
+        report_type: ReportType = ReportType.PASTURES,
     ) -> PolicyDocumentResponse:
-        return await self.client.post(
+        return await self.client.get(
             endpoint=f"v1/formularios/{proposal_id}/documentos?relatorio_id={report_type}",
             response_model=PolicyDocumentResponse,
         )

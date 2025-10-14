@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import IntEnum, StrEnum
 from typing import Any, Optional
 
-from plug_sdk.base_model import BaseModel, Field
+from plug_sdk.base_model import BaseModel, Field, RootModel
 
 from .transmission_schemas import TransmissionData
 
@@ -32,33 +32,20 @@ class SubmitQuotationResponse(BaseERPResponse):
 
 
 class GetProposalRequest(BaseModel):
-    proposal_id: int = Field(alias="numeroProposta")
+    quotation_id: int = Field(alias="numeroProposta")
 
 
-class GetProposalResponse(BaseModel):
+class ProposalStatus(BaseModel):
     status_id: int = Field(..., alias="cd_status", description="ID of the proposal and/or policy status")
-    status_name: str = Field(
-        ...,
-        alias="nm_status",
-        description="Description of the proposal and/or policy status",
-    )
-    proposal_number: int = Field(
-        ...,
-        alias="cd_proposta",
-        description="Proposal number corresponding to the queried proposal",
-    )
-    endorsement_id: int = Field(..., alias="id_endosso", description="Endorsement ID of the queried proposal")
-    policy_number: int = Field(
-        ...,
-        alias="cd_apolice",
-        description="Policy number corresponding to the queried proposal",
-    )
-    policy_id: int = Field(
-        ...,
-        alias="id_apolice",
-        description="Policy ID corresponding to the queried proposal",
-    )
-    issue_date: datetime = Field(..., alias="dt_emissao", description="Issue date in the ERP")
+    status_name: Optional[str] = Field(alias="nm_status", description="Description of the proposal and/or policy status", default=None)
+    quotation_id: int = Field(alias="cd_proposta", description="Proposal number corresponding to the queried proposal")
+    endorsement_id: int = Field(alias="id_endosso", description="Endorsement ID of the queried proposal")
+    policy_code: Optional[int] = Field(alias="cd_apolice", description="Policy number corresponding to the queried proposal", default=None)
+    policy_id: int = Field(alias="id_apolice", description="Policy ID corresponding to the queried proposal")
+    issue_date: datetime = Field(alias="dt_emissao", description="Issue date in the ERP")
+
+
+GetProposalResponse = RootModel[list[ProposalStatus]]
 
 
 class RejectProposalRequest(BaseModel):

@@ -18,9 +18,9 @@ async def test_submit_quotation(
 
 async def test_get_proposal(
     sdk: PlugSDK,
-    proposal_id,
+    quotation_id,
 ):
-    return await sdk.get_proposal(proposal_id)
+    return await sdk.get_proposal(quotation_id)
 
 
 async def test_reject_proposal(sdk: PlugSDK, proposal_id):
@@ -97,10 +97,13 @@ async def main():
         del request_data["secao"]
         request_data["numeroProposta"] = str(int(request_data["numeroProposta"]) + 10)
 
-    quotation_id = request_data["numeroProposta"]
+    with open("tests/fixtures/valid_transmission_response.json") as f:
+        response_data = json.load(f)
+
+    quotation_id = "17604470749248"  # request_data["numeroProposta"]
+    proposal_id = int(response_data["idEndosso"])
     policy_id = "xpto"
-    proposal_id = 10175989
-    cpf_cnpj = "01368766099"
+    cpf_cnpj = "12345678909"
     year = 2025
     postal_code = "91760600"
     state = "RS"
@@ -120,7 +123,7 @@ async def main():
         {
             "name": "get_proposal",
             "fn": test_get_proposal,
-            "params": {"sdk": plug, "proposal_id": proposal_id},
+            "params": {"sdk": plug, "quotation_id": quotation_id},
         },
         {
             "name": "reject_proposal",
@@ -180,7 +183,7 @@ async def main():
     responses = {}
     errors = {}
     skip_list = [
-        # "submit_quotation",
+        "submit_quotation",
         "get_proposal",
         "reject_proposal",
         "issue_policy",
