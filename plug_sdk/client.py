@@ -112,7 +112,7 @@ async def main():
     proposal_id = int(response_data["idEndosso"])
     policy_id = "xpto"
     cpf = "01368766099"
-    cnpj = "49598227000170"
+    cnpj = "14525684000150"
     year = 2025
     postal_code = "91760600"
     state = "RS"
@@ -212,7 +212,7 @@ async def main():
         "search_postal_code",
         "search_address",
         "verify_technical_restriction",
-        # "get_natural_person_details",
+        "get_natural_person_details",
         # "get_legal_entity_details",
     ]
 

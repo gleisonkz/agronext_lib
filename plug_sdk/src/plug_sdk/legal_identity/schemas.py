@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from plug_sdk.base_model import BaseModel, Field
 
@@ -21,19 +21,7 @@ class Metadata(BaseModel):
     last_update: datetime = Field(alias="lastUpdate", description="Date of the last update in Neoway for the legalentity")
     processing_timestamp: datetime = Field(alias="processingTimeStamp", description="Processing date in Neoway for the legalentity")
     schema_id: int = Field(alias="schemaID", description="Schema ID of the legalentity information")
-    source: List[str] = Field(alias="source", description="Sources of legalentity information")
-
-
-class PublicDebtInfo(Metadata):
-    """Information about PGFN and DAU debts."""
-
-
-class TaxHealthInfo(Metadata):
-    """Information about legalentity tax and fiscal health."""
-
-
-class SintegraInfo(Metadata):
-    """Information about legalentity fiscal situation from Sintegra."""
+    source: list[str] = Field(alias="source", description="Sources of legalentity information")
 
 
 class RegistrationStatus(BaseModel):
@@ -45,6 +33,33 @@ class LegalEntityMetadata(Metadata):
     public_debt: Optional[Metadata] = Field(None, alias="empresaPgfnDau", description="Debts in PGFN and DAU")
     tax_health: Optional[Metadata] = Field(None, alias="empresaSaudeTributaria", description="Tax and fiscal health")
     sintegra: Optional[Metadata] = Field(None, alias="empresaSintegra", description="Sintegra fiscal data")
+
+
+class NegativeCertificate(BaseModel):
+    name: str = Field(alias="nome")
+
+
+class UnionDebt(BaseModel):
+    registration_number: Optional[str] = Field(alias="inscricao")
+    nature: Optional[str] = Field(alias="natureza")
+    value: Optional[float] = Field(alias="valorInscricaoDevido")
+
+
+class UnionDebtInfo(BaseModel):
+    total_debts: Optional[float] = Field(alias="totalDividas")
+    debts: list[UnionDebt] = Field(alias="dividas", description="list of debts in PGFN and DAU", default_factory=list)
+
+
+class TaxHealthInfo(BaseModel):
+    negative_certificates: list[NegativeCertificate] = Field(alias="cnds", default_factory=list)
+
+
+class StateRegistration(BaseModel):
+    state: str = Field(alias="ie")
+
+
+class SintegraInfo(BaseModel):
+    registrations: list[StateRegistration] = Field(alias="inscricoes", default_factory=list)
 
 
 class LegalEntity(BaseModel):
@@ -59,6 +74,9 @@ class LegalEntity(BaseModel):
 class PlugLegalEntityResponse(BaseModel):
     cnpj: str = Field(alias="_id", description="CNPJ of the legalentity")
     legal_entity: LegalEntity = Field(alias="empresa", description="LegalEntity information object")
+    union_debt_info: Optional[UnionDebtInfo] = Field(alias="empresaPgfnDau", default=None)
+    tax_health_info: Optional[TaxHealthInfo] = Field(alias="empresaSaudeTributaria", default=None)
+    sintegra_info: Optional[SintegraInfo] = Field(alias="empresaSintegra", default=None)
 
 
 class LegalEntityResponse(BaseModel):
