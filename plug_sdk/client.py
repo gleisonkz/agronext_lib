@@ -2,6 +2,8 @@ import asyncio
 import json
 import traceback
 
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from plug_sdk.policy import (
     TransmissionData,
 )
@@ -117,8 +119,24 @@ def capture_response_error(func):
     return wrapper
 
 
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    DEBUG: bool = True
+
+    LOG_LEVEL: str = "INFO"
+
+    EAS_TOKEN: str
+
+
+api_settings = Settings()
+
+
 async def main():
-    plug = PlugSDK(base_url="http://uatplug.essor.net/")
+    settings = Settings()
+    plug = PlugSDK(
+        base_url="http://uatplug.essor.net/",
+        credentials={"eas_token": settings.EAS_TOKEN},
+    )
 
     with open("tests/fixtures/valid_transmission_data.json") as f:
         request_data = json.load(f)
@@ -131,6 +149,7 @@ async def main():
 
     quotation_id = "17604470749248"  # request_data["numeroProposta"]
     proposal_id = int(response_data["idEndosso"])
+    broker_cnpj = "08270601000126"
     policy_id = "xpto"
     cpf = "01368766099"
     cnpj = "14525684000150"
@@ -219,6 +238,11 @@ async def main():
             "params": {"sdk": plug, "cnpj": cnpj},
         },
         {
+            "name": "get_broker_details",
+            "fn": plug.get_broker_details,
+            "params": {"cpf_cnpj": broker_cnpj},
+        },
+        {
             "name": "create_external_user",
             "fn": plug.create_external_user,
             "params": {
@@ -256,8 +280,9 @@ async def main():
         "get_natural_person_details",
         "get_legal_entity_details",
         "create_external_user",
-        "filter_external_users",
-        # "send_email",
+        # "filter_external_users",
+        "send_email",
+        "get_broker_details",
     ]
 
     responses = {}

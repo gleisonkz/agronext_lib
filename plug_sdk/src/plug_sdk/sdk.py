@@ -1,6 +1,6 @@
 from typing import Optional
 
-from .async_client import BaseAsyncClient
+from .async_client import BaseAsyncClient, RequestOptions
 from .external_users import (
     CreateExternalUserRequest,
     CreateExternalUserResponse,
@@ -75,33 +75,47 @@ class PlugSDK:
         headers: Optional[dict[str, str]] = None,
     ):
         self.client = BaseAsyncClient(base_url=base_url, headers=headers)
-        self.credentials = credentials
+
+        self._eas_headers = {
+            "Authorization": f"Bearer {credentials.get('eas_token', None)}" if credentials else None,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
 
     ## External Users Methods
     async def create_external_user(self, email: str, phone: str, name: str) -> CreateExternalUserResponse:
         request = CreateExternalUserRequest(email=email, phone_number=phone, name=name)
+        options = RequestOptions(headers=self._eas_headers)
         return await self.client.post(
             endpoint="/authentication-system/v1/users",
+            options=options,
             payload=request.model_dump(mode="json", by_alias=True),
             response_model=CreateExternalUserResponse,
         )
 
     async def get_external_user(self, user_id: str) -> ExternalUserResponse:
+        options = RequestOptions(headers=self._eas_headers)
+
         return await self.client.get(
             endpoint=f"/authentication-system/v1/users/{user_id}",
+            options=options,
             response_model=ExternalUserResponse,
         )
 
     async def update_external_user(self, user_id: str, user_data: UpdateExternalUserRequest) -> UpdateExternalUserResponse:
-        return await self.client.put(
+        options = RequestOptions(headers=self._eas_headers)
+        return await self.client.patch(
             endpoint=f"/authentication-system/v1/users/{user_id}",
+            options=options,
             payload=user_data.model_dump(mode="json", by_alias=True, exclude_none=True),
             response_model=UpdateExternalUserResponse,
         )
 
     async def delete_external_user(self, user_id: str) -> None:
+        options = RequestOptions(headers=self._eas_headers)
         await self.client.delete(
             endpoint=f"/authentication-system/v1/users/{user_id}",
+            options=options,
         )
 
     async def filter_external_users(
@@ -109,13 +123,16 @@ class PlugSDK:
         id: Optional[str] = None,
         email: Optional[str] = None,
         username: Optional[str] = None,
-    ) -> list[FilterExternalUsersResponse]:
+    ) -> list[ExternalUserResponse]:
         filters = FilterExternalUsersRequest(id=id, email=email, username=username)
-        return await self.client.get(
+        options = RequestOptions(headers=self._eas_headers)
+        response = await self.client.get(
             endpoint="/authentication-system/v1/users",
+            options=options,
             params=filters.model_dump(mode="json", by_alias=True, exclude_none=True),
-            response_model=list[dict],
+            response_model=FilterExternalUsersResponse,
         )
+        return response.data
 
     ## Policy Lifecycle Methods
 
