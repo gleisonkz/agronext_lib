@@ -1,12 +1,12 @@
 @baseUrl = http://uatplug.essor.net
 ### Transmit
 POST {{baseUrl}}/authentication-system/v1/users
-Authorization: Bearer QyJhbGciOiJIUzI1NiIsInR5TxI2IkpXVzJ9
-# Accept: application/json
+Accept: application/json
+Authorization: Bearer XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce
 Content-Type: application/json
 
 {
-    "email": "cristovam.lage4@essor.com.br",
-    "phone_number": "+5551993182697",
-    "name": "Cristovam Lage"
+    "email": "raul.regadas@essor.com.br",
+    "phone_number": "+5551994227117",
+    "name": "Raul Regadas",
 }

@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from plug_sdk.policy import (
     TransmissionData,
 )
-from plug_sdk.sdk import Applications, EmailTemplateTypes, PlugSDK
+from plug_sdk.sdk import Applications, DomainTypes, EmailTemplateTypes, PlugSDK
 
 
 async def test_submit_quotation(
@@ -125,17 +125,14 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "INFO"
 
-    EAS_TOKEN: str
-
-
-api_settings = Settings()
+    PLUG_API_KEY: str
 
 
 async def main():
     settings = Settings()
     plug = PlugSDK(
         base_url="http://uatplug.essor.net/",
-        credentials={"eas_token": settings.EAS_TOKEN},
+        credentials={"api_key": settings.PLUG_API_KEY},
     )
 
     with open("tests/fixtures/valid_transmission_data.json") as f:
@@ -246,10 +243,9 @@ async def main():
             "name": "create_external_user",
             "fn": plug.create_external_user,
             "params": {
-                # "sdk": plug,
-                "name": "Teste X",
-                "email": "teste_x@testx.com",
-                "phone": "+5551997182695",
+                "email": "raul.regadas@essor.com.br",
+                "phone": "+5551994227117",
+                "name": "Raul Regadas",
             },
         },
         {
@@ -264,7 +260,24 @@ async def main():
         },
     ]
 
-    skip_list = [
+    domain_scap_funcs = [
+        {
+            "name": f"get_domain_{domain.value}",
+            "fn": plug.list_domain_items,
+            "params": {"domain": domain},
+        }
+        for domain in list(DomainTypes)
+    ]
+
+    scap_funcs = [
+        {
+            "name": "list_roles",
+            "fn": plug.list_roles,
+            "params": {},
+        },
+    ]
+
+    test_skip_list = [
         "submit_quotation",
         "get_proposal",
         "reject_proposal",
@@ -284,11 +297,16 @@ async def main():
         "send_email",
         "get_broker_details",
     ]
+    scap_skip_list = [
+        # "list_roles",
+    ]
+
+    skip_list = test_skip_list + scap_skip_list
 
     responses = {}
     errors = {}
 
-    for test in test_funcs:
+    for test in scap_funcs:
         name = test["name"]
 
         if name in skip_list:
