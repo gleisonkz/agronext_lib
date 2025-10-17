@@ -1,6 +1,6 @@
 [project]
 name = "plug-sdk"
-version = "0.0.7"
+version = "0.0.8"
 description = "Python SDK for Plug API"
 readme = "README.md"
 authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
