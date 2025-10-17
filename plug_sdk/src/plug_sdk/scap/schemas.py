@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import date, datetime
+from enum import StrEnum
 from typing import Any, Optional
 
 from ..base_model import BaseModel, Field, RootModel
@@ -24,17 +27,21 @@ from .domain_types import (
 )
 
 
-class TimeStampMixin(BaseModel):
-    created_at: datetime
-    updated_at: datetime
+class TimeStampMixIn(BaseModel):
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 
-class IDMixin(BaseModel):
+class IDMixIn(BaseModel):
+    id: Optional[str] = None
+
+
+class PersonIDMixIn(BaseModel):
     person_id: str
 
 
-class PersonIDMixin(BaseModel):
-    person_id: str
+class PartyResponseMixIn(BaseModel):
+    party: Optional[PartyResponse] = Field(alias="person", default=None)
 
 
 class DomainData(BaseModel):
@@ -44,7 +51,7 @@ class DomainData(BaseModel):
     active: bool
 
 
-DomainListResponse = RootModel[list[DomainData]]
+ListDomainResponse = RootModel[list[DomainData]]
 
 
 class RoleResponse(BaseModel):
@@ -59,10 +66,10 @@ class RoleResponse(BaseModel):
 ListRolesResponse = RootModel[list[RoleResponse]]
 
 
-class Address(BaseModel):
+class Address(IDMixIn):
     postal_code: str
     state_id: DomainState = Field(alias="state_type_id")
-    country: str
+    country: Optional[str] = None
     city: str
     neighborhood: str = Field(alias="district")
     street: str
@@ -72,16 +79,16 @@ class Address(BaseModel):
     is_primary: bool
 
 
-class AddressRequest(Address, PersonIDMixin):
+class AddressRequest(Address, PersonIDMixIn):
     pass
 
 
-class AddressResponse(Address, IDMixin, PersonIDMixin, TimeStampMixin):
+class AddressResponse(AddressRequest, TimeStampMixIn, PartyResponseMixIn):
     state_description: DomainStateDescription = Field(alias="state_type_description")
     address_description: DomainAddressDescription = Field(alias="address_type_description")
 
 
-class BankingDetails(BaseModel):
+class BankingDetails(IDMixIn):
     bank_number: str
     bank_name: str
     branch_number: int
@@ -94,44 +101,44 @@ class BankingDetails(BaseModel):
     is_primary: bool = Field(default=True)
 
 
-class BankingDetailsRequest(BankingDetails, PersonIDMixin):
+class BankingDetailsRequest(BankingDetails, PersonIDMixIn):
     pass
 
 
-class BankingDetailsResponse(BankingDetails, IDMixin, PersonIDMixin, TimeStampMixin):
+class BankingDetailsResponse(BankingDetailsRequest, TimeStampMixIn, PartyResponseMixIn):
     payment_type_description: DomainPaymentDescription
     bank_account_type_description: DomainBankAccountDescription
 
 
-class ContactInformation(BaseModel):
+class ContactInformation(IDMixIn):
     communication_type: DomainCommunication = Field(alias="communication_type_id")
-    description: str
+    description: Optional[str] = None
     contact: str
     observation: Optional[str] = None
     is_primary: bool
 
 
-class ContactInformationRequest(ContactInformation, PersonIDMixin):
+class ContactInformationRequest(ContactInformation, PersonIDMixIn):
     pass
 
 
-class ContactInformationResponse(ContactInformation, IDMixin, PersonIDMixin, TimeStampMixin):
+class ContactInformationResponse(ContactInformationRequest, TimeStampMixIn, PartyResponseMixIn):
     communication_type_description: DomainCommunicationDescription
 
 
-class Document(BaseModel):
+class Document(IDMixIn):
     document_type_id: DomainDocument = Field(alias="document_type")
-    document_number: str
-    issuing_agency: str
-    issuing_date: datetime
+    document_number: Optional[str] = None
+    issuing_agency: Optional[str] = None
+    issuing_date: Optional[datetime] = None
     expiration_date: Optional[datetime] = None
 
 
-class DocumentRequest(Document, PersonIDMixin):
+class DocumentRequest(Document, PersonIDMixIn):
     pass
 
 
-class DocumentResponse(Document, IDMixin, PersonIDMixin, TimeStampMixin):
+class DocumentResponse(DocumentRequest, TimeStampMixIn, PartyResponseMixIn):
     document_type_description: DomainDocumentDescription
 
 
@@ -140,40 +147,46 @@ class AssignRoleRequest(BaseModel):
     attributes: Optional[dict[str, Any]] = None
 
 
-class AssignRoleResponse(IDMixin):
+class AssignRoleResponse(IDMixIn):
     name: str
     attributes: Optional[dict[str, Any]] = None
 
 
-class ListPartyRolesResponse(PersonIDMixin):
+class Role(BaseModel):
+    id: Roles
+    name: RoleDescription
+    attributes: Optional[dict[str, Any]] = None
+
+
+class ListPartyRolesResponse(PersonIDMixIn):
     name: str
     roles: list[AssignRoleResponse]
 
 
-class Party(BaseModel):
+class Party(IDMixIn):
     person_type: DomainPerson = Field(alias="person_type_id")
     full_name: str
     preferred_name: Optional[str] = None
     company_name: Optional[str] = None
     document_number: Optional[str] = None
-    birth_date: Optional[date] = None
-    gender_type: DomainGender = Field(alias="gender_type_id")
+    birth_date: Optional[datetime] = None
+    gender_type: Optional[DomainGender] = Field(alias="gender_type_id", default=None)
     occupation: Optional[str] = None
     monthly_income: Optional[float] = None
     politically_exposed: Optional[bool] = None
     economic_activity: Optional[str] = None
     annual_gross_income: Optional[float] = None
     net_worth: Optional[float] = None
-    addresses: list[Address] = Field(default_factory=list)
-    contact_information: list[ContactInformation] = Field(default_factory=list, alias="communications")
-    banking_details: list[BankingDetails] = Field(default_factory=list, alias="bank_accounts")
-    documents: list[Document] = Field(default_factory=list)
-    roles: list[AssignRoleRequest] = Field(default_factory=list)
+    addresses: list[AddressResponse] = Field(default_factory=list)
+    contact_information: list[ContactInformationResponse] = Field(default_factory=list, alias="communications")
+    banking_details: list[BankingDetailsResponse] = Field(default_factory=list, alias="bank_accounts")
+    documents: list[DocumentResponse] = Field(default_factory=list)
+    roles: list[Role] = Field(default_factory=list)
 
 
-class PartyResponse(Party, IDMixin, TimeStampMixin):
-    person_type_description: DomainPersonDescription
-    gender_type_description: DomainGenderDescription
+class PartyResponse(Party, TimeStampMixIn):
+    person_type_description: Optional[DomainPersonDescription] = None
+    gender_type_description: Optional[DomainGenderDescription] = None
 
 
 ## SEARCH AND PAGINATION SCHEMAS
@@ -187,32 +200,42 @@ class PaginationLinks(BaseModel):
 
 
 class PaginationMetaLinks(BaseModel):
-    url: str
+    url: Optional[str] = None
     label: str
+    page: Optional[int] = None
     active: bool
 
 
 class PaginationMeta(BaseModel):
     current_page: int
-    from_: int
+    from_: Optional[int] = Field(default=None, alias="from")
     last_page: int
     links: Optional[list[PaginationMetaLinks]] = None
 
 
 class PaginationResponse[T: BaseModel](BaseModel):
-    data: list[T]
+    data: list[T] = Field(default_factory=list)
     links: PaginationLinks
     meta: PaginationMeta
+
+
+class SearchIncludeOptions(StrEnum):
+    PARTY = "person"
+    ADDRESSES = "addresses"
+    CONTACT = "communications"
+    BANKING_DETAILS = "bankAccounts"
+    DOCUMENTS = "documents"
+    ROLES = "roles"
 
 
 class BaseSearchParams(BaseModel):
     page: Optional[int] = Field(default=1, ge=1, description="Page number for pagination.")
     per_page: Optional[int] = Field(default=10, ge=1, le=100, description="Number of items per page for pagination.")
-    filter: Optional[list[str]] = Field(
+    include: Optional[list[SearchIncludeOptions]] = Field(
         default=None,
-        alias="with",
+        alias="with[]",
         description="List of related resources to include in the response. "
-        "Options: 'addresses', 'communications', 'bank_accounts', 'documents', 'roles'.",
+        "Options: 'person' , 'addresses', 'communications', 'bank_accounts', 'documents', 'roles'.",
     )
 
 

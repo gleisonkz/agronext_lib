@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from plug_sdk.policy import (
     TransmissionData,
 )
-from plug_sdk.sdk import Applications, DomainTypes, EmailTemplateTypes, PlugSDK
+from plug_sdk.sdk import Applications, DomainTypes, EmailTemplateTypes, PlugSDK, SearchIncludeOptions
 
 
 async def test_submit_quotation(
@@ -275,6 +275,28 @@ async def main():
             "fn": plug.list_roles,
             "params": {},
         },
+        {
+            "name": "list_parties",
+            "fn": plug.list_parties,
+            "params": {
+                "include": [
+                    SearchIncludeOptions.ROLES,
+                    SearchIncludeOptions.CONTACT,
+                    SearchIncludeOptions.BANKING_DETAILS,
+                    SearchIncludeOptions.ADDRESSES,
+                    SearchIncludeOptions.DOCUMENTS,
+                ],
+                "document_number": "86908394026",
+            },
+        },
+        {
+            "name": "list_contacts",
+            "fn": plug.list_contact_information,
+            "params": {
+                "contact": "raphael.luzo@essor.com.br",
+                "include_person": True,
+            },
+        },
     ]
 
     test_skip_list = [
@@ -298,7 +320,9 @@ async def main():
         "get_broker_details",
     ]
     scap_skip_list = [
-        # "list_roles",
+        "list_roles",
+        "list_parties",
+        # "list_contacts",
     ]
 
     skip_list = test_skip_list + scap_skip_list

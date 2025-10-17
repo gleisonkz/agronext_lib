@@ -18,7 +18,7 @@ from .schemas import (
     DocumentRequest,
     DocumentResponse,
     DocumentSearchParams,
-    DomainListResponse,
+    ListDomainResponse,
     ListPartyRolesResponse,
     ListRolesResponse,
     PaginatedAddressResponse,
@@ -26,8 +26,8 @@ from .schemas import (
     PaginatedContactInformationResponse,
     PaginatedDocumentResponse,
     PaginatedPartyResponse,
-    PaginatedRoleResponse,
     Party,
     PartyResponse,
     PartySearchParams,
+    SearchIncludeOptions,
 )

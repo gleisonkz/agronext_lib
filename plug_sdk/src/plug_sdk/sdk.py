@@ -77,8 +77,8 @@ from .scap import (
     DocumentRequest,
     DocumentResponse,
     DocumentSearchParams,
-    DomainListResponse,
     DomainTypes,
+    ListDomainResponse,
     ListPartyRolesResponse,
     ListRolesResponse,
     PaginatedAddressResponse,
@@ -89,6 +89,7 @@ from .scap import (
     Party,
     PartyResponse,
     PartySearchParams,
+    SearchIncludeOptions,
 )
 from .validations import (
     AddressLookupRequest,
@@ -362,12 +363,13 @@ class PlugSDK:
 
     ## SCAP METHODS
 
-    async def list_domain_items(self, domain: DomainTypes | str) -> DomainListResponse:
+    #
+    async def list_domain_items(self, domain: DomainTypes | str) -> ListDomainResponse:
         """List all active items for a given domain"""
         param = domain.value if isinstance(domain, DomainTypes) else domain
         return await self.client.get(
             endpoint=f"/unified-person-registry/v1/domains/{param}",
-            response_model=DomainListResponse,
+            response_model=ListDomainResponse,
         )
 
     async def list_roles(self) -> ListRolesResponse:
@@ -383,22 +385,23 @@ class PlugSDK:
             response_model=ListRolesResponse,
         )
 
+    #
     async def create_party(self, payload: Party) -> PartyResponse:
         """Create a new person with all related details"""
         return await self.client.post(
             endpoint="/unified-person-registry/v1/people/with-details",
-            payload=payload.model_dump(mode="json", by_alias=True),
+            payload=payload.model_dump(mode="json", by_alias=True, exclude_none=True),
             response_model=PartyResponse,
         )
 
-    async def get_person(self, id: str) -> PartyResponse:
+    async def get_party(self, id: str) -> PartyResponse:
         """Retrieve person by ID"""
         return await self.client.get(
             endpoint=f"/unified-person-registry/v1/people/{id}",
             response_model=PartyResponse,
         )
 
-    async def update_person(
+    async def update_party(
         self,
         person_id: str,
         payload: Party,
@@ -420,13 +423,14 @@ class PlugSDK:
             response_model=AssignRoleResponse,
         )
 
-    async def get_person_roles(self, id: str) -> ListPartyRolesResponse:
+    async def get_party_roles(self, id: str) -> ListPartyRolesResponse:
         """Get roles assigned to a person"""
         return await self.client.get(
             endpoint=f"/unified-person-registry/v1/people/{id}/roles",
             response_model=ListPartyRolesResponse,
         )
 
+    #
     async def register_address(self, payload: AddressRequest) -> AddressResponse:
         """Register a new address to a party"""
 
@@ -452,7 +456,8 @@ class PlugSDK:
             response_model=AddressResponse,
         )
 
-    async def create_bank_account(self, payload: BankingDetailsRequest) -> BankingDetailsResponse:
+    #
+    async def register_bank_account(self, payload: BankingDetailsRequest) -> BankingDetailsResponse:
         """Create a new bank account"""
 
         return await self.client.post(
@@ -477,7 +482,8 @@ class PlugSDK:
             response_model=BankingDetailsResponse,
         )
 
-    async def create_communication(self, payload: ContactInformationRequest) -> ContactInformationResponse:
+    #
+    async def register_contact_information(self, payload: ContactInformationRequest) -> ContactInformationResponse:
         """Create a new communication"""
 
         return await self.client.post(
@@ -486,14 +492,14 @@ class PlugSDK:
             response_model=ContactInformationResponse,
         )
 
-    async def get_communication(self, id: str) -> ContactInformationResponse:
+    async def get_contact_information(self, id: str) -> ContactInformationResponse:
         """Retrieve communication by ID"""
         return await self.client.get(
             endpoint=f"/unified-person-registry/v1/people/communications/{id}",
             response_model=ContactInformationResponse,
         )
 
-    async def update_communication(self, id: str, payload: ContactInformation) -> ContactInformationResponse:
+    async def update_contact_information(self, id: str, payload: ContactInformation) -> ContactInformationResponse:
         """Update an existing communication"""
 
         return await self.client.put(
@@ -502,7 +508,8 @@ class PlugSDK:
             response_model=ContactInformationResponse,
         )
 
-    async def create_document(self, payload: DocumentRequest) -> DocumentResponse:
+    #
+    async def register_document(self, payload: DocumentRequest) -> DocumentResponse:
         """Create a new document"""
 
         return await self.client.post(
@@ -527,6 +534,7 @@ class PlugSDK:
             response_model=DocumentResponse,
         )
 
+    #
     async def list_parties(
         self,
         full_name: Optional[str] = None,
@@ -536,7 +544,7 @@ class PlugSDK:
         gender_type_id: Optional[int] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        filter: Optional[list[str]] = None,
+        include: Optional[list[SearchIncludeOptions]] = None,
     ) -> PaginatedPartyResponse:
         """Retrieve paginated list of people"""
         params = PartySearchParams(
@@ -547,7 +555,7 @@ class PlugSDK:
             gender_type_id=gender_type_id,
             page=page,
             per_page=per_page,
-            filter=filter,
+            include=[i for i in include if i is not SearchIncludeOptions.PARTY] if include else None,
         )
 
         return await self.client.get(
@@ -563,7 +571,7 @@ class PlugSDK:
         address_type_id: Optional[int] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        filter: Optional[list[str]] = None,
+        include_person: bool = False,
     ) -> PaginatedAddressResponse:
         """Retrieve paginated list of addresses"""
         params = AddressSearchParams(
@@ -572,7 +580,7 @@ class PlugSDK:
             address_type_id=address_type_id,
             page=page,
             per_page=per_page,
-            filter=filter,
+            include=[SearchIncludeOptions.PARTY] if include_person else None,
         )
 
         return await self.client.get(
@@ -588,7 +596,7 @@ class PlugSDK:
         payment_type_id: Optional[int] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        filter: Optional[list[str]] = None,
+        include_person: bool = False,
     ) -> PaginatedBankingDetailsResponse:
         """Retrieve paginated list of bank accounts"""
         params = BankingDetailsSearchParams(
@@ -597,7 +605,7 @@ class PlugSDK:
             payment_type_id=payment_type_id,
             page=page,
             per_page=per_page,
-            filter=filter,
+            include=[SearchIncludeOptions.PARTY] if include_person else None,
         )
 
         return await self.client.get(
@@ -606,7 +614,7 @@ class PlugSDK:
             response_model=PaginatedBankingDetailsResponse,
         )
 
-    async def list_contact_informations(
+    async def list_contact_information(
         self,
         person_id: Optional[str] = None,
         contact_type_id: Optional[int] = None,
@@ -614,7 +622,7 @@ class PlugSDK:
         contact: Optional[str] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        filter: Optional[list[str]] = None,
+        include_person: bool = False,
     ) -> PaginatedContactInformationResponse:
         """Retrieve paginated list of communications"""
         params = ContactSearchParams(
@@ -624,7 +632,7 @@ class PlugSDK:
             contact=contact,
             page=page,
             per_page=per_page,
-            filter=filter,
+            include=[SearchIncludeOptions.PARTY] if include_person else None,
         )
 
         return await self.client.get(
@@ -641,7 +649,7 @@ class PlugSDK:
         issuing_agency: Optional[str] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        filter: Optional[list[str]] = None,
+        include_person: bool = False,
     ) -> PaginatedDocumentResponse:
         """Retrieve paginated list of documents"""
         params = DocumentSearchParams(
@@ -651,7 +659,7 @@ class PlugSDK:
             issuing_agency=issuing_agency,
             page=page,
             per_page=per_page,
-            filter=filter,
+            include=[SearchIncludeOptions.PARTY] if include_person else None,
         )
 
         return await self.client.get(
