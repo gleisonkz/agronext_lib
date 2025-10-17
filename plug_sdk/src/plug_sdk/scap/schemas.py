@@ -174,3 +174,96 @@ class Party(BaseModel):
 class PartyResponse(Party, IDMixin, TimeStampMixin):
     person_type_description: DomainPersonDescription
     gender_type_description: DomainGenderDescription
+
+
+## SEARCH AND PAGINATION SCHEMAS
+
+
+class PaginationLinks(BaseModel):
+    first: Optional[str] = None
+    last: Optional[str] = None
+    prev: Optional[str] = None
+    next: Optional[str] = None
+
+
+class PaginationMetaLinks(BaseModel):
+    url: str
+    label: str
+    active: bool
+
+
+class PaginationMeta(BaseModel):
+    current_page: int
+    from_: int
+    last_page: int
+    links: Optional[list[PaginationMetaLinks]] = None
+
+
+class PaginationResponse[T: BaseModel](BaseModel):
+    data: list[T]
+    links: PaginationLinks
+    meta: PaginationMeta
+
+
+class BaseSearchParams(BaseModel):
+    page: Optional[int] = Field(default=1, ge=1, description="Page number for pagination.")
+    per_page: Optional[int] = Field(default=10, ge=1, le=100, description="Number of items per page for pagination.")
+    filter: Optional[list[str]] = Field(
+        default=None,
+        alias="with",
+        description="List of related resources to include in the response. "
+        "Options: 'addresses', 'communications', 'bank_accounts', 'documents', 'roles'.",
+    )
+
+
+class PartySearchParams(BaseSearchParams):
+    birth_date: Optional[date] = None
+    document_number: Optional[str] = None
+    full_name: Optional[str] = None
+    gender_type_id: Optional[DomainGender] = None
+    person_type_id: Optional[DomainPerson] = None
+
+
+class PaginatedPartyResponse(PaginationResponse[PartyResponse]):
+    pass
+
+
+class AddressSearchParams(BaseSearchParams):
+    party_id: Optional[str] = Field(alias="person_id", default=None)
+    postal_code: Optional[str] = None
+    address_type_id: Optional[DomainAddress] = None
+
+
+class PaginatedAddressResponse(PaginationResponse[AddressResponse]):
+    pass
+
+
+class BankingDetailsSearchParams(BaseSearchParams):
+    party_id: Optional[str] = Field(alias="person_id", default=None)
+    bank_account_type_id: Optional[DomainBankAccount] = None
+    payment_type_id: Optional[DomainPayment] = None
+
+
+class PaginatedBankingDetailsResponse(PaginationResponse[BankingDetailsResponse]):
+    pass
+
+
+class ContactSearchParams(BaseSearchParams):
+    party_id: Optional[str] = Field(alias="person_id", default=None)
+    communication_type_id: Optional[DomainCommunication] = None
+    contact: Optional[str] = None
+
+
+class PaginatedContactInformationResponse(PaginationResponse[ContactInformationResponse]):
+    pass
+
+
+class DocumentSearchParams(BaseSearchParams):
+    party_id: Optional[str] = Field(alias="person_id", default=None)
+    document_type_id: Optional[DomainDocument] = None
+    issuing_agency: Optional[str] = None
+    document_number: Optional[str] = None
+
+
+class PaginatedDocumentResponse(PaginationResponse[DocumentResponse]):
+    pass

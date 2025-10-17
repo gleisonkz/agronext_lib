@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional
 
 from .async_client import BaseAsyncClient, RequestOptions
@@ -61,23 +62,33 @@ from .scap import (
     Address,
     AddressRequest,
     AddressResponse,
+    AddressSearchParams,
     AssignRoleRequest,
     AssignRoleResponse,
     BankingDetails,
     BankingDetailsRequest,
     BankingDetailsResponse,
+    BankingDetailsSearchParams,
     ContactInformation,
     ContactInformationRequest,
     ContactInformationResponse,
+    ContactSearchParams,
     Document,
     DocumentRequest,
     DocumentResponse,
+    DocumentSearchParams,
     DomainListResponse,
     DomainTypes,
     ListPartyRolesResponse,
     ListRolesResponse,
+    PaginatedAddressResponse,
+    PaginatedBankingDetailsResponse,
+    PaginatedContactInformationResponse,
+    PaginatedDocumentResponse,
+    PaginatedPartyResponse,
     Party,
     PartyResponse,
+    PartySearchParams,
 )
 from .validations import (
     AddressLookupRequest,
@@ -516,135 +527,135 @@ class PlugSDK:
             response_model=DocumentResponse,
         )
 
-    # async def list_people(
-    #     self,
-    #     per_page: Optional[int] = None,
-    #     full_name: Optional[str] = None,
-    #     document_number: Optional[str] = None,
-    #     person_type_id: Optional[int] = None,
-    #     gender_type_id: Optional[int] = None,
-    #     with_: Optional[list[str]] = None,
-    # ) -> PaginatedPersonsResponse:
-    #     """Retrieve paginated list of people"""
-    #     params = PersonQueryParams(
-    #         per_page=per_page,
-    #         full_name=full_name,
-    #         document_number=document_number,
-    #         person_type_id=person_type_id,
-    #         gender_type_id=gender_type_id,
-    #         with_=with_,
-    #     ).model_dump(mode="json", by_alias=True)
+    async def list_parties(
+        self,
+        full_name: Optional[str] = None,
+        birth_date: Optional[date] = None,
+        document_number: Optional[str] = None,
+        person_type_id: Optional[int] = None,
+        gender_type_id: Optional[int] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        filter: Optional[list[str]] = None,
+    ) -> PaginatedPartyResponse:
+        """Retrieve paginated list of people"""
+        params = PartySearchParams(
+            birth_date=birth_date,
+            full_name=full_name,
+            document_number=document_number,
+            person_type_id=person_type_id,
+            gender_type_id=gender_type_id,
+            page=page,
+            per_page=per_page,
+            filter=filter,
+        )
 
-    #     return await self.client.get(
-    #         endpoint="/v1/people",
-    #         params=params,
-    #         response_model=PaginatedPersonsResponse,
-    #     )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people",
+            params=params.model_dump(mode="json", by_alias=True),
+            response_model=PaginatedPartyResponse,
+        )
 
-    # # -------------------------------------------------------
-    # # GET /v1/people/addresses
-    # # -------------------------------------------------------
-    # async def list_addresses(
-    #     self,
-    #     per_page: Optional[int] = None,
-    #     person_id: Optional[str] = None,
-    #     address_type_id: Optional[int] = None,
-    #     postal_code: Optional[str] = None,
-    #     with_: Optional[list[str]] = None,
-    # ) -> PaginatedAddressesResponse:
-    #     """Retrieve paginated list of addresses"""
-    #     params = AddressQueryParams(
-    #         per_page=per_page,
-    #         person_id=person_id,
-    #         address_type_id=address_type_id,
-    #         postal_code=postal_code,
-    #         with_=with_,
-    #     ).model_dump(mode="json", by_alias=True)
+    async def list_addresses(
+        self,
+        person_id: Optional[str] = None,
+        postal_code: Optional[str] = None,
+        address_type_id: Optional[int] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        filter: Optional[list[str]] = None,
+    ) -> PaginatedAddressResponse:
+        """Retrieve paginated list of addresses"""
+        params = AddressSearchParams(
+            person_id=person_id,
+            postal_code=postal_code,
+            address_type_id=address_type_id,
+            page=page,
+            per_page=per_page,
+            filter=filter,
+        )
 
-    #     return await self.client.get(
-    #         endpoint="/v1/people/addresses",
-    #         params=params,
-    #         response_model=PaginatedAddressesResponse,
-    #     )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people/addresses",
+            params=params.model_dump(mode="json", by_alias=True),
+            response_model=PaginatedAddressResponse,
+        )
 
-    # # -------------------------------------------------------
-    # # GET /v1/people/bank-accounts
-    # # -------------------------------------------------------
-    # async def list_bank_accounts(
-    #     self,
-    #     per_page: Optional[int] = None,
-    #     person_id: Optional[str] = None,
-    #     payment_type_id: Optional[int] = None,
-    #     bank_account_type_id: Optional[int] = None,
-    #     with_: Optional[list[str]] = None,
-    # ) -> PaginatedBankAccountsResponse:
-    #     """Retrieve paginated list of bank accounts"""
-    #     params = BankAccountQueryParams(
-    #         per_page=per_page,
-    #         person_id=person_id,
-    #         payment_type_id=payment_type_id,
-    #         bank_account_type_id=bank_account_type_id,
-    #         with_=with_,
-    #     ).model_dump(mode="json", by_alias=True)
+    async def list_bank_details(
+        self,
+        person_id: Optional[str] = None,
+        bank_account_type_id: Optional[int] = None,
+        payment_type_id: Optional[int] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        filter: Optional[list[str]] = None,
+    ) -> PaginatedBankingDetailsResponse:
+        """Retrieve paginated list of bank accounts"""
+        params = BankingDetailsSearchParams(
+            person_id=person_id,
+            bank_account_type_id=bank_account_type_id,
+            payment_type_id=payment_type_id,
+            page=page,
+            per_page=per_page,
+            filter=filter,
+        )
 
-    #     return await self.client.get(
-    #         endpoint="/v1/people/bank-accounts",
-    #         params=params,
-    #         response_model=PaginatedBankAccountsResponse,
-    #     )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people/bank-accounts",
+            params=params.model_dump(mode="json", by_alias=True),
+            response_model=PaginatedBankingDetailsResponse,
+        )
 
-    # # -------------------------------------------------------
-    # # GET /v1/people/communications
-    # # -------------------------------------------------------
-    # async def list_communications(
-    #     self,
-    #     per_page: Optional[int] = None,
-    #     person_id: Optional[str] = None,
-    #     contact: Optional[str] = None,
-    #     communication_type_id: Optional[int] = None,
-    #     is_primary: Optional[bool] = None,
-    #     with_: Optional[list[str]] = None,
-    # ) -> PaginatedCommunicationsResponse:
-    #     """Retrieve paginated list of communications"""
-    #     params = CommunicationQueryParams(
-    #         per_page=per_page,
-    #         person_id=person_id,
-    #         contact=contact,
-    #         communication_type_id=communication_type_id,
-    #         is_primary=is_primary,
-    #         with_=with_,
-    #     ).model_dump(mode="json", by_alias=True)
+    async def list_contact_informations(
+        self,
+        person_id: Optional[str] = None,
+        contact_type_id: Optional[int] = None,
+        is_primary: Optional[bool] = None,
+        contact: Optional[str] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        filter: Optional[list[str]] = None,
+    ) -> PaginatedContactInformationResponse:
+        """Retrieve paginated list of communications"""
+        params = ContactSearchParams(
+            person_id=person_id,
+            communication_type_id=contact_type_id,
+            is_primary=is_primary,
+            contact=contact,
+            page=page,
+            per_page=per_page,
+            filter=filter,
+        )
 
-    #     return await self.client.get(
-    #         endpoint="/v1/people/communications",
-    #         params=params,
-    #         response_model=PaginatedCommunicationsResponse,
-    #     )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people/communications",
+            params=params.model_dump(mode="json", by_alias=True),
+            response_model=PaginatedContactInformationResponse,
+        )
 
-    # # -------------------------------------------------------
-    # # GET /v1/people/documents
-    # # -------------------------------------------------------
-    # async def list_documents(
-    #     self,
-    #     per_page: Optional[int] = None,
-    #     person_id: Optional[str] = None,
-    #     document_type_id: Optional[int] = None,
-    #     document_number: Optional[str] = None,
-    #     issuing_agency: Optional[str] = None,
-    #     with_: Optional[list[str]] = None,
-    # ) -> PaginatedDocumentsResponse:
-    #     """Retrieve paginated list of documents"""
-    #     params = DocumentQueryParams(
-    #         per_page=per_page,
-    #         person_id=person_id,
-    #         document_type_id=document_type_id,
-    #         document_number=document_number,
-    #         issuing_agency=issuing_agency,
-    #         with_=with_,
-    #     ).model_dump(mode="json", by_alias=True)
+    async def list_documents(
+        self,
+        person_id: Optional[str] = None,
+        document_number: Optional[str] = None,
+        document_type_id: Optional[int] = None,
+        issuing_agency: Optional[str] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        filter: Optional[list[str]] = None,
+    ) -> PaginatedDocumentResponse:
+        """Retrieve paginated list of documents"""
+        params = DocumentSearchParams(
+            person_id=person_id,
+            document_number=document_number,
+            document_type_id=document_type_id,
+            issuing_agency=issuing_agency,
+            page=page,
+            per_page=per_page,
+            filter=filter,
+        )
 
-    #     return await self.client.get(
-    #         endpoint="/v1/people/documents",
-    #         params=params,
-    #         response_model=PaginatedDocumentsResponse,
-    #     )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people/documents",
+            params=params.model_dump(mode="json", by_alias=True),
+            response_model=PaginatedDocumentResponse,
+        )
