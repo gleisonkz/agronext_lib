@@ -108,12 +108,14 @@ class PlugSDK:
         credentials: dict | None = None,
         headers: Optional[dict[str, str]] = None,
     ):
-        headers = headers or {
-            "Authorization": f"Bearer {credentials.get('api_key', None)}" if credentials else None,
-            "Content-Type": "application/json",
+        default_headers = {
             "Accept": "application/json",
-            #   --header 'External-User-Id: usr_12345' \
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {credentials.get('api_key', '')}" if credentials else "",
+            "External-User-Id": credentials.get("external_user_id", "") if credentials else "",
         }
+        headers = default_headers.update(headers) if headers else default_headers
+
         self.client = BaseAsyncClient(base_url=base_url, headers=headers)
 
     ## External Users Methods
@@ -571,7 +573,7 @@ class PlugSDK:
         address_type_id: Optional[int] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        include_person: bool = False,
+        include_person: bool = True,
     ) -> PaginatedAddressResponse:
         """Retrieve paginated list of addresses"""
         params = AddressSearchParams(
@@ -596,7 +598,7 @@ class PlugSDK:
         payment_type_id: Optional[int] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        include_person: bool = False,
+        include_person: bool = True,
     ) -> PaginatedBankingDetailsResponse:
         """Retrieve paginated list of bank accounts"""
         params = BankingDetailsSearchParams(
@@ -622,7 +624,7 @@ class PlugSDK:
         contact: Optional[str] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        include_person: bool = False,
+        include_person: bool = True,
     ) -> PaginatedContactInformationResponse:
         """Retrieve paginated list of communications"""
         params = ContactSearchParams(
@@ -649,7 +651,7 @@ class PlugSDK:
         issuing_agency: Optional[str] = None,
         page: Optional[int] = None,
         per_page: Optional[int] = None,
-        include_person: bool = False,
+        include_person: bool = True,
     ) -> PaginatedDocumentResponse:
         """Retrieve paginated list of documents"""
         params = DocumentSearchParams(

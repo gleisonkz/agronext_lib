@@ -1,12 +1,12 @@
-@baseUrl = http://uatplug.essor.net
-### Transmit
-POST {{baseUrl}}/authentication-system/v1/users
-Accept: application/json
-Authorization: Bearer XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce
-Content-Type: application/json
+### Get token
+GET http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/
+Metadata: true
 
-{
-    "email": "raul.regadas@essor.com.br",
-    "phone_number": "+5551994227117",
-    "name": "Raul Regadas",
-}
+> {% client.global.set("token", response.body.access_token); %}
+
+###
+
+### List blobs
+GET https://absuatstagronext.blob.core.windows.net/repository?restype=container&comp=list
+Authorization: Bearer {{token}}
+x-ms-version: 2023-11-03
