@@ -5,6 +5,14 @@ from .validations import (
     GISAllValidationsRequest,
     GISAllValidationsResponse,
 )
+from .rates import (
+    GISRateRequest,
+    GISPixelRateResponse,
+    GISCityRateResponse,
+    GISStateRateResponse,
+    GISCountryRateResponse,
+    GISAllRatesResponse,
+)
 
 
 class GisSDK:
@@ -25,5 +33,60 @@ class GisSDK:
         return await self.client.post(
             endpoint="/validations/all",
             response_model=list[GISAllValidationsResponse],
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    async def get_pixel_rate(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> list[GISPixelRateResponse]:
+        request = GISRateRequest(polygons)
+        return await self.client.post(
+            endpoint="/rates/pixel",
+            response_model=list[GISPixelRateResponse],
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    async def get_city_rate(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> list[GISCityRateResponse]:
+        request = GISRateRequest(polygons)
+        return await self.client.post(
+            endpoint="/rates/city",
+            response_model=list[GISCityRateResponse],
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    async def get_state_rate(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> list[GISStateRateResponse]:
+        request = GISRateRequest(polygons)
+        return await self.client.post(
+            endpoint="/rates/state",
+            response_model=list[GISStateRateResponse],
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    async def get_country_rate(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> list[GISCountryRateResponse]:
+        request = GISRateRequest(polygons)
+        return await self.client.post(
+            endpoint="/rates/country",
+            response_model=list[GISCountryRateResponse],
+            payload=request.model_dump(mode="json", by_alias=True),
+        )
+
+    async def get_all_rates(
+        self,
+        polygons: list[list[tuple[float, float]]],
+    ) -> list[GISAllRatesResponse]:
+        request = GISRateRequest(polygons)
+        return await self.client.post(
+            endpoint="/rates/all",
+            response_model=list[GISAllRatesResponse],
             payload=request.model_dump(mode="json", by_alias=True),
         )
