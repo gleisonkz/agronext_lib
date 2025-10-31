@@ -17,6 +17,11 @@ class Franchise(BaseModel):
     name: str
 
 
+class Coverage(BaseModel):
+    id: int
+    name: str
+
+
 class Profile(BaseModel):
     id: int
     name: str
@@ -31,6 +36,7 @@ class PixelRate(GeometryArea):
     geometry: list[Geometry]
     product: Product
     franchise: Franchise
+    coverage: Coverage
     profile: Profile
     rate: Rate
 
@@ -42,9 +48,12 @@ class GISPixelRateResponse(BaseModel):
 
 class CityRate(GeometryArea):
     geometry: list[Geometry]
-    rate: float
     uf: str
     description: str
+    product: Product
+    franchise: Franchise
+    coverage: Coverage
+    rate: Rate
 
 
 class GISCityRateResponse(BaseModel):
@@ -54,9 +63,12 @@ class GISCityRateResponse(BaseModel):
 
 class StateRate(GeometryArea):
     geometry: list[Geometry]
-    rate: float
     uf: str
     description: str
+    product: Product
+    franchise: Franchise
+    coverage: Coverage
+    rate: Rate
 
 
 class GISStateRateResponse(BaseModel):
@@ -66,9 +78,12 @@ class GISStateRateResponse(BaseModel):
 
 class CountryRate(GeometryArea):
     geometry: list[Geometry]
-    rate: float
     country: str
     description: str
+    product: Product
+    franchise: Franchise
+    coverage: Coverage
+    rate: Rate
 
 
 class GISCountryRateResponse(BaseModel):
