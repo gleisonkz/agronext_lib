@@ -1,0 +1,24 @@
+@baseUrl = http://uatplug.essor.net
+
+
+### CREATE USER
+POST {{baseUrl}}/authentication-system/v1/users
+Authorization: Bearer xpto
+Accept: "application/json"
+Content-Type: application/json
+
+{
+    "name": "Marcelo Paulino",
+    "email": "mpaulino@scor.com",
+    "phone": "+5551980125321"
+}
+
+### Try
+POST http://localhost:8000/simulation/
+Content-Type: application/json
+
+{
+    "name": "Marcelo Paulino",
+    "email": "mpaulino@scor.com",
+    "phone": "+5551980125321"
+}

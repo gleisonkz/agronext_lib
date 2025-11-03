@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from .async_client import BaseAsyncClient, RequestOptions
+from .async_client import URL, BaseAsyncClient
 from .external_users import (
     CreateExternalUserRequest,
     CreateExternalUserResponse,
@@ -107,6 +107,7 @@ class PlugSDK:
         base_url: str = "http://uatplug.essor.net",
         credentials: dict | None = None,
         headers: Optional[dict[str, str]] = None,
+        timeout: float = 60.0,
     ):
         default_headers = {
             "Accept": "application/json",
@@ -116,7 +117,7 @@ class PlugSDK:
         }
         headers = default_headers.update(headers) if headers else default_headers
 
-        self.client = BaseAsyncClient(base_url=base_url, headers=headers)
+        self.client = BaseAsyncClient(base_url=URL(base_url), headers=headers, timeout=timeout)
 
     ## External Users Methods
     async def create_external_user(self, email: str, phone: str, name: str) -> CreateExternalUserResponse:

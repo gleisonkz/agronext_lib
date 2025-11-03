@@ -243,9 +243,9 @@ async def main():
             "name": "create_external_user",
             "fn": plug.create_external_user,
             "params": {
-                "email": "raul.regadas@essor.com.br",
-                "phone": "+5551994227117",
-                "name": "Raul Regadas",
+                "name": "Marcelo Paulino",
+                "email": "mpaulino@scor.com",
+                "phone": "+5551980125321",
             },
         },
         {
@@ -314,8 +314,8 @@ async def main():
         "verify_technical_restriction",
         "get_natural_person_details",
         "get_legal_entity_details",
-        "create_external_user",
-        # "filter_external_users",
+        # "create_external_user",
+        "filter_external_users",
         "send_email",
         "get_broker_details",
     ]
@@ -330,7 +330,7 @@ async def main():
     responses = {}
     errors = {}
 
-    for test in scap_funcs:
+    for test in test_funcs:
         name = test["name"]
 
         if name in skip_list:
