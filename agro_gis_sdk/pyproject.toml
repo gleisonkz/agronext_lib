@@ -1,6 +1,6 @@
 [project]
 name = "agro-gis-sdk"
-version = "0.0.1"
+version = "0.0.2"
 description = "Python SDK for GIS API"
 readme = "README.md"
 authors = [{ name = "Alexander Alves", email = "alexander.alves@essor.com.br" }]
