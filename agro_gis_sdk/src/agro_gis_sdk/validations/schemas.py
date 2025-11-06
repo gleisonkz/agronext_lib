@@ -1,17 +1,17 @@
 from datetime import date, datetime
-from enum import Enum
-from typing import List, Optional
+from enum import StrEnum
+from typing import Optional
 
 from pydantic import BaseModel, Field, RootModel
 
-from gis_sdk.schemas import GISBaseRequest, GeometryArea, Geometry, Point
+from ..schemas import Geometry, GeometryArea, GISBaseRequest, Point
 
 
 class GISAllValidationsRequest(RootModel):
     root: list[GISBaseRequest]
 
 
-class ProductType(str, Enum):
+class ProductType(StrEnum):
     fruit_and_vegetables = "fruit_and_vegetables"
     winter_grains = "winter_grains"
     summer_grains = "summer_grains"
@@ -78,7 +78,7 @@ class GISAllValidationsResponse(BaseModel):
     city_belonging: CityBelonging
     conflicting_policy: ConflictingPolicy
 
-    pixel_rate: List = Field(..., description="Rate of pixel grid")
-    city_rate: List = Field(..., description="Rate of city area")
-    state_rate: List = Field(..., description="Rate of state area")
-    country_rate: List = Field(..., description="Rate of country area")
+    pixel_rate: list = Field(..., description="Rate of pixel grid")
+    city_rate: list = Field(..., description="Rate of city area")
+    state_rate: list = Field(..., description="Rate of state area")
+    country_rate: list = Field(..., description="Rate of country area")

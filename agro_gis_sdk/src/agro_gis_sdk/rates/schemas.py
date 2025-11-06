@@ -1,6 +1,6 @@
 from pydantic import BaseModel, RootModel
 
-from gis_sdk.schemas import GISBaseRequest, GeometryArea, Geometry
+from agro_gis_sdk.schemas import GISBaseRequest, GeometryArea, Geometry
 
 
 class GISRateRequest(RootModel):

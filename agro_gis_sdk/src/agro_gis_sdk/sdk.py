@@ -1,18 +1,21 @@
 from typing import Optional
-from .async_client import BaseAsyncClient
 
+from .async_client import BaseAsyncClient
+from .rates import (
+    GISAllRatesResponse,
+    GISCityRateResponse,
+    GISCountryRateResponse,
+    GISPixelRateResponse,
+    GISRateRequest,
+    GISStateRateResponse,
+)
 from .validations import (
     GISAllValidationsRequest,
     GISAllValidationsResponse,
 )
-from .rates import (
-    GISRateRequest,
-    GISPixelRateResponse,
-    GISCityRateResponse,
-    GISStateRateResponse,
-    GISCountryRateResponse,
-    GISAllRatesResponse,
-)
+
+Coordinates = tuple[float, float]
+Polygon = list[Coordinates]
 
 
 class GisSDK:
@@ -27,7 +30,8 @@ class GisSDK:
 
     async def get_gis_report(
         self,
-        polygons: list[list[tuple[float, float]]],
+        polygons: list[Polygon],
+        property_location: Coordinates,
     ) -> list[GISAllValidationsResponse]:
         request = GISAllValidationsRequest(polygons)
         return await self.client.post(
