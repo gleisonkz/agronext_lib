@@ -2,7 +2,12 @@ from fastapi import status
 
 from .base import BaseHTTPException
 
-## Auth
+
+class BadRequest(BaseHTTPException):
+    def __init__(self, message: str = "") -> None:
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.message = f"Bad Request - {message}" if message else "Bad Request"
+        super().__init__(status_code=self.status_code, message=self.message)
 
 
 class Unauthorized(BaseHTTPException):
@@ -19,20 +24,6 @@ class Forbidden(BaseHTTPException):
         super().__init__(status_code=status_code, message=message)
 
 
-class Locked(BaseHTTPException):
-    def __init__(self, message: str = "") -> None:
-        status_code = status.HTTP_423_LOCKED
-        message = f"Locked - {message}" if message else "Locked"
-        super().__init__(status_code=status_code, message=message)
-
-
-class BadRequest(BaseHTTPException):
-    def __init__(self, message: str = "") -> None:
-        self.status_code = status.HTTP_400_BAD_REQUEST
-        self.message = f"Bad Request - {message}" if message else "Bad Request"
-        super().__init__(status_code=self.status_code, message=self.message)
-
-
 class NotFound(BaseHTTPException):
     def __init__(self, message: str = "") -> None:
         self.status_code = status.HTTP_404_NOT_FOUND
@@ -47,15 +38,18 @@ class Conflict(BaseHTTPException):
         super().__init__(status_code=self.status_code, message=self.message)
 
 
-class UnavailableForLegalReasons(BaseHTTPException):
+class Locked(BaseHTTPException):
     def __init__(self, message: str = "") -> None:
-        self.status_code = status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS
-        self.message = (
-            f"Unavailable For Legal Reasons - {message}"
-            if message
-            else "Unavailable For Legal Reasons"
-        )
-        super().__init__(status_code=self.status_code, message=self.message)
+        status_code = status.HTTP_423_LOCKED
+        message = f"Locked - {message}" if message else "Locked"
+        super().__init__(status_code=status_code, message=message)
+
+
+class TooManyRequests(BaseHTTPException):
+    def __init__(self, message: str = "") -> None:
+        status_code = status.HTTP_429_TOO_MANY_REQUESTS
+        message = f"Too Many Requests - {message}" if message else "Too Many Requests"
+        super().__init__(status_code=status_code, message=message)
 
 
 class InternalServerError(BaseHTTPException):
@@ -74,8 +68,28 @@ class BadGateway(BaseHTTPException):
         super().__init__(status_code=self.status_code, message=self.message)
 
 
+class ServiceUnavailable(BaseHTTPException):
+    def __init__(self, message: str = "") -> None:
+        self.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        self.message = (
+            f"Service Unavailable - {message}" if message else "Service Unavailable"
+        )
+        super().__init__(status_code=self.status_code, message=self.message)
+
+
 class GatewayTimeout(BaseHTTPException):
     def __init__(self, message: str = "") -> None:
         self.status_code = status.HTTP_504_GATEWAY_TIMEOUT
         self.message = f"Gateway Timeout - {message}" if message else "Gateway Timeout"
+        super().__init__(status_code=self.status_code, message=self.message)
+
+
+class UnavailableForLegalReasons(BaseHTTPException):
+    def __init__(self, message: str = "") -> None:
+        self.status_code = status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS
+        self.message = (
+            f"Unavailable For Legal Reasons - {message}"
+            if message
+            else "Unavailable For Legal Reasons"
+        )
         super().__init__(status_code=self.status_code, message=self.message)

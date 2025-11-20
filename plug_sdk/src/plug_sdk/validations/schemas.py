@@ -43,7 +43,9 @@ class AddressLookupLink(BaseModel):
 
 
 class AddressLookupResponse(BaseModel):
-    addresses: list[PostalCodeLookupResponse] = Field(alias="itens", default_factory=list)
+    addresses: list[PostalCodeLookupResponse] = Field(
+        alias="itens", default_factory=list
+    )
     links: list[AddressLookupLink] = Field(alias="links", default_factory=list)
     pagination: AddressLookupPage = Field(alias="page", default=None)
 
@@ -53,7 +55,7 @@ class TechnicalRestrictionRequest(BaseModel):
 
 
 class TechnicalRestrictionResponse(BaseModel):
-    cpf_cnpj: str = Field(alias="cpfCnpj")
+    document: str = Field(alias="cpfCnpj")
     name: str | None = Field(alias="nome", default=None)
     message: str = Field(alias="mensagem")
     restriction: bool = Field(alias="restricao")

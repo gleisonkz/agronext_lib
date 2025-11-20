@@ -50,9 +50,7 @@ class BaseAsyncClient(AsyncClient):
         await super().aclose()
 
     @staticmethod
-    def _handle_response(
-        response: Response, response_model: Optional[T]
-    ) -> Response | T:
+    def _handle_response(response: Response, response_model: Optional[T]) -> Response | T:
         response.raise_for_status()
         if response_model and (response.status_code in [codes.OK, codes.CREATED]):
             try:
@@ -61,9 +59,7 @@ class BaseAsyncClient(AsyncClient):
                     return response_model(**response_json)
                 return response_model(response_json)
             except Exception:
-                raise ResponseError(
-                    f"Failed to parse response to {response_model}", response
-                )
+                raise ResponseError(f"Failed to parse response to {response_model}", response)
         return response
 
     @staticmethod
@@ -77,9 +73,7 @@ class BaseAsyncClient(AsyncClient):
         **kwargs: Any,
     ) -> Response | T:
         async with AsyncClient() as client:
-            response = await client.request(
-                method, url, data=payload, headers=headers, **kwargs
-            )
+            response = await client.request(method, url, data=payload, headers=headers, **kwargs)
             response = BaseAsyncClient._handle_response(response, response_model)
             return response
 
@@ -94,9 +88,7 @@ class BaseAsyncClient(AsyncClient):
             response = await super().request(method, url, **kwargs)
             response = BaseAsyncClient._handle_response(response, response_model)
         except HTTPStatusError as e:
-            logger.error(
-                f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
-            )
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
             raise
         except RequestError as e:
             logger.error(f"An error occurred while requesting {e.request.url!r}.")
@@ -107,22 +99,14 @@ class BaseAsyncClient(AsyncClient):
 
         return response
 
-    async def get(
-        self, url: str, response_model: Optional[T] = None, **kwargs
-    ) -> Response | T:
+    async def get(self, url: str, response_model: Optional[T] = None, **kwargs) -> Response | T:
         return await self._request("GET", url, response_model, **kwargs)
 
-    async def post(
-        self, url: str, response_model: Optional[T] = None, **kwargs
-    ) -> Response | T:
+    async def post(self, url: str, response_model: Optional[T] = None, **kwargs) -> Response | T:
         return await self._request("POST", url, response_model, **kwargs)
 
-    async def put(
-        self, url: str, response_model: Optional[T] = None, **kwargs
-    ) -> Response | T:
+    async def put(self, url: str, response_model: Optional[T] = None, **kwargs) -> Response | T:
         return await self._request("PUT", url, response_model, **kwargs)
 
-    async def delete(
-        self, url: str, response_model: Optional[T] = None, **kwargs
-    ) -> Response | T:
+    async def delete(self, url: str, response_model: Optional[T] = None, **kwargs) -> Response | T:
         return await self._request("DELETE", url, response_model, **kwargs)

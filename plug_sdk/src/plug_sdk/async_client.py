@@ -72,8 +72,8 @@ class BaseAsyncClient(AsyncClient):
         base_url: str | URL,
         headers: Optional[dict[str, str]] = None,
         follow_redirects: bool = True,
-        max_redirects: int = 5,
-        timeout: float = 15.0,
+        max_redirects: int = 3,
+        timeout: float = 30.0,
         options: Optional[InitOptions] = None,
     ):
         if options is None:

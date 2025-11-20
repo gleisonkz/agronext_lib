@@ -10,4 +10,5 @@ from .schemas import (
     SubsidyLimitRequest,
     CadinRequest,
     CadinResponse,
+    CadinPlugResponse,
 )

@@ -15,4 +15,4 @@ async def health_check() -> dict:
     try:
         return {"status": "ok"}
     except Exception as e:
-        raise FailedHealthCheckException(str(e))
+        raise FailedHealthCheckException(str(e)) from e

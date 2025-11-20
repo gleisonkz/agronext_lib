@@ -8,6 +8,7 @@ from logging.config import dictConfig
 from pathlib import Path
 from typing import Optional, Union, Dict
 from logging.handlers import QueueHandler, QueueListener
+from logging import Logger  # noqa: F401
 
 # Replace this with your real JSONFormatter
 from .formatters import JSONFormatter
@@ -143,5 +144,5 @@ def close_logger() -> None:
     logging.shutdown()
 
 
-def get_logger(name: str) -> logging.Logger:
+def get_logger(name: str) -> Logger:
     return logging.getLogger(name)

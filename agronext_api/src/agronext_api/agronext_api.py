@@ -8,7 +8,8 @@ from fastapi import (
     FastAPI,
     APIRouter,
     status,
-    Path, Query,
+    Path,
+    Query,
 )
 from fastapi.responses import RedirectResponse
 import uvicorn
@@ -129,17 +130,20 @@ def create_api(
     version: str | None = None,
     description: str = "Backend for Agronext Platform",
     custom_lifespan_events: Optional[Iterable[tuple[LifecycleFn, LifecycleFn]]] = None,
-    custom_errors: Optional[dict[str, tuple[int, str]]] = None,
+    custom_extensions: Optional[dict[str, tuple[int, str]]] = None,
     custom_exception_handlers: Optional[dict[str, tuple[int, str]]] = None,
     custom_middlewares: Optional[list[tuple[str, str]]] = None,
 ) -> FastAPI:
     log_level = DEBUG if api_settings.DEBUG else api_settings.LOG_LEVEL
+
     init_logger(log_level)
+
     lifespan_events = (
         [create_lifespan_event(*event) for event in custom_lifespan_events]
         if custom_lifespan_events
         else []
     )
+
     app = FastAPI(
         title=title,
         description=description,
@@ -150,7 +154,9 @@ def create_api(
     init_error_handling(app, custom_exception_handlers or [])
     init_security(app)
     init_middlewares(app, custom_middlewares or [])
-    init_extensions(app, custom_errors or [])
+    init_extensions(app, custom_extensions or [])
+
+    app.include_router(health_check_router)
 
     @app.get(("/"), status_code=status.HTTP_200_OK, include_in_schema=False)
     async def home():
@@ -158,8 +164,6 @@ def create_api(
         Home endpoint for the API.
         """
         return RedirectResponse(url="/health_check/")
-
-    app.include_router(health_check_router)
 
     for router in apps:
         app.include_router(router)

@@ -1,5 +1,5 @@
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import ConfigDict, model_validator, Field  # noqa: F401
+from pydantic import ConfigDict, model_validator, Field, EmailStr, model_serializer  # noqa: F401
 
 
 def to_camel(string: str) -> str:

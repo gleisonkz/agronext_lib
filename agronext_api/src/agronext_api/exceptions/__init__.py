@@ -29,25 +29,25 @@ def init_error_handling(app: FastAPI, custom_handlers: list) -> None:
     async def bad_request_exception_handler(
         request: Request, exc: BadRequest
     ) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_400_BAD_REQUEST, str(exc))
+        return __user_friendly_json(exc.status_code, str(exc))
 
     @app.exception_handler(Unauthorized)
     async def unauthorized_exception_handler(
         request: Request, exc: Unauthorized
     ) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_401_UNAUTHORIZED, str(exc))
+        return __user_friendly_json(exc.status_code, str(exc))
 
     @app.exception_handler(Forbidden)
     async def forbidden_exception_handler(
         request: Request, exc: Forbidden
     ) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_403_FORBIDDEN, str(exc))
+        return __user_friendly_json(exc.status_code, str(exc))
 
     @app.exception_handler(Conflict)
     async def conflict_exception_handler(
         request: Request, exc: Conflict
     ) -> JSONResponse:
-        return __user_friendly_json(status.HTTP_409_CONFLICT, str(exc))
+        return __user_friendly_json(exc.status_code, str(exc))
 
     @app.exception_handler(Exception)
     async def custom_http_exception_handler(
@@ -67,8 +67,9 @@ def init_error_handling(app: FastAPI, custom_handlers: list) -> None:
 
         exception = HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error: {type(exc).__name__}",
+            detail=f"Internal Server Error - {type(exc).__name__}: {str(exc)}",
         )
+
         return await http_exception_handler(request, exception)
 
     for handler in custom_handlers:
