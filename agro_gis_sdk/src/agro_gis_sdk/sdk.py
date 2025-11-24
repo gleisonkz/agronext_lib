@@ -16,6 +16,7 @@ from .validations import (
 
 Coordinates = tuple[float, float]
 Polygon = list[Coordinates]
+Plots = list[Polygon]
 
 
 class GisSDK:
