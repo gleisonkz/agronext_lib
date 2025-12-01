@@ -62,7 +62,7 @@ class AzureBlobRepository(BlobRepository):
 
     def _get_shared_access_signature(
         self,
-        name: str,
+        document_id: str,
         expires_in_seconds: int=3600,
     ) -> str:
         return generate_blob_sas(
@@ -70,29 +70,41 @@ class AzureBlobRepository(BlobRepository):
             account_key=self.client.credential.account_key,
             container_name=self.container.container_name,
             permission=BlobSasPermissions(read=True),
-            blob_name=name,
+            blob_name=document_id,
             expiry=datetime.now() + timedelta(seconds=expires_in_seconds),
         )
 
-    async def upload(self, name: str, data: bytes, content_type: str) -> str:
-        timestamp = int(time.time())
-        filename = f'{timestamp}-{name}'
-        blob = self.container.get_blob_client(filename)
+    async def upload(
+        self,
+        name: str,
+        data: bytes,
+        content_type: str,
+        document_id: Optional[str] = None,
+        metadata: Optional[dict] = None,
+    ) -> str:
+        if not document_id:
+            timestamp = int(time.time())
+            document_id = f'{timestamp}_{name}'
+        blob = self.container.get_blob_client(document_id)
         await blob.upload_blob(
             data,
             overwrite=True,
             content_settings=ContentSettings(content_type=content_type),
+            metadata=metadata,
         )
-        return f'{blob.url}?{self._get_shared_access_signature(filename)}'
+        return f'{blob.url}?{self._get_shared_access_signature(document_id)}'
 
-    async def list(self) -> list[str]:
+    async def list(self, starts_with: Optional[str] = None) -> list[dict]:
         blobs = []
-        async for blob in self.container.list_blobs():
-            blobs.append(blob.name)
+        async for blob in self.container.list_blobs(
+            name_starts_with=starts_with,
+            include=['metadata'],
+        ):
+            blobs.append(blob.metadata)
         return blobs
 
-    async def download(self, name: str) -> Optional[AsyncIterator[bytes]]:
-        blob = self.container.get_blob_client(name)
+    async def download(self, document_id: str) -> Optional[AsyncIterator[bytes]]:
+        blob = self.container.get_blob_client(document_id)
         try:
             stream = await blob.download_blob()
             return stream.chunks()
@@ -101,8 +113,8 @@ class AzureBlobRepository(BlobRepository):
             logger.error(f'{error=}')
             return None
 
-    async def delete(self, name: str) -> bool:
-        blob = self.container.get_blob_client(name)
+    async def delete(self, document_id: str) -> bool:
+        blob = self.container.get_blob_client(document_id)
         try:
             await blob.delete_blob()
             return True
@@ -111,18 +123,24 @@ class AzureBlobRepository(BlobRepository):
             logger.error(f'{error=}')
             return False
 
-    async def get(self, name: str) -> Optional[dict]:
-        blob = self.container.get_blob_client(name)
+    async def get(self, document_id: str) -> Optional[dict]:
+        blob = self.container.get_blob_client(document_id)
         try:
             data = await blob.get_blob_properties()
-            data.url = f'{blob.url}?{self._get_shared_access_signature(name)}'
+            data.url = f'{blob.url}?{self._get_shared_access_signature(document_id)}'
             return data
 
         except Exception as error:
             logger.error(f'{error=}')
             return None
 
-    async def update(self, name: str, data: bytes, content_type: str) -> bool:
+    async def update(
+        self,
+        document_id: str,
+        data: Optional[bytes] = None,
+        content_type: Optional[str] = None,
+        metadata: Optional[dict] = None,
+    ) -> str:
         '''
         # NOTE:
         # If you dont change the content settings AND serve with media type on API
@@ -130,15 +148,28 @@ class AzureBlobRepository(BlobRepository):
         '''
         # TODO: Check existence before updating (or it will create a new one)
 
-        blob = self.container.get_blob_client(name)
+        blob = self.container.get_blob_client(document_id)
         try:
+            props = await blob.get_blob_properties()
+            new_metadata = {
+                **(props.metadata or {}),
+                **(metadata or {}),
+            }
+
+            if not data:
+                await blob.set_blob_metadata(new_metadata)
+                return f'{blob.url}?{self._get_shared_access_signature(document_id)}'
+
             await blob.upload_blob(
                 data,
                 overwrite=True,
-                content_settings=ContentSettings(content_type=content_type),
+                content_settings=ContentSettings(
+                    content_type=content_type or props.content_settings.content_type,
+                ),
+                metadata=new_metadata,
             )
-            return True
+            return f'{blob.url}?{self._get_shared_access_signature(document_id)}'
 
         except Exception as error:
             logger.error(f'{error=}')
-            return False
+            raise error

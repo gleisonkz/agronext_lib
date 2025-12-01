@@ -16,7 +16,7 @@ class UploadFileResponse:
 
 @dataclass
 class ListFilesResponse:
-    urls: list[str]
+    files: list[dict]
 
 
 @dataclass
