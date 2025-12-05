@@ -658,8 +658,15 @@ class PlugSDK:
         page: Optional[int] = None,
         per_page: Optional[int] = None,
         include_person: bool = True,
+        include_roles: bool = True,
     ) -> PaginatedContactInformationResponse:
         """Retrieve paginated list of communications"""
+        include = []
+        if include_person:
+            include.append(SearchIncludeOptions.PARTY)
+        if include_roles:
+            include.append(f"{SearchIncludeOptions.PARTY}.{SearchIncludeOptions.ROLES}")
+
         params = ContactSearchParams(
             person_id=person_id,
             communication_type_id=contact_type_id,
@@ -667,7 +674,7 @@ class PlugSDK:
             contact=contact,
             page=page,
             per_page=per_page,
-            include=[SearchIncludeOptions.PARTY] if include_person else None,
+            include=include or None,
         )
 
         return await self.client.get(
