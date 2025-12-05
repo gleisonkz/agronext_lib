@@ -1,5 +1,6 @@
-from dataclasses import dataclass
 from typing import Optional, Protocol
+
+from pydantic import BaseModel
 
 
 class File(Protocol):
@@ -8,34 +9,28 @@ class File(Protocol):
     async def read(self) -> bytes: ...
 
 
-@dataclass
-class UploadFileResponse:
+class UploadFileResponse(BaseModel):
     name: str
     url: str
 
 
-@dataclass
-class ListFilesResponse:
+class ListFilesResponse(BaseModel):
     files: list[dict]
 
 
-@dataclass
-class DownloadFileResponse:
+class DownloadFileResponse(BaseModel):
     data: Optional[bytes]
     content_type: Optional[str]
 
 
-@dataclass
-class GetFileResponse:
+class GetFileResponse(BaseModel):
     data: Optional[dict]
 
 
-@dataclass
-class DeleteFileResponse:
+class DeleteFileResponse(BaseModel):
     success: bool
 
 
-@dataclass
-class UpdateFileResponse:
+class UpdateFileResponse(BaseModel):
     name: str
     url: str

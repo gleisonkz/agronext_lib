@@ -11,13 +11,11 @@ from azure.storage.blob import (
 )
 from azure.storage.blob.aio import BlobServiceClient as AsyncBlobServiceClient
 
-from ..application.interfaces import BlobRepository
+
+logger = logging.getLogger('infrastructure.azure_blob_client')
 
 
-logger = logging.getLogger('infrastructure.azure_blob_repository')
-
-
-class AzureBlobRepository(BlobRepository):
+class AzureBlobClient:
     def __init__(
         self,
         container_name: str,
