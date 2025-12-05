@@ -4,7 +4,7 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "agronext-api"
-version = "0.0.13"
+version = "0.0.14"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
@@ -36,7 +36,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.123.9" },
     { name = "fastapi-pagination", specifier = ">=0.13.1" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
 ]
@@ -283,7 +283,7 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.121.3"
+version = "0.123.9"
 source = { registry = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple" }
 dependencies = [
     { name = "annotated-doc" },
@@ -291,9 +291,9 @@ dependencies = [
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/packages/80/f0/086c442c6516195786131b8ca70488c6ef11d2f2e33c9a893576b2b0d3f7/fastapi-0.121.3.tar.gz", hash = "sha256:0055bc24fe53e56a40e9e0ad1ae2baa81622c406e548e501e717634e2dfbc40b" }
+sdist = { url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/packages/2c/01/c3fb48c0135d89586a03c3e2c5bc04540dda52079a1af5cac4a63598efb9/fastapi-0.123.9.tar.gz", hash = "sha256:ab33d672d8e1cc6e0b49777eb73c32ccf20761011f5ca16755889ab406fd1de0" }
 wheels = [
-    { url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/packages/98/b6/4f620d7720fc0a754c8c1b7501d73777f6ba43b57c8ab99671f4d7441eb8/fastapi-0.121.3-py3-none-any.whl", hash = "sha256:0c78fc87587fcd910ca1bbf5bc8ba37b80e119b388a7206b39f0ecc95ebf53e9" },
+    { url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/packages/db/15/a785e992a27620e022d0bc61b6c897ec14cff07c5ab7ff9f27651a21570b/fastapi-0.123.9-py3-none-any.whl", hash = "sha256:f54c69f23db14bd3dbcdfaf3fdce0483ca5f499512380c8e379a70cda30aa920" },
 ]
 
 [package.optional-dependencies]
