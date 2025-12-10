@@ -148,6 +148,9 @@ class AzureBlobClient:
 
         blob = self.container.get_blob_client(document_id)
         try:
+            if not await blob.exists():
+                return None
+
             props = await blob.get_blob_properties()
             new_metadata = {
                 **(props.metadata or {}),
