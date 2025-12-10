@@ -70,6 +70,6 @@ def main() -> None:
         print(f'Updated: {updated_response}')
 
         get_response: ListFilesResponse = await sdk.get(document_id)
-        print('get_response:', get_response.data.metadata)
+        print('get_response:', get_response.data)
 
     asyncio.run(run())

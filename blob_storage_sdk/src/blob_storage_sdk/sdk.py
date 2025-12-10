@@ -55,14 +55,17 @@ class BlobStorageSDK:
     async def download(self, document_id: str) -> DownloadFileResponse:
         stream = await self.blob_client.download(document_id)
         _data = await self.blob_client.get(document_id)
-        content_type = _data.get('content_settings', {}).get('content_type')
+        content_type = getattr(_data, 'content_settings', {}).get('content_type')
 
         data = b''.join([chunk async for chunk in stream]) if stream else None
         return DownloadFileResponse(data=data, content_type=content_type)
 
     async def get(self, document_id: str) -> GetFileResponse:
         data = await self.blob_client.get(document_id)
-        return GetFileResponse(data=data)
+        return GetFileResponse(data={
+            **data.metadata,
+            'url': getattr(data, 'url', ''),
+        })
 
     async def update(
         self,

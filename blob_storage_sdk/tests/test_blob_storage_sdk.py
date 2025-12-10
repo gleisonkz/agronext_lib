@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -38,7 +38,11 @@ def get_blob_storage(mocked_blob_client, fake_metadata) -> BlobStorageSDK:
     mocked_blob_client.return_value.upload = AsyncMock(return_value='fake_url')
     mocked_blob_client.return_value.list = AsyncMock(return_value=[fake_metadata])
     mocked_blob_client.return_value.download = AsyncMock(return_value=_download_result())
-    mocked_blob_client.return_value.get = AsyncMock(return_value=fake_metadata)
+    mocked_blob_client.return_value.get = AsyncMock(return_value=Mock(
+        metadata=fake_metadata,
+        url='fake.url.com',
+        content_settings={'content_type': 'image/png'},
+    ))
     mocked_blob_client.return_value.update = AsyncMock(return_value='fake_url')
     mocked_blob_client.return_value.delete = AsyncMock(return_value=True)
     sdk = BlobStorageSDK()
@@ -99,7 +103,7 @@ async def test_download(get_blob_storage):
         document_id,
     )
     assert isinstance(result_download, DownloadFileResponse)
-    assert result_download.content_type == None
+    assert result_download.content_type == 'image/png'
     assert result_download.data == b'fake_bytesfake_bytes'
 
 
@@ -111,8 +115,11 @@ async def test_get(get_blob_storage, fake_metadata):
         document_id,
     )
     assert isinstance(result, GetFileResponse)
-    assert result.data == get_blob_storage._mocked_blob_client.get.return_value
-    assert result.data == fake_metadata
+    expected_url = 'fake.url.com'
+    expected_data = {'url': expected_url, **fake_metadata}
+    assert get_blob_storage._mocked_blob_client.get.return_value.metadata == fake_metadata
+    assert get_blob_storage._mocked_blob_client.get.return_value.url == expected_url
+    assert result.data == expected_data
 
 
 @pytest.mark.asyncio
