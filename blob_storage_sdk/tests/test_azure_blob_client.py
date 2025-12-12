@@ -450,7 +450,24 @@ async def test_update_exception(
     get_azure_blob_client,
     fake_params,
 ):
-    with pytest.raises(Exception) as error:
-        response = await get_azure_blob_client.update(fake_params.document_id)
-        assert response is None
-        mocked_logger.error.assert_called_once_with(f'{error=}')
+    with pytest.raises(Exception) as _error:
+        await get_azure_blob_client.update(fake_params.document_id)
+    error = _error.value
+    mocked_logger.error.assert_called_once_with(f'{error=}')
+    assert isinstance(error, Exception)
+    assert not isinstance(error, FileNotFoundError)
+
+
+@pytest.mark.asyncio
+async def test_update_file_not_found(
+    get_azure_blob_client,
+    fake_params,
+):
+    client = get_azure_blob_client._async_svc.from_connection_string.return_value
+    container = client.get_container_client.return_value
+    blob = container.get_blob_client.return_value
+    blob.exists = AsyncMock(return_value=False)
+    with pytest.raises(FileNotFoundError) as error:
+        await get_azure_blob_client.update(fake_params.document_id)
+    assert isinstance(error.value, FileNotFoundError)
+    assert str(error.value) == f"File '{fake_params.document_id}' not found."

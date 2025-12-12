@@ -149,7 +149,7 @@ class AzureBlobClient:
         blob = self.container.get_blob_client(document_id)
         try:
             if not await blob.exists():
-                return None
+                raise FileNotFoundError(f"File '{document_id}' not found.")
 
             props = await blob.get_blob_properties()
             new_metadata = {
