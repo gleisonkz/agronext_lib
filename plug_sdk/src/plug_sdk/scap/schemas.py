@@ -226,6 +226,7 @@ class SearchIncludeOptions(StrEnum):
     BANKING_DETAILS = "bankAccounts"
     DOCUMENTS = "documents"
     ROLES = "roles"
+    PARTY_ROLES = "person.roles"
 
 
 class BaseSearchParams(BaseModel):

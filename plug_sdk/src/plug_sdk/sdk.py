@@ -665,7 +665,7 @@ class PlugSDK:
         if include_person:
             include.append(SearchIncludeOptions.PARTY)
         if include_roles:
-            include.append(f"{SearchIncludeOptions.PARTY}.{SearchIncludeOptions.ROLES}")
+            include.append(SearchIncludeOptions.PARTY_ROLES)
 
         params = ContactSearchParams(
             person_id=person_id,
