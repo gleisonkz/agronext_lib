@@ -169,7 +169,7 @@ def test_get_shared_access_signature(
     )
 
     assert response is mocked_generate_blob_sas.return_value
-    mocked_BlobSasPermissions.assert_called_once_with(read=True)
+    mocked_BlobSasPermissions.assert_called_once_with(write=False, create=False, read=True)
     mocked_generate_blob_sas.assert_called_once_with(
         account_name=get_azure_blob_client.client.account_name,
         account_key=get_azure_blob_client.client.credential.account_key,
@@ -177,6 +177,54 @@ def test_get_shared_access_signature(
         permission=mocked_BlobSasPermissions.return_value,
         blob_name=expected_document_id,
         expiry=mocked_datetime.now() + timedelta(seconds=expected_expires_in_seconds),
+    )
+
+
+@patch('blob_storage_sdk.azure_blob_client.BlobSasPermissions')
+@patch('blob_storage_sdk.azure_blob_client.datetime')
+@patch('blob_storage_sdk.azure_blob_client.generate_blob_sas')
+def test_get_shared_access_signature_write_true(
+    mocked_generate_blob_sas,
+    mocked_datetime,
+    mocked_BlobSasPermissions,
+    get_azure_blob_client,
+):
+    mocked_datetime.now.return_value = datetime.now()
+    expected_document_id = 'abc'
+    expected_expires_in_seconds = 123
+    response = get_azure_blob_client._get_shared_access_signature(
+        expected_document_id,
+        expected_expires_in_seconds,
+        True,
+    )
+
+    assert response is mocked_generate_blob_sas.return_value
+    mocked_BlobSasPermissions.assert_called_once_with(write=True, create=True, read=True)
+    mocked_generate_blob_sas.assert_called_once_with(
+        account_name=get_azure_blob_client.client.account_name,
+        account_key=get_azure_blob_client.client.credential.account_key,
+        container_name=get_azure_blob_client.container.container_name,
+        permission=mocked_BlobSasPermissions.return_value,
+        blob_name=expected_document_id,
+        expiry=mocked_datetime.now() + timedelta(seconds=expected_expires_in_seconds),
+    )
+
+
+@patch('blob_storage_sdk.azure_blob_client.AzureBlobClient._get_shared_access_signature')
+def test_writer_signed_url(
+    mocked_get_shared_access_signature,
+    get_azure_blob_client,
+):
+    mocked_blob = get_azure_blob_client.container.get_blob_client.return_value
+    expected_document_id = 'abc'
+    response = get_azure_blob_client.writer_signed_url(expected_document_id)
+
+    assert type(response) is str
+    assert response == f'{mocked_blob.url}?{mocked_get_shared_access_signature.return_value}'
+    mocked_get_shared_access_signature.assert_called_once_with(
+        expected_document_id,
+        expires_in_seconds=60 * 60 * 10,
+        write=True,
     )
 
 

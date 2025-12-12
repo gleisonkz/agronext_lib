@@ -58,16 +58,26 @@ class AzureBlobClient:
         logger.info('Container closed.')
         logger.info('Client closed.')
 
+    def writer_signed_url(self, document_id: str) -> str:
+        blob = self.container.get_blob_client(document_id)
+        sas = self._get_shared_access_signature(
+            document_id,
+            expires_in_seconds=60 * 60 * 10,
+            write=True,
+        )
+        return f'{blob.url}?{sas}'
+
     def _get_shared_access_signature(
         self,
         document_id: str,
         expires_in_seconds: int=3600,
+        write: bool=False,
     ) -> str:
         return generate_blob_sas(
             account_name=self.client.account_name,
             account_key=self.client.credential.account_key,
             container_name=self.container.container_name,
-            permission=BlobSasPermissions(read=True),
+            permission=BlobSasPermissions(write=write, create=write, read=True),
             blob_name=document_id,
             expiry=datetime.now() + timedelta(seconds=expires_in_seconds),
         )

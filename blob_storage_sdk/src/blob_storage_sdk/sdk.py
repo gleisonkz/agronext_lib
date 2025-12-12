@@ -6,6 +6,7 @@ from .schemas import (
     DownloadFileResponse,
     File,
     GetFileResponse,
+    GetSignedURLResponse,
     ListFilesResponse,
     UpdateFileResponse,
     UploadFileResponse,
@@ -32,6 +33,16 @@ class BlobStorageSDK:
 
     def _format_connection_string(self, connection_string: str) -> str:
         return connection_string.strip().replace('\n', '').replace(' ', '')
+
+    def writer_signed_url(
+        self,
+        document_id: Optional[str] = None,
+    ) -> GetSignedURLResponse:
+        '''
+        pattern: https://<storage-account-name>.blob.core.windows.net/<container-name>/<blob-name>
+        '''
+        url = self.blob_client.writer_signed_url(document_id)
+        return GetSignedURLResponse(url=url)
 
     async def upload(
         self,

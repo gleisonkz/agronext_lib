@@ -34,3 +34,7 @@ class DeleteFileResponse(BaseModel):
 class UpdateFileResponse(BaseModel):
     name: str
     url: str
+
+
+class GetSignedURLResponse(BaseModel):
+    url: str

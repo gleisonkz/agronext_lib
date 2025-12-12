@@ -7,6 +7,7 @@ from blob_storage_sdk import (
     DeleteFileResponse,
     DownloadFileResponse,
     GetFileResponse,
+    GetSignedURLResponse,
     ListFilesResponse,
     UpdateFileResponse,
     UploadFileResponse,
@@ -61,6 +62,19 @@ def test_init(get_blob_storage):
         connection_string=connection_string,
     )
     assert get_blob_storage._mocked_blob_client_class.return_value == get_blob_storage._mocked_blob_client
+
+
+@patch('blob_storage_sdk.sdk.AzureBlobClient')
+def test_writer_signed_url(mocked_blob_client):
+    mocked_blob_client.return_value.writer_signed_url = Mock(return_value='fake_url')
+    sdk = BlobStorageSDK()
+    document_id = 'fake_id'
+    result = sdk.writer_signed_url(document_id)
+    mocked_blob_client.return_value.writer_signed_url.assert_called_once_with(
+        document_id,
+    )
+    assert isinstance(result, GetSignedURLResponse)
+    assert result.url == mocked_blob_client.return_value.writer_signed_url.return_value
 
 
 @pytest.mark.asyncio
