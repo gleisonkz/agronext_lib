@@ -5,140 +5,20 @@ description = "Python SDK for Plug API"
 readme = "README.md"
 authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
 requires-python = ">=3.12"
-dependencies = [
-    "httpx>=0.28.1",
- "pydantic[email]>=2.11.7",
-]
+dependencies = ["httpx>=0.28.1", "pydantic[email]>=2.11.7"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "fastapi>=0.116.1",
- "pydantic-settings>=2.11.0",
- "uvicorn>=0.35.0",
-]
-
-quality = [
-    "astroid>=3.3.9",
-    "black>=25.1.0",
-    "flake8>=7.1.2",
-    "isort>=6.0.1",
-    "mypy>=1.15.0",
-    "pylint>=3.3.5",
-    "ruff>=0.11.0",
-    "types-pyyaml>=6.0.12.20241230",
-    "types-ujson>=5.10.0.20240515",
-]
-security = ["bandit>=1.8.3"]
-test = [
-    "pytest>=8.3.5",
-    "pytest-asyncio>=0.25.3",
-    "pytest-cov>=6.0.0",
-    "pytest-mock>=3.14.0",
-]
+dev = []
 
 [tool.uv]
+
 [[tool.uv.index]]
 name = "artifactory"
 default = true
 allow-insecure = true
-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi/simple"
-publish-url = "http://artifactory.eu.scor.local/artifactory/api/pypi/pypi"
-
-[[tool.uv.index]]
-name = "pypi"
-url = "https://pypi.org/simple"
-fallback = true
-
-[tool.uv.sources]
-agronext-procurement-repositories = { path = "../../Repositories/agronext_procurement_repositories", editable = true }
-plug-sdk = { path = "../../Lib/plug_sdk", editable = true }
-
-[tool.isort]
-profile = "black"
-
-[tool.black]
-line-length = 144
-target-version = ["py312"]
-include = "\\.pyi?$"
-exclude = "/(\n  \\.git\n| \\.venv\n| build\n| dist\n)/\n"
-
-[tool.ruff]
-line-length = 144
-target-version = "py312"
-exclude = ["dist/", "build/", ".venv/", "__pycache__/", ".mypy_cache/"]
-force-exclude = true
-
-[tool.bandit]
-exclude_dirs = ["dist", "build", ".venv", "__pycache__"]
-skips = ["B101", "B102"]
-tests = ["B301", "B501"]
-targets = ["src"]
-
-[tool.mypy]
-python_version = "3.12"
-ignore_missing_imports = true
-follow_imports = "silent"
-namespace_packages = true
-exclude = ["^dist($|/)", "^build($|/)", "^\\.venv($|/)", "^__pycache__($|/)"]
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unreachable = true
-strict = true
-
-[tool.pylint]
-max-line-length = 144
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "C90", "Q", "B", "I"]
-ignore = ["E203", "E501"]
-
-[tool.pylint.MASTER]
-ignore-paths = ["dist/", "build/", ".venv/", "__pycache__/", ".mypy_cache/"]
-
-[tool.pylint.DESIGN]
-max-parents = 10
-max-args = 15
-max-locals = 30
-
-[tool.pylint.messages_control]
-disable = [
-    "missing-module-docstring",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "too-many-instance-attributes",
-    "too-few-public-methods",
-    "invalid-name",
-    "too-many-ancestors",
-    "unexpected-keyword-arg",
-    "abstract-class-instantiated",
-]
-
-[tool.pytest.ini_options]
-pythonpath = "src"
-testpaths = ["tests"]
-
-[tool.coverage.run]
-branch = true
-source = ["src"]
-omit = ["tests/*", "src/**/__init__.py", "src/**/migrations/*"]
-
-[tool.coverage.report]
-fail_under = 90
-show_missing = true
-skip_covered = true
-exclude_lines = ["pragma: no cover", "if __name__ == .__main__.:"]
-
-[tool.coverage.html]
-directory = "htmlcov"
-
-[tool.coverage.xml]
-output = "coverage.xml"
-
-[tool.ruff.lint.per-file-ignores]
-"src/__init__.py" = ["F401"]
-"tests/**/*.py" = ["D"]
+url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple"
+publish-url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/"
