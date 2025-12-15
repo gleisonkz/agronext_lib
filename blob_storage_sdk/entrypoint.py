@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-
+import httpx
 from blob_storage_sdk import (
     BlobStorageSDK,
     DownloadFileResponse,
@@ -41,7 +41,7 @@ async def main() -> None:
     _extension = Path(file.filename).suffix
     document_id = f"{quotation_id}.{uuid4()}{_extension}"
     file_size = len(file)
-    upload_date = datetime.utcnow().isoformat()
+    upload_date = datetime.now().isoformat()
     metadata = {
         "id": document_id,
         "file_name": name,
@@ -51,6 +51,18 @@ async def main() -> None:
         "upload_date": upload_date,
         "quotation_id": quotation_id,
     }
+
+    signed_url = sdk.writer_signed_url(document_id)
+    print(f"Signed URL: {signed_url.url}")
+    async with httpx.AsyncClient() as client:
+        upload_response = await client.put(
+            signed_url.url,
+            content=await file.read(),
+            headers={"x-ms-blob-type": "BlockBlob", "Content-Type": file.content_type},
+        )
+        upload_response.raise_for_status()
+        print(f"Uploaded via signed URL with status: {upload_response.status_code}")
+
     upload_response: UploadFileResponse = await sdk.upload(file, document_id, metadata)
     print(f"Uploaded: {upload_response}")
 

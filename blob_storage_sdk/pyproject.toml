@@ -16,7 +16,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["fastapi>=0.116.1", "uvicorn>=0.35.0"]
+dev = [
+    "fastapi>=0.116.1",
+    "httpx>=0.28.1",
+    "uvicorn>=0.35.0",
+]
 
 quality = [
     "astroid>=3.3.9",
@@ -50,9 +54,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 fallback = true
 
-[tool.uv.sources]
-agronext-procurement-repositories = { path = "../../Repositories/agronext_procurement_repositories", editable = true }
-blob-storage-sdk = { path = "../../Lib/blob_storage_sdk", editable = true }
 
 [tool.isort]
 profile = "black"
