@@ -11,6 +11,7 @@ from httpx import (
     codes,
     URL,
 )
+from pydantic import TypeAdapter
 
 logger = logging.getLogger("async_client")
 
@@ -91,9 +92,8 @@ class BaseAsyncClient(AsyncClient):
         if response_model and (response.status_code in [codes.OK, codes.CREATED]):
             try:
                 response_json = response.json()
-                if isinstance(response_json, dict):
-                    return response_model(**response_json)
-                return response_model(response_json)
+                adapter = TypeAdapter(response_model)
+                return adapter.validate_python(response_json)
             except Exception as e:
                 print(e)
                 raise ResponseError(
