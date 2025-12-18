@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - development
+  paths:
+    include:
+      - agro_gis_sdk/**
+
+pr:
+  branches:
+    include:
+      - development
+  paths:
+    include:
+      - "agro_gis_sdk/**"
+
+pool:
+  name: "DAS-SGLA"
+
+variables:
+  - name: "package_path"
+    value: "agro_gis_sdk"
+
+resources:
+  repositories:
+    - repository: workflows
+      type: git
+      name: agronext_workflows
+
+jobs:
+  - template: integration.yml@workflows
+    parameters:
+      package_path: "$(package_path)"

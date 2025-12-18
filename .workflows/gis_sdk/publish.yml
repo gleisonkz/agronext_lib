@@ -1,10 +1,13 @@
-trigger:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - agronext_api/**
+# trigger:
+#   branches:
+#     include:
+#       - development
+#   paths:
+#     include:
+#       - agro_gis_sdk/**
+
+trigger: none
+pr: none
 
 pool:
   name: "DAS-SGLA"
@@ -12,7 +15,7 @@ pool:
 variables:
   - group: Credentials
   - name: "package_path"
-    value: "agronext_api"
+    value: "agro_gis_sdk"
 
 resources:
   repositories:
@@ -24,4 +27,3 @@ jobs:
   - template: publish.yml@workflows
     parameters:
       package_path: "$(package_path)"
-      patch: true

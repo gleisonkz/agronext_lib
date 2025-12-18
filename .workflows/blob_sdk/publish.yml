@@ -1,0 +1,29 @@
+# trigger:
+#   branches:
+#     include:
+#       - development
+#   paths:
+#     include:
+#       - blob_storage_sdk/**
+
+trigger: none
+pr: none
+
+pool:
+  name: "DAS-SGLA"
+
+variables:
+  - group: Credentials
+  - name: "package_path"
+    value: "blob_storage_sdk"
+
+resources:
+  repositories:
+    - repository: workflows
+      type: git
+      name: agronext_workflows
+
+jobs:
+  - template: publish.yml@workflows
+    parameters:
+      package_path: "$(package_path)"
