@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - development
+      - main
   paths:
     include:
       - agronext_api/**
@@ -9,7 +9,7 @@ trigger:
 pr:
   branches:
     include:
-      - development
+      - main
   paths:
     include:
       - "agronext_api/**"
