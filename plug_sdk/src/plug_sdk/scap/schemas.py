@@ -85,7 +85,9 @@ class AddressRequest(Address, PersonIDMixIn):
 
 class AddressResponse(AddressRequest, TimeStampMixIn, PartyResponseMixIn):
     state_description: DomainStateDescription = Field(alias="state_type_description")
-    address_description: DomainAddressDescription = Field(alias="address_type_description")
+    address_description: DomainAddressDescription = Field(
+        alias="address_type_description"
+    )
 
 
 class BankingDetails(IDMixIn):
@@ -122,7 +124,9 @@ class ContactInformationRequest(ContactInformation, PersonIDMixIn):
     pass
 
 
-class ContactInformationResponse(ContactInformationRequest, TimeStampMixIn, PartyResponseMixIn):
+class ContactInformationResponse(
+    ContactInformationRequest, TimeStampMixIn, PartyResponseMixIn
+):
     communication_type_description: DomainCommunicationDescription
 
 
@@ -164,8 +168,8 @@ class ListPartyRolesResponse(PersonIDMixIn):
 
 
 class Party(IDMixIn):
-    person_type: DomainPerson = Field(alias="person_type_id")
-    full_name: str
+    person_type: Optional[DomainPerson] = Field(alias="person_type_id", default=None)
+    full_name: Optional[str] = None
     preferred_name: Optional[str] = None
     company_name: Optional[str] = None
     document_number: Optional[str] = None
@@ -178,8 +182,12 @@ class Party(IDMixIn):
     annual_gross_income: Optional[float] = None
     net_worth: Optional[float] = None
     addresses: list[AddressResponse] = Field(default_factory=list)
-    contact_information: list[ContactInformationResponse] = Field(default_factory=list, alias="communications")
-    banking_details: list[BankingDetailsResponse] = Field(default_factory=list, alias="bank_accounts")
+    contact_information: list[ContactInformationResponse] = Field(
+        default_factory=list, alias="communications"
+    )
+    banking_details: list[BankingDetailsResponse] = Field(
+        default_factory=list, alias="bank_accounts"
+    )
     documents: list[DocumentResponse] = Field(default_factory=list)
     roles: list[Role] = Field(default_factory=list)
 
@@ -230,8 +238,12 @@ class SearchIncludeOptions(StrEnum):
 
 
 class BaseSearchParams(BaseModel):
-    page: Optional[int] = Field(default=1, ge=1, description="Page number for pagination.")
-    per_page: Optional[int] = Field(default=10, ge=1, le=100, description="Number of items per page for pagination.")
+    page: Optional[int] = Field(
+        default=1, ge=1, description="Page number for pagination."
+    )
+    per_page: Optional[int] = Field(
+        default=10, ge=1, le=100, description="Number of items per page for pagination."
+    )
     include: Optional[list[SearchIncludeOptions]] = Field(
         default=None,
         alias="with[]",
@@ -278,7 +290,9 @@ class ContactSearchParams(BaseSearchParams):
     contact: Optional[str] = None
 
 
-class PaginatedContactInformationResponse(PaginationResponse[ContactInformationResponse]):
+class PaginatedContactInformationResponse(
+    PaginationResponse[ContactInformationResponse]
+):
     pass
 
 

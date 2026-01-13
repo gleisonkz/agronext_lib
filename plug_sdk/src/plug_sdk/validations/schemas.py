@@ -14,7 +14,7 @@ class AddressLookupRequest(BaseModel):
 
 
 class PostalCodeLookupResponse(BaseModel):
-    cep: str = Field(alias="cep")
+    postal_code: str = Field(alias="cep")
     state: str = Field(alias="uf")
     locality_number: int = Field(alias="numeroLocalidade")
     city: str = Field(alias="localidade")
@@ -23,7 +23,7 @@ class PostalCodeLookupResponse(BaseModel):
     neighborhood: Optional[str] = Field(alias="bairro", default=None)
     abbreviation: Optional[str] = Field(alias="abreviatura", default=None)
     street_type: Optional[str] = Field(alias="tipoLogradouro", default=None)
-    cep_type: Optional[int] = Field(alias="tipoCEP", default=None)
+    postal_code_type: Optional[int] = Field(alias="tipoCEP", default=None)
     complement: Optional[str] = Field(alias="complemento", default=None)
     side: Optional[str] = Field(alias="lado", default=None)
     number_start: Optional[int] = Field(alias="numeroInicial", default=None)

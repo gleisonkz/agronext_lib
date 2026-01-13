@@ -10,6 +10,7 @@ from httpx import (
     RequestError,
     Response,
     codes,
+    TimeoutException,
 )
 
 logger = logging.getLogger("async_client")
