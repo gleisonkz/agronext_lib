@@ -104,11 +104,16 @@ wheels = [
 
 [[package]]
 name = "plug-sdk"
-version = "0.0.16"
+version = "0.0.17"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic", extra = ["email"] },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pydantic-settings" },
 ]
 
 [package.metadata]
@@ -118,7 +123,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = []
+dev = [{ name = "pydantic-settings", specifier = ">=2.12.0" }]
 
 [[package]]
 name = "pydantic"
@@ -201,6 +206,29 @@ wheels = [
     { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/5a/bd/389504c9e0600ef4502cd5238396b527afe6ef8981a6a15cd1814fc7b434/pydantic_core-2.41.1-graalpy312-graalpy250_312_native-macosx_11_0_arm64.whl", hash = "sha256:b3b7d9cfbfdc43c80a16638c6dc2768e3956e73031fca64e8e1a3ae744d1faeb" },
     { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/ff/9c/5111c6b128861cb792a4c082677e90dac4f2e090bb2e2fe06aa5b2d39027/pydantic_core-2.41.1-graalpy312-graalpy250_312_native-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eec83fc6abef04c7f9bec616e2d76ee9a6a4ae2a359b10c21d0f680e24a247ca" },
     { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/14/3f/cfec8b9a0c48ce5d64409ec5e1903cb0b7363da38f14b41de2fcb3712700/pydantic_core-2.41.1-graalpy312-graalpy250_312_native-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6771a2d9f83c4038dfad5970a3eef215940682b2175e32bcc817bdc639019b28" },
+]
+
+[[package]]
+name = "pydantic-settings"
+version = "2.12.0"
+source = { registry = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "typing-inspection" },
+]
+sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/43/4b/ac7e0aae12027748076d72a8764ff1c9d82ca75a7a52622e67ed3f765c54/pydantic_settings-2.12.0.tar.gz", hash = "sha256:005538ef951e3c2a68e1c08b292b5f2e71490def8589d4221b95dab00dafcfd0" }
+wheels = [
+    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/c1/60/5d4751ba3f4a40a6891f24eec885f51afd78d208498268c734e256fb13c4/pydantic_settings-2.12.0-py3-none-any.whl", hash = "sha256:fddb9fd99a5b18da837b29710391e945b1e30c135477f484084ee513adb93809" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.2.1"
+source = { registry = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple" }
+sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/f0/26/19cadc79a718c5edbec86fd4919a6b6d3f681039a2f6d66d14be94e75fb9/python_dotenv-1.2.1.tar.gz", hash = "sha256:42667e897e16ab0d66954af0e60a9caa94f0fd4ecf3aaf6d2d260eec1aa36ad6" }
+wheels = [
+    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/packages/packages/14/1b/a298b06749107c305e1fe0f814c6c74aea7b2f1e10989cb30f544a1b3253/python_dotenv-1.2.1-py3-none-any.whl", hash = "sha256:b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61" },
 ]
 
 [[package]]

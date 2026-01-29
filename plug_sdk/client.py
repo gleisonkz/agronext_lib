@@ -7,7 +7,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from plug_sdk.policy import (
     TransmissionData,
 )
-from plug_sdk.sdk import Applications, DomainTypes, EmailTemplateTypes, PlugSDK, SearchIncludeOptions
+from plug_sdk.sdk import (
+    Applications,
+    DomainTypes,
+    EmailTemplateTypes,
+    PlugSDK,
+    SearchIncludeOptions,
+)
+from plug_sdk.scap.schemas import Roles
 
 
 async def test_submit_quotation(
@@ -125,7 +132,7 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "INFO"
 
-    PLUG_API_KEY: str
+    PLUG_API_KEY: str = ""
 
 
 async def main():
@@ -197,7 +204,11 @@ async def main():
         {
             "name": "get_boleto",
             "fn": test_get_boleto,
-            "params": {"sdk": plug, "proposal_id": proposal_id, "installment": installment},
+            "params": {
+                "sdk": plug,
+                "proposal_id": proposal_id,
+                "installment": installment,
+            },
         },
         {
             "name": "get_federal_subsidy_limit",
@@ -359,5 +370,34 @@ async def main():
     print("✅ Done. Output saved to test_run_output.json")
 
 
+async def create_broker_user():
+    settings = Settings()
+    plug = PlugSDK(
+        base_url="http://uatplug.essor.net/",
+        credentials={"api_key": "XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce"},
+    )
+    # response = await plug.list_parties(
+    #     per_page=100,
+    #     include=[
+    #         SearchIncludeOptions.ROLES,
+    #         # SearchIncludeOptions.DOCUMENTS,
+    #         # SearchIncludeOptions.CONTACT,
+    #     ],
+    # )
+    response = await plug.list_brokers(per_page=1, page=1)
+    parties = response.data
+    brokers = [p for p in parties if any(r.id == Roles.BROKER for r in p.roles)]
+    broker = brokers[0] if brokers else None
+
+    if broker:
+        cnpj = broker.document_number
+        email = "teste@teste.com"
+        phone = "51997182626"
+        name = "Teste External User"
+        broker = await plug.get_legal_entity_details(cnpj=cnpj)
+        user = await plug.create_external_user(email=email, phone=phone, name=name)
+        print(f"User: {user.user_data.model_dump()}")
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(create_broker_user())

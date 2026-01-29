@@ -23,8 +23,6 @@ from .financial import (
     SubsidyLimitResponse,
 )
 from .legal_identity import (
-    BrokerRequest,
-    BrokerResponse,
     LegalEntityRequest,
     LegalEntityResponse,
     NaturalPersonRequest,
@@ -90,7 +88,9 @@ from .scap import (
     Party,
     PartyResponse,
     PartySearchParams,
+    Roles as RoleIDs,
     SearchIncludeOptions,
+    ERPPartySearchParams,
 )
 from .validations import (
     AddressLookupRequest,
@@ -330,13 +330,6 @@ class PlugSDK:
             trade_name=response.legal_entity.name,
             registration_date=response.legal_entity.registration_info.date,
             status=response.legal_entity.registration_info.status,
-        )
-
-    async def get_broker_details(self, cpf_cnpj: str) -> BrokerResponse:
-        request = BrokerRequest(cpf_cnpj=cpf_cnpj)
-        return await self.client.get(
-            endpoint=f"/v1/pessoas/corretores/{request.cpf_cnpj}",
-            response_model=BrokerResponse,
         )
 
     ## Notification Methods
@@ -708,4 +701,37 @@ class PlugSDK:
             endpoint="/unified-person-registry/v1/people/documents",
             params=params.model_dump(mode="json", by_alias=True, exclude_none=True),
             response_model=PaginatedDocumentResponse,
+        )
+
+    #
+    async def list_brokers(
+        self,
+        cpf_cnpj: Optional[str] = None,
+        email: Optional[str] = None,
+        phone: Optional[str] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+        include: Optional[list[SearchIncludeOptions]] = None,
+    ) -> PaginatedPartyResponse:
+        role_id = RoleIDs.BROKER.value
+        params = ERPPartySearchParams(
+            role_id=role_id,
+            document_number=cpf_cnpj,
+            email=email,
+            phone=phone,
+            page=page,
+            per_page=per_page,
+            include=[
+                i
+                for i in include
+                if i
+                not in [SearchIncludeOptions.PARTY, SearchIncludeOptions.PARTY_ROLES]
+            ]
+            if include
+            else None,
+        )
+        return await self.client.get(
+            endpoint="/unified-person-registry/v1/people/search",
+            params=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+            response_model=PaginatedPartyResponse,
         )

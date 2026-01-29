@@ -185,11 +185,12 @@ class Party(IDMixIn):
     contact_information: list[ContactInformationResponse] = Field(
         default_factory=list, alias="communications"
     )
-    banking_details: list[BankingDetailsResponse] = Field(
-        default_factory=list, alias="bank_accounts"
-    )
+    # banking_details: list[BankingDetailsResponse] = Field(
+    #     default_factory=list, alias="bank_accounts"
+    # )
     documents: list[DocumentResponse] = Field(default_factory=list)
     roles: list[Role] = Field(default_factory=list)
+    validation: Optional[dict[str, Any]] = None
 
 
 class PartyResponse(Party, TimeStampMixIn):
@@ -258,6 +259,13 @@ class PartySearchParams(BaseSearchParams):
     full_name: Optional[str] = None
     gender_type_id: Optional[DomainGender] = None
     person_type_id: Optional[DomainPerson] = None
+
+
+class ERPPartySearchParams(BaseSearchParams):
+    document_number: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role_id: Optional[Roles] = None
 
 
 class PaginatedPartyResponse(PaginationResponse[PartyResponse]):

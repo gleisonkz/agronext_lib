@@ -5,10 +5,6 @@ from enum import StrEnum
 from plug_sdk.base_model import BaseModel, Field
 
 
-class BrokerRequest(BaseModel):
-    cpf_cnpj: str = Field(alias="cpfCnpj", description="CPF or CNPJ of the broker")
-
-
 class NaturalPersonRequest(BaseModel):
     cpf: str = Field(alias="cpf", description="CPF of the natural person")
 
@@ -185,7 +181,3 @@ class NaturalPersonResponse(BaseModel):
     status: CpfRegularityStatus = Field(
         alias="situacao", description="Status of the naturalperson"
     )
-
-
-class BrokerResponse(BaseModel):
-    pass
