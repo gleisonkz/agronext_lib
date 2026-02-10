@@ -185,9 +185,9 @@ class Party(IDMixIn):
     contact_information: list[ContactInformationResponse] = Field(
         default_factory=list, alias="communications"
     )
-    # banking_details: list[BankingDetailsResponse] = Field(
-    #     default_factory=list, alias="bank_accounts"
-    # )
+    banking_details: list[BankingDetailsResponse] = Field(
+        default_factory=list, alias="bank_accounts"
+    )
     documents: list[DocumentResponse] = Field(default_factory=list)
     roles: list[Role] = Field(default_factory=list)
     validation: Optional[dict[str, Any]] = None
