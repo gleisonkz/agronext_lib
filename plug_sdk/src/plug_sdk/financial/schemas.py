@@ -81,6 +81,7 @@ class PartyCadinStatus(StrEnum):
     IN_GOOD_STANDING = "ADIMPLENTE"
     DELINQUENT = "INADIMPLENTE"
     NOT_LISTED = "NAO CONSTA"
+    NOT_VERIFIED = "NAO_VALIDADO"
 
 
 class CadinInsured(BaseModel):

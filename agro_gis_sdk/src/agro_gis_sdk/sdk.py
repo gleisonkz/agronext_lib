@@ -13,6 +13,7 @@ from .validations import (
     GISAllValidationsRequest,
     GISAllValidationsResponse,
 )
+from .schemas import GISBaseRequest
 
 Coordinates = tuple[float, float]
 Polygon = list[Coordinates]
@@ -34,7 +35,19 @@ class GisSDK:
         polygons: list[Polygon],
         property_location: Coordinates,
     ) -> list[GISAllValidationsResponse]:
-        request = GISAllValidationsRequest(polygons)
+        request_payload = []
+        for polygon in polygons:
+            request_payload.append(
+                GISBaseRequest(
+                    geometry=polygon,
+                    uf=None,
+                    city=None,
+                    city_percentage=None,
+                    product_type=None,
+                    max_overlap=None,
+                )
+            )
+        request = GISAllValidationsRequest(request_payload)
         return await self.client.post(
             endpoint="/validations/all",
             response_model=list[GISAllValidationsResponse],

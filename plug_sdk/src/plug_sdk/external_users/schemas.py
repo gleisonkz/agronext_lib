@@ -1,12 +1,17 @@
-from typing import Optional
+from typing import Optional, Any
 
 from plug_sdk.base_model import BaseModel, EmailStr, Field, RootModel
 
 
 class BaseUserResponse(BaseModel):
     id: str
-    email: EmailStr
     username: str
+    email: EmailStr
+    type_id: int
+    external_id: Optional[str] = Field(
+        default=None, description="ID of the user in the external system."
+    )
+    user_metadata: dict[str, Any]
 
 
 class ExternalUserResponse(BaseUserResponse):
@@ -14,7 +19,9 @@ class ExternalUserResponse(BaseUserResponse):
     name: str
     phone_number: str
     blocked: bool = Field(default=False)
-    user_metadata: Optional[dict] = Field(default=None, description="Metadata associated with the user.")
+    user_metadata: Optional[dict] = Field(
+        default=None, description="Metadata associated with the user."
+    )
 
 
 class CreateExternalUserRequest(BaseModel):
@@ -48,4 +55,7 @@ class FilterExternalUsersRequest(BaseModel):
 
 
 class FilterExternalUsersResponse(BaseModel):
-    data: list[ExternalUserResponse] = Field(default_factory=list, description="List of external users matching the filter criteria.")
+    data: list[ExternalUserResponse] = Field(
+        default_factory=list,
+        description="List of external users matching the filter criteria.",
+    )
