@@ -1,0 +1,24 @@
+[project]
+name = "agro-pdf-generator"
+version = "0.0.3"
+description = "Generic PDF generation library with automatic pagination"
+authors = [{ name = "AgroNext", email = "dev@agronext.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "weasyprint>=66.0",
+    "pydantic>=2.0.0",
+    "agronext-procurement==0.0.57",
+    "agronext-procurement-repositories>=0.0.50",
+]
+
+[tool.uv]
+[[tool.uv.index]]
+name = "artifactory"
+default = true
+allow-insecure = true
+url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple"
+publish-url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
