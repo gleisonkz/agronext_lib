@@ -33,18 +33,22 @@ class GisSDK:
     async def get_gis_report(
         self,
         polygons: list[Polygon],
-        property_location: Coordinates,
+        property_uf: Optional[str] = None,
+        property_city: Optional[str] = None,
+        city_percentage: Optional[float] = None,
+        product_type: Optional[str] = None,
+        max_overlap: Optional[float] = None,
     ) -> list[GISAllValidationsResponse]:
         request_payload = []
         for polygon in polygons:
             request_payload.append(
                 GISBaseRequest(
                     geometry=polygon,
-                    uf=None,
-                    city=None,
-                    city_percentage=None,
-                    product_type=None,
-                    max_overlap=None,
+                    uf=property_uf,
+                    city=property_city,
+                    city_percentage=city_percentage,
+                    product_type=product_type,
+                    max_overlap=max_overlap,
                 )
             )
         request = GISAllValidationsRequest(request_payload)
