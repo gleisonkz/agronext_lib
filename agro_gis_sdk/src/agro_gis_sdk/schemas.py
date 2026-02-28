@@ -3,6 +3,11 @@ from typing import List, Optional, Tuple
 from pydantic import BaseModel, Field, RootModel
 
 
+class CroquiPolygon(BaseModel):
+    label: str
+    coordinates: list[tuple[float, float]]
+
+
 class GISBaseRequest(BaseModel):
     geometry: List[Tuple[float, float]] = Field(..., description="Polygon to validate")
 
