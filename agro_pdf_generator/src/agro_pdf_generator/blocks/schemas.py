@@ -194,6 +194,7 @@ class BlockConfig(BaseModel):
 
     # IMAGE
     image_path: str = ""
+    image_bytes: bytes = b""  # raw bytes; renderer will base64 encode when present
     image_max_height: str = "400px"
 
     # CHECKBOX

@@ -342,9 +342,15 @@ class ProposalBlockBuilder:
         )
 
     def _build_croqui_block(self) -> BlockConfig | None:
-        if not self._data.croqui_image:
+        croqui = getattr(self._data, "croqui_bytes", None)
+        if not croqui:
             return None
-        return BlockConfig(type=BlockType.IMAGE, section_header="Croqui", estimated_height=400, image_path=self._data.croqui_image)
+        return BlockConfig(
+            type=BlockType.IMAGE,
+            section_header="Croqui",
+            estimated_height=400,
+            image_bytes=croqui,
+        )
 
     def _build_risk_questionnaire_block(self) -> BlockConfig:
         rq = self._data.risk_questionnaire

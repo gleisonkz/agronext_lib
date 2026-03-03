@@ -22,6 +22,7 @@ def build_quotation_data_from_domain(
     view: procurement.QuotationView,
     metadata: repositories.QuotationMetadata,
     broker_details: dict,
+    croqui_bytes: bytes,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
@@ -59,13 +60,12 @@ def build_quotation_data_from_domain(
         property=property_data,
         risk_data=risk_data,
         plot_coordinates=coords_data,
-        # croqui_image="???",
+        croqui_bytes=croqui_bytes,
         risk_questionnaire=risk_questionnaire_data,
         information_html_blocks=acceptance_data,
         grace_period_html=grace_period_data,
         coverage_restrictions_html=coverage_restrictions_data,
         available_documents_html=available_documents_data,
         excluded_risks_html=excluded_risks_data,
-        # total_pages=5,
     )
     return data

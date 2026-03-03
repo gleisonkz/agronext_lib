@@ -298,7 +298,7 @@ class PDFData:
     authorized_persons: list[AuthorizedPersonData] = field(default_factory=list)
     risk_data: list[list[str]] = field(default_factory=list)
     plot_coordinates: list[list[str]] = field(default_factory=list)
-    croqui_image: str = ""
+    croqui_bytes: bytes = b""
     additional_data: str = ""
     observations: str = ""
     grace_period_html: str = ""

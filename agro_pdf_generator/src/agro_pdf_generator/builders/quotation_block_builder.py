@@ -428,13 +428,16 @@ class QuotationBlockBuilder:
         )
 
     def _build_croqui_block(self) -> BlockConfig | None:
-        if not self._data.croqui_image:
+        # croqui_bytes is now raw image bytes.  refuse to build if empty.
+        croqui = getattr(self._data, "croqui_bytes", None)
+        if not croqui:
             return None
+        # provide bytes to the block; renderer will do the base64 conversion.
         return BlockConfig(
             type=BlockType.IMAGE,
             section_header="Croqui",
             estimated_height=400,
-            image_path=self._data.croqui_image,
+            image_bytes=croqui,
         )
 
     def _build_risk_questionnaire_block(self) -> BlockConfig:

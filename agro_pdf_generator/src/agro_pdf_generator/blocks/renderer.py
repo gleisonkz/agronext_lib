@@ -239,9 +239,20 @@ def _render_html_block(block: BlockConfig) -> str:
 
 
 def _render_image(block: BlockConfig) -> str:
-    if not block.image_path:
+    # The image may be provided either as a path/URI string or as raw bytes.
+    src = ""
+    if block.image_bytes:
+        # convert bytes to base64 data URI (assume PNG by convention)
+        import base64
+
+        b64 = base64.b64encode(block.image_bytes).decode("ascii")
+        src = f"data:image/png;base64,{b64}"
+    elif block.image_path:
+        src = block.image_path
+
+    if not src:
         return ""
-    return build_image_block(block.image_path)
+    return build_image_block(src)
 
 
 def _render_checkbox(block: BlockConfig) -> str:
