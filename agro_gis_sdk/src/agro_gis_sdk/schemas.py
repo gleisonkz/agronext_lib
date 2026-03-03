@@ -8,6 +8,28 @@ class CroquiPolygon(BaseModel):
     coordinates: list[tuple[float, float]]
 
 
+class CroquiOptions(BaseModel):
+    # image size and padding
+    width: int = 512
+    height: int = 384
+    pad_px: int = 40
+
+    # Google Static Maps
+    use_google_basemap: bool = True
+    maptype: str = "roadmap"  # "roadmap", "satellite", "hybrid", "terrain"
+    scale: int = 2  # 1 or 2 (2 gives higher-res)
+
+    # Polygon styling
+    outline_width: int = 2
+    outline_rgba: Tuple[int, int, int, int] = (0, 80, 200, 255)
+    fill_rgba: Tuple[int, int, int, int] = (0, 80, 200, 80)
+
+    # Label styling
+    label_fill_rgba: Tuple[int, int, int, int] = (0, 0, 0, 255)
+    label_bg_rgba: Tuple[int, int, int, int] = (255, 255, 255, 220)
+    label_padding_px: int = 6
+
+
 class GISBaseRequest(BaseModel):
     geometry: List[Tuple[float, float]] = Field(..., description="Polygon to validate")
 

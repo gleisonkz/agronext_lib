@@ -13,7 +13,7 @@ from .validations import (
     GISAllValidationsRequest,
     GISAllValidationsResponse,
 )
-from .schemas import GISBaseRequest, CroquiPolygon
+from .schemas import GISBaseRequest, CroquiPolygon, CroquiOptions
 
 Coordinates = tuple[float, float]
 Polygon = list[Coordinates]
@@ -116,6 +116,7 @@ class GisSDK:
     async def generate_croqui(
         self,
         polygons: list[CroquiPolygon],
+        options: CroquiOptions | None = None,
     ) -> bytes:
         """
         Generate a croqui (sketch/map) image from polygons.
@@ -126,13 +127,15 @@ class GisSDK:
         Returns:
             bytes: PNG image data
         """
-        payload = [
-            polygon.model_dump(mode="json")
-            for polygon in polygons
-        ]
-        return await self.client.post(
+        payload = {
+            "polygons": [polygon.model_dump(mode="json") for polygon in polygons],
+        }
+        if options:
+            payload["options"] = options.model_dump(mode="json") 
+
+        response = await self.client.post(
             endpoint="/polygons/generate-croqui",
-            response_model=bytes,
             payload=payload,
-            is_raw_response=True,
+            options={"timeout": 180},
         )
+        return response.content
