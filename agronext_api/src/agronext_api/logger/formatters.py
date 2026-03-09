@@ -2,6 +2,7 @@ import datetime as dt
 import json
 import logging
 from typing import Any
+from pythonjsonlogger.jsonlogger import JsonFormatter  # type: ignore
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",

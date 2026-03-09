@@ -10,8 +10,7 @@ from typing import Optional, Union, Dict
 from logging.handlers import QueueHandler, QueueListener
 from logging import Logger  # noqa: F401
 
-# Replace this with your real JSONFormatter
-from .formatters import JSONFormatter
+from pythonjsonlogger.jsonlogger import JsonFormatter  # type: ignore
 
 # ── 1) Filters ────────────────────────────────────────────────────────────────
 
@@ -97,7 +96,7 @@ def init_logger(
             h
             for h in root.handlers
             if isinstance(h, logging.StreamHandler)
-            and isinstance(h.formatter, JSONFormatter)
+            and isinstance(h.formatter, JsonFormatter)
         )
     else:
         # 3) Programmatic default setup
@@ -120,7 +119,7 @@ def init_logger(
 
         cloud_h = logging.StreamHandler(sys.stdout)
         cloud_h.setLevel(logging.WARNING)
-        cloud_h.setFormatter(JSONFormatter())
+        cloud_h.setFormatter(JsonFormatter())
 
         # attach the queue
         queue_h = QueueHandler(_log_queue)
