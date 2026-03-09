@@ -92,7 +92,13 @@ async def cpf_lookup(
     )
 
     # Non-blocking parallel wait
-    scap_info, details, technical_restrictions, cadin, federal_subsidy_limit = await asyncio.gather(
+    (
+        scap_info,
+        details,
+        technical_restrictions,
+        cadin,
+        federal_subsidy_limit,
+    ) = await asyncio.gather(
         task_scap,
         task_details,
         task_technical,
@@ -166,7 +172,13 @@ async def cnpj_lookup(
     )
 
     # Non-blocking parallel wait
-    scap_info, details, technical_restrictions, cadin, federal_subsidy_limit = await asyncio.gather(
+    (
+        scap_info,
+        details,
+        technical_restrictions,
+        cadin,
+        federal_subsidy_limit,
+    ) = await asyncio.gather(
         task_scap,
         task_details,
         task_technical,
@@ -187,19 +199,28 @@ async def main() -> str:
     ### === RUNTIME SETUP === ###
     PLUG_URL = "http://uatplug.essor.net/"
 
-    plug = PlugSDK(base_url=PLUG_URL, credentials={"api_key": "XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce"})
+    plug = PlugSDK(
+        base_url=PLUG_URL,
+        credentials={"api_key": "XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce"},
+    )
 
     email = "raphael.luzo@essor.com.br"
     cpf = "71166763099"
-    cpf = "01368766099"
+    # cpf = "01368766099"
     cnpj = "40929384000146"
     year = 2025
 
-    email_result = await email_lookup(email, plug, logger)
+    cadin = await plug.cadin_lookup(cpf)
+    logger.info(f"CADIN lookup for CPF {cpf}: {cadin}")
 
-    cpf_result = await cpf_lookup(cpf, year, plug, logger)
+    # email_result = await email_lookup(email, plug, logger)
+    # logger.info(f"Email lookup result: {email_result}")
 
-    cnpj_result = await cnpj_lookup(cnpj, year, plug, logger)
+    # cpf_result = await cpf_lookup(cpf, year, plug, logger)
+    # logger.info(f"CPF lookup result: {cpf_result}")
+
+    # cnpj_result = await cnpj_lookup(cnpj, year, plug, logger)
+    # logger.info(f"CNPJ lookup result: {cnpj_result}")
 
 
 if __name__ == "__main__":
