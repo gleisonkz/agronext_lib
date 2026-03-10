@@ -163,15 +163,23 @@ class CommissionParticipant(BaseModel):
     is_leader: int = Field(alias="lider", default=1)
     party_type: PartyType = Field(alias="tipoPessoa")
     document: str = Field(alias="cpfCnpj")
-    participation_percentage: float = Field(alias="percentualParticipacao", default=100.0)
-    commission_type_code: ComissionCodeType = Field(alias="codigoTipoComissao", default=ComissionCodeType.BROKERAGE)
-    inspector_code: int = Field(alias="codigoInspetor", default=1854)  # TODO: Check if this is always 1854
+    participation_percentage: float = Field(
+        alias="percentualParticipacao", default=100.0
+    )
+    commission_type_code: ComissionCodeType = Field(
+        alias="codigoTipoComissao", default=ComissionCodeType.BROKERAGE
+    )
+    inspector_code: int = Field(
+        alias="codigoInspetor", default=1854
+    )  # TODO: Check if this is always 1854
 
 
 class CommissionRules(BaseModel):
     percentage: float = Field(alias="percentual")
     commission_coefficient: float = Field(alias="coeficienteComissao", default=0.0)
-    participants: list[CommissionParticipant] = Field(alias="participantes", default_factory=list)
+    participants: list[CommissionParticipant] = Field(
+        alias="participantes", default_factory=list
+    )
 
 
 ### === COBRANÇA === ###
@@ -313,18 +321,36 @@ class Item(BaseModel):
     area: float = Field(alias="area")
     ton_value: float = Field(alias="valorTonelada")
     ##
-    ton_yield_value: float = Field(alias="valorRendimentoTonelada")  # TODO: Equal to ton_value? Why?
-    estimated_yield_value: float = Field(alias="valorRendimentoEstimado", default=3)  # TODO: It makes no sense to be 3 Why?
-    crop_ton_value: float = Field(alias="valorToneladaCultura")  # TODO: Equal to ton_value? Why?
+    ton_yield_value: float = Field(
+        alias="valorRendimentoTonelada"
+    )  # TODO: Equal to ton_value? Why?
+    estimated_yield_value: float = Field(
+        alias="valorRendimentoEstimado", default=3
+    )  # TODO: It makes no sense to be 3 Why?
+    crop_ton_value: float = Field(
+        alias="valorToneladaCultura"
+    )  # TODO: Equal to ton_value? Why?
     ##
     description: Optional[str] = Field(alias="descricao", default=None)
-    has_coverage: bool = Field(alias="indicadorCobertura", default=True)  # TODO: Check if this is always True Why?
-    sowing_date: Optional[date] = Field(alias="dataSemeadura", default=None)  # TODO: Check if this is always None Why?
-    paf_value: Optional[float] = Field(alias="valorPaf", default=None)  # TODO: Check if this is always None Why?
-    insured_value_per_ha: float = Field(alias="valorSeguradoHa", default=0.0)  # TODO: Check if this is always 0.0 Why?
+    has_coverage: bool = Field(
+        alias="indicadorCobertura", default=True
+    )  # TODO: Check if this is always True Why?
+    sowing_date: Optional[date] = Field(
+        alias="dataSemeadura", default=None
+    )  # TODO: Check if this is always None Why?
+    paf_value: Optional[float] = Field(
+        alias="valorPaf", default=None
+    )  # TODO: Check if this is always None Why?
+    insured_value_per_ha: float = Field(
+        alias="valorSeguradoHa", default=0.0
+    )  # TODO: Check if this is always 0.0 Why?
     age: int = Field(alias="idade", default=0)  # TODO: Check if this is always 0 Why?
-    guaranteed_fruit_number: int = Field(alias="numeroFrutoGarantido", default=0)  # TODO: Check if this is always 0 Why?
-    spacing: str = Field(alias="espacamento", default_factory=lambda: "X")  # TODO: dont even know where to start
+    guaranteed_fruit_number: int = Field(
+        alias="numeroFrutoGarantido", default=0
+    )  # TODO: Check if this is always 0 Why?
+    spacing: str = Field(
+        alias="espacamento", default_factory=lambda: "X"
+    )  # TODO: dont even know where to start
 
 
 ### === QUESTIONARIO === ###
@@ -345,7 +371,9 @@ class Question(BaseModel):
 
 class Questionnaire(BaseModel):
     coefficient: float = Field(alias="coeficiente", default=0.0)
-    answer_type: QuestionnaireResponseTypes = Field(alias="tipoResposta", default=QuestionnaireResponseTypes.ALPHANUMERIC)
+    answer_type: QuestionnaireResponseTypes = Field(
+        alias="tipoResposta", default=QuestionnaireResponseTypes.ALPHANUMERIC
+    )
     questions: list[Question] = Field(alias="perguntas")
 
 
@@ -405,13 +433,17 @@ class PartyDetails(BaseModel):
     birth_date: Optional[date] = Field(alias="dataNascimento", default=None)
     gender: Optional[str] = Field(alias="genero", default=None)
     marital_status: Optional[str] = Field(alias="estadoCivil", default=None)
-    identification_document: Optional[list[IdentificationDocument]] = Field(alias="documentoIdentificacao", default_factory=list)
+    identification_document: Optional[list[IdentificationDocument]] = Field(
+        alias="documentoIdentificacao", default_factory=list
+    )
 
 
 class PartyRole(BaseModel):
     role_code: PartyRoleCode = Field(alias="codigoPapel")
     # role_description: PartyRoleDescription = Field(alias="descricaoPapel")
-    participation_percentage: Optional[float] = Field(alias="percentualParticipacao", default=None)
+    participation_percentage: Optional[float] = Field(
+        alias="percentualParticipacao", default=None
+    )
 
     @computed_field(alias="descricaoPapel")
     @property
@@ -511,7 +543,9 @@ class PartyAddress(BaseModel):
     state_code: int = Field(alias="codigoUf")  # TODO: Get Codes
     street: str = Field(alias="endereco")
     complement: str = Field(alias="complemento")
-    address_type: int = Field(alias="tipoEndereco", default=1)  # TODO: Check if this is always 1 Why?
+    address_type: int = Field(
+        alias="tipoEndereco", default=1
+    )  # TODO: Check if this is always 1 Why?
     is_main_address: bool = Field(alias="enderecoPrincipal", default=True)
 
 
@@ -523,13 +557,15 @@ class LegalIdentity(BaseModel):
     document: str = Field(alias="cpfCnpj")
     details: PartyDetails = Field(alias="detalhes")
     roles: list[PartyRole] = Field(alias="papeis")
-    communication_methods: Optional[list[CommunicationMethod]] = Field(alias="meiosComunicacao", default=None)
+    communication_methods: Optional[list[CommunicationMethod]] = Field(
+        alias="meiosComunicacao", default=None
+    )
     addresses: Optional[list[PartyAddress]] = Field(alias="enderecos", default=None)
 
 
 class TransmissionData(BaseModel):
     harvest: int = Field(alias="safra")
-    quotation_id: str = Field(alias="numeroProposta", max_length=15)
+    proposal_id: str = Field(alias="numeroProposta", max_length=15)
     client_city_bacen_code: str = Field(alias="codigoBacenMunicipioCliente")
     product_code: int = Field(alias="codigoProduto")
     calculation_base_date: date = Field(alias="dataBaseCalculo")
@@ -544,7 +580,9 @@ class TransmissionData(BaseModel):
         alias="textoLivreEndosso",
         default=None,
     )
-    related_endorsement_id: Optional[int] = Field(alias="idEndossoRelacionado", default=None)
+    related_endorsement_id: Optional[int] = Field(
+        alias="idEndossoRelacionado", default=None
+    )
     related_endorsement_note: Optional[str] = Field(
         alias="textoLivreEndossoRelacionado",
         default=None,
