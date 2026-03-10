@@ -16,6 +16,8 @@ from .land_property import build_quotation_property
 from .payment import build_quotation_payment
 from .risk_data import build_quotation_risk_data
 from .risk_questionnaire import build_quotation_risk_questionnaire
+from .notifications import build_proponent_notifications
+from .declarations import build_declarations
 
 
 def build_quotation_data_from_domain(
@@ -50,6 +52,8 @@ def build_quotation_data_from_domain(
         ["101 - Granizo (Pêra)"]
     )
     excluded_risks_data = build_quotation_excluded_risks()
+    notifications_data = build_proponent_notifications()
+    declarations_data = build_declarations()
 
     data = PDFData(
         header=header_data,
@@ -67,5 +71,7 @@ def build_quotation_data_from_domain(
         coverage_restrictions_html=coverage_restrictions_data,
         available_documents_html=available_documents_data,
         excluded_risks_html=excluded_risks_data,
+        propopent_notifications_html_block=notifications_data,
+        declarations_and_commitments_html_block=declarations_data,
     )
     return data

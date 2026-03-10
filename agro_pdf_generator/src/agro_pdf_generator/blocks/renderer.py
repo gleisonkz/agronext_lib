@@ -2,28 +2,29 @@ from typing import Callable
 
 from agro_pdf_generator.config import Pagination
 
-from .schemas import BlockConfig, BlockType
 from .builders import (
-    build_logo,
-    build_info_table,
+    build_authorization_beneficiary,
+    build_authorization_term,
+    build_checkbox_list,
     build_data_table,
-    build_text_block,
+    build_date_line,
+    build_date_location_line,
+    build_federal_subsidy_term,
     build_html_block,
     build_image_block,
-    build_checkbox_list,
-    build_signature_block,
-    build_section_header,
-    build_authorization_term,
-    build_date_line,
-    build_signature_line,
-    build_date_location_line,
-    build_authorization_beneficiary,
+    build_info_table,
     build_lgpd_consent,
+    build_logo,
     build_proponent_declaration,
-    build_federal_subsidy_term,
-    build_state_subsidy_term,
+    build_section_header,
+    build_section_second_header,
+    build_signature_block,
+    build_signature_line,
     build_state_authorization_term,
+    build_state_subsidy_term,
+    build_text_block,
 )
+from .schemas import BlockConfig, BlockType
 
 BlockRenderer = Callable[[BlockConfig], str]
 
@@ -64,9 +65,13 @@ def render_blocks_to_pages(blocks: list[BlockConfig]) -> list[str]:
     header_repeat_stopped = False  # Flag para parar repetição de headers
 
     # Separate blocks: repeat on all pages, repeat on range, normal
-    repeat_all_blocks = [b for b in blocks if b.repeat_on_pages and not b.repeat_on_page_range]
+    repeat_all_blocks = [
+        b for b in blocks if b.repeat_on_pages and not b.repeat_on_page_range
+    ]
     repeat_range_blocks = [b for b in blocks if b.repeat_on_page_range]
-    normal_blocks = [b for b in blocks if not b.repeat_on_pages and not b.repeat_on_page_range]
+    normal_blocks = [
+        b for b in blocks if not b.repeat_on_pages and not b.repeat_on_page_range
+    ]
 
     # Helper to get repeat content for a specific page number
     def get_repeat_html_for_page(page_num: int) -> tuple[str, int]:
@@ -116,7 +121,9 @@ def render_blocks_to_pages(blocks: list[BlockConfig]) -> list[str]:
         block_height = _calculate_block_height(block)
 
         # Force page break if requested or if block doesn't fit
-        needs_break = block.force_page_break or _needs_page_break(current_height, block_height, current_page)
+        needs_break = block.force_page_break or _needs_page_break(
+            current_height, block_height, current_page
+        )
 
         if needs_break and len(current_page) > 0:
             pages.append("\n".join(current_page))
@@ -131,7 +138,15 @@ def render_blocks_to_pages(blocks: list[BlockConfig]) -> list[str]:
                 current_height = repeat_height
 
         if block.section_header:
-            current_page.append(build_section_header(block.section_header, block.section_header_pagination))
+            current_page.append(
+                build_section_header(
+                    block.section_header, block.section_header_pagination
+                )
+            )
+        if block.section_second_header:
+            current_page.append(
+                build_section_second_header(block.section_second_header)
+            )
 
         current_page.append(html)
         current_height += block_height
@@ -183,7 +198,13 @@ def _render_repeat_blocks(blocks: list[BlockConfig]) -> str:
     html_parts: list[str] = []
     for block in blocks:
         if block.section_header:
-            html_parts.append(build_section_header(block.section_header, block.section_header_pagination))
+            html_parts.append(
+                build_section_header(
+                    block.section_header, block.section_header_pagination
+                )
+            )
+        if block.section_second_header:
+            html_parts.append(build_section_second_header(block.section_second_header))
         html = render_block_to_html(block)
         if html:
             html_parts.append(html)
@@ -195,11 +216,18 @@ def _calculate_block_height(block: BlockConfig) -> int:
     height = block.estimated_height
     if block.section_header:
         height += Pagination.SECTION_HEADER_HEIGHT
+    if block.section_second_header:
+        height += Pagination.SECTION_HEADER_HEIGHT
     return height
 
 
-def _needs_page_break(current_height: int, block_height: int, current_page: list[str]) -> bool:
-    return current_height + block_height > Pagination.MAX_PAGE_HEIGHT and len(current_page) > 0
+def _needs_page_break(
+    current_height: int, block_height: int, current_page: list[str]
+) -> bool:
+    return (
+        current_height + block_height > Pagination.MAX_PAGE_HEIGHT
+        and len(current_page) > 0
+    )
 
 
 ## Private Renderers
@@ -212,7 +240,9 @@ def _render_logo(block: BlockConfig) -> str:
 
 
 def _render_info_table(block: BlockConfig) -> str:
-    return build_info_table(block.rows, no_margin=block.no_margin, row_gap_after=block.row_gap_after)
+    return build_info_table(
+        block.rows, no_margin=block.no_margin, row_gap_after=block.row_gap_after
+    )
 
 
 def _render_data_table(block: BlockConfig) -> str:
@@ -229,7 +259,9 @@ def _render_data_table(block: BlockConfig) -> str:
 def _render_text_block(block: BlockConfig) -> str:
     if not block.content:
         return ""
-    return build_text_block(block.content, bordered=block.text_bordered, bold=block.text_bold)
+    return build_text_block(
+        block.content, bordered=block.text_bordered, bold=block.text_bold
+    )
 
 
 def _render_html_block(block: BlockConfig) -> str:

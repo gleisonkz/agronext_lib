@@ -127,7 +127,7 @@ class Styles:
     HTML_BLOCK_TEXT = (
         f"font-family: {Fonts.FAMILY}; "
         f"font-weight: {Fonts.WEIGHT_NORMAL}; "
-        f"font-size: {Fonts.SIZE_LARGE}; "
+        f"font-size: {Fonts.SIZE_SMALL}; "
         f"line-height: {LineHeight.LOOSE}; "
         f"color: {Colors.PRIMARY};"
     )
@@ -170,7 +170,5 @@ class Styles:
     INFO_ROW = "display: flex;"
 
     INFO_CELL = (
-        f"padding: {Spacing.SM} {Spacing.MD}; "
-        "display: flex; "
-        "flex-direction: column;"
+        f"padding: {Spacing.SM} {Spacing.MD}; display: flex; flex-direction: column;"
     )

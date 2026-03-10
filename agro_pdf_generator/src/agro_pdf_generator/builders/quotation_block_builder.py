@@ -26,40 +26,9 @@ class QuotationBlockBuilder:
         if croqui:
             blocks.append(croqui)
 
-        # Na cotação, não incluímos: subvenção, beneficiários, pessoas autorizadas e observações
         blocks.append(self._build_risk_questionnaire_block())
-
-        # Add information blocks
-        blocks.extend(self._build_information_blocks())
-
-        # Add grace period block (after information)
-        grace_period = self._build_grace_period_block()
-        if grace_period:
-            blocks.append(grace_period)
-
-        # Add coverage restrictions block
-        coverage_restrictions = self._build_coverage_restrictions_block()
-        if coverage_restrictions:
-            blocks.append(coverage_restrictions)
-
-        # Add available documents block
-        available_documents = self._build_available_documents_block()
-        if available_documents:
-            blocks.append(available_documents)
-
-        # Add excluded risks block
-        excluded_risks = self._build_excluded_risks_block()
-        if excluded_risks:
-            blocks.append(excluded_risks)
-
-        # Na cotação, não incluímos:
-        # - authorization_term (Termo de Autorização para Pagamento)
-        # - authorization_beneficiary
-        # - lgpd_consent
-        # - proponent_declaration
-        # - federal_subsidy_term
-        # - state_subsidy_term
-        # - state_authorization_term
+        blocks.append(self._build_propopent_notifications())
+        blocks.append(self._build_declarations_and_commitments())
 
         return blocks
 
@@ -440,6 +409,39 @@ class QuotationBlockBuilder:
             image_bytes=croqui,
         )
 
+    def _build_declarations_and_commitments(self) -> BlockConfig:
+        html_content = self._data.declarations_and_commitments_html_block
+        estimated_lines = len(html_content) / 120
+        estimated_height = int(estimated_lines * 20 + html_content.count("</p>") * 8)
+        # Minimum height of 50px, no maximum cap to allow proper page breaks
+        estimated_height = max(50, estimated_height)
+
+        block = BlockConfig(
+            type=BlockType.HTML_BLOCK,
+            section_header="DECLARAÇÕES E COMPROMISSOS DO PROPONENTE RELACIONADAS À EXECUÇÃO E CONFORMIDADE CONTRATUAL",
+            estimated_height=estimated_height,
+            content=html_content,
+        )
+
+        return block
+
+    def _build_propopent_notifications(self) -> BlockConfig:
+
+        html_content = self._data.propopent_notifications_html_block
+        estimated_lines = len(html_content) / 120
+        estimated_height = int(estimated_lines * 20 + html_content.count("</p>") * 8)
+        # Minimum height of 50px, no maximum cap to allow proper page breaks
+        estimated_height = max(50, estimated_height)
+
+        block = BlockConfig(
+            type=BlockType.HTML_BLOCK,
+            section_header="Avisos Importantes para o Proponente",
+            estimated_height=estimated_height,
+            content=html_content,
+        )
+
+        return block
+
     def _build_risk_questionnaire_block(self) -> BlockConfig:
         rq = self._data.risk_questionnaire
 
@@ -458,7 +460,11 @@ class QuotationBlockBuilder:
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Questionário de Risco",
-            estimated_height=50 + len(rq.questions) * 60,
+            section_second_header=(
+                '<div style="font-weight: 600;">Atenção:</div>'
+                "<div>É fundamental que todas as informações fornecidas na formação do contrato de seguro sejam completas e precisas. O descumprimento do dever de informar pode resultar na perda de direitos ou na anulação do contrato de seguro. Caso tenha dúvidas sobre quais informações são relevantes, consulte nosso atendimento</div>"
+            ),
+            estimated_height=150 + len(rq.questions) * 60,
             rows=rows,
             force_page_break=True,
         )

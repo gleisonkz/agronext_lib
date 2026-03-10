@@ -165,6 +165,7 @@ class BlockConfig(BaseModel):
 
     type: BlockType
     section_header: str | None = None
+    section_second_header: str | None = None
     section_header_pagination: bool = False  # Se True, mostra paginação no section header
     estimated_height: int = 100
     repeat_on_pages: bool = False  # Se True, repete em todas as páginas

@@ -1,14 +1,15 @@
-from agro_pdf_generator.config import Colors, Fonts, LineHeight, Spacing, Layout, Styles
+from agro_pdf_generator.config import Colors, Fonts, Layout, LineHeight, Spacing, Styles
+
 from .schemas import (
-    DataTableVariant,
-    CheckboxAlign,
-    AuthorizationTermConfig,
     AuthorizationBeneficiaryConfig,
+    AuthorizationTermConfig,
+    CheckboxAlign,
+    DataTableVariant,
+    FederalSubsidyTermConfig,
     LgpdConsentConfig,
     ProponentDeclarationConfig,
-    FederalSubsidyTermConfig,
-    StateSubsidyTermConfig,
     StateAuthorizationTermConfig,
+    StateSubsidyTermConfig,
 )
 
 
@@ -24,7 +25,12 @@ def build_logo(logo_path: str) -> str:
     '''
 
 
-def build_info_table(rows: list[list[dict]], *, no_margin: bool = False, row_gap_after: list[int] | None = None) -> str:
+def build_info_table(
+    rows: list[list[dict]],
+    *,
+    no_margin: bool = False,
+    row_gap_after: list[int] | None = None,
+) -> str:
     if not rows:
         return ""
 
@@ -51,7 +57,11 @@ def build_info_table(rows: list[list[dict]], *, no_margin: bool = False, row_gap
         for row_idx, (i, row) in enumerate(group):
             is_last_row_in_group = row_idx == len(group) - 1
 
-            border_style = "" if is_last_row_in_group else f"border-bottom: 1px solid {Colors.BORDER};"
+            border_style = (
+                ""
+                if is_last_row_in_group
+                else f"border-bottom: 1px solid {Colors.BORDER};"
+            )
 
             cells_html = []
             for j, cell in enumerate(row):
@@ -62,10 +72,14 @@ def build_info_table(rows: list[list[dict]], *, no_margin: bool = False, row_gap
                 text_color = cell.get("text_color", "")
 
                 is_last_cell = j == len(row) - 1
-                cell_border = "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+                cell_border = (
+                    "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+                )
 
                 # Custom background and text colors for special cells
-                bg_style = f"background: {background_color};" if background_color else ""
+                bg_style = (
+                    f"background: {background_color};" if background_color else ""
+                )
 
                 # Override label and value styles if text_color is provided
                 if text_color:
@@ -96,7 +110,9 @@ def build_info_table(rows: list[list[dict]], *, no_margin: bool = False, row_gap
             ''')
 
         # Add margin-bottom to all groups except the last
-        group_margin = f"margin-bottom: {Spacing.XS};" if group_idx < len(groups) - 1 else ""
+        group_margin = (
+            f"margin-bottom: {Spacing.XS};" if group_idx < len(groups) - 1 else ""
+        )
 
         groups_html.append(f"""
             <div style="border: 1px solid {Colors.BORDER}; border-radius: {Layout.BORDER_RADIUS}; overflow: hidden; {group_margin}">
@@ -112,7 +128,10 @@ def build_info_table(rows: list[list[dict]], *, no_margin: bool = False, row_gap
 
 
 def build_data_table(
-    headers: list[str], rows: list[list[str]], widths: list[str] | None = None, variant: DataTableVariant = DataTableVariant.DEFAULT
+    headers: list[str],
+    rows: list[list[str]],
+    widths: list[str] | None = None,
+    variant: DataTableVariant = DataTableVariant.DEFAULT,
 ) -> str:
     if not rows:
         return ""
@@ -124,8 +143,14 @@ def build_data_table(
     effective_widths = widths or ["auto"] * col_count
 
     # Determine styles based on variant
-    use_small_font = variant in (DataTableVariant.SMALL_CENTERED_UPPERCASE, DataTableVariant.SMALL_CENTERED_NORMAL)
-    use_uppercase = variant in (DataTableVariant.CENTERED_UPPERCASE, DataTableVariant.SMALL_CENTERED_UPPERCASE)
+    use_small_font = variant in (
+        DataTableVariant.SMALL_CENTERED_UPPERCASE,
+        DataTableVariant.SMALL_CENTERED_NORMAL,
+    )
+    use_uppercase = variant in (
+        DataTableVariant.CENTERED_UPPERCASE,
+        DataTableVariant.SMALL_CENTERED_UPPERCASE,
+    )
     use_centered = variant != DataTableVariant.DEFAULT
 
     header_style = Styles.TABLE_HEADER_SMALL if use_small_font else Styles.TABLE_HEADER
@@ -143,7 +168,9 @@ def build_data_table(
         for i, h in enumerate(headers):
             width = effective_widths[i] if i < len(effective_widths) else "auto"
             is_last_cell = i == len(headers) - 1
-            border_right = "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+            border_right = (
+                "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+            )
             header_cells.append(f'''
                 <th style="{header_style} text-align: center; vertical-align: middle; {header_transform} {word_wrap} {cell_padding} width: {width}; border-bottom: 1px solid {Colors.BORDER}; {border_right}">
                     {h}
@@ -158,8 +185,12 @@ def build_data_table(
         for i, cell in enumerate(row):
             width = effective_widths[i] if i < len(effective_widths) else "auto"
             is_last_cell = i == len(row) - 1
-            border_bottom = "" if is_last_row else f"border-bottom: 1px solid {Colors.BORDER};"
-            border_right = "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+            border_bottom = (
+                "" if is_last_row else f"border-bottom: 1px solid {Colors.BORDER};"
+            )
+            border_right = (
+                "" if is_last_cell else f"border-right: 1px solid {Colors.BORDER};"
+            )
             cells.append(f'''
                 <td style="{cell_style} {cell_align} {word_wrap} {cell_padding} width: {width}; vertical-align: middle; {border_bottom} {border_right}">
                     {cell}
@@ -181,7 +212,9 @@ def build_text_block(content: str, *, bordered: bool = True, bold: bool = False)
     if not content:
         return ""
 
-    container_style = f"{Styles.BORDERED_CONTAINER} padding: {Spacing.MD};" if bordered else ""
+    container_style = (
+        f"{Styles.BORDERED_CONTAINER} padding: {Spacing.MD};" if bordered else ""
+    )
     font_weight = f"font-weight: {Fonts.WEIGHT_SEMIBOLD};" if bold else ""
 
     return f'''
@@ -196,9 +229,9 @@ def build_html_block(content: str) -> str:
         return ""
 
     return f'''
-        <div style="{Styles.HTML_BLOCK_TEXT} margin-bottom: {Spacing.LG};">
+        <div style="{Styles.HTML_BLOCK_TEXT} margin-bottom: {Spacing.LG}; padding: 0 {Spacing.LG}; box-sizing: border-box;">
             <style>
-                .html-block p {{ margin: 0 0 {Spacing.LG} 0; }}
+                .html-block p {{ margin: 0 0 {Spacing.MD} 0; }}
                 .html-block p:last-child {{ margin-bottom: 0; }}
                 .html-block a {{ color: inherit; text-decoration: underline; }}
             </style>
@@ -221,10 +254,18 @@ def build_image_block(image_path: str) -> str:
 
 
 def build_checkbox_item(
-    label: str, checked: bool = False, align: CheckboxAlign = CheckboxAlign.TOP, bold: bool = False, font_size: str | None = None
+    label: str,
+    checked: bool = False,
+    align: CheckboxAlign = CheckboxAlign.TOP,
+    bold: bool = False,
+    font_size: str | None = None,
 ) -> str:
     checkbox_style = Styles.CHECKBOX_CHECKED if checked else Styles.CHECKBOX_UNCHECKED
-    align_style = "align-items: flex-start;" if align == CheckboxAlign.TOP else "align-items: center;"
+    align_style = (
+        "align-items: flex-start;"
+        if align == CheckboxAlign.TOP
+        else "align-items: center;"
+    )
     bold_style = f"font-weight: {Fonts.WEIGHT_SEMIBOLD};" if bold else ""
 
     # Use custom font size if provided, otherwise use Styles.VALUE
@@ -249,11 +290,16 @@ def build_checkbox_item(
     '''
 
 
-def build_checkbox_list(items: list[dict], align: CheckboxAlign = CheckboxAlign.TOP) -> str:
+def build_checkbox_list(
+    items: list[dict], align: CheckboxAlign = CheckboxAlign.TOP
+) -> str:
     if not items:
         return ""
 
-    checkboxes = [build_checkbox_item(item.get("label", ""), item.get("checked", False), align) for item in items]
+    checkboxes = [
+        build_checkbox_item(item.get("label", ""), item.get("checked", False), align)
+        for item in items
+    ]
 
     return f'''
         <div style="{Styles.BORDERED_CONTAINER} padding: {Spacing.MD}; margin-bottom: {Spacing.LG};">
@@ -314,13 +360,30 @@ def build_section_header(title: str, show_pagination: bool = False) -> str:
 
     return f"""
         <div style="border: 1px solid {Colors.BORDER}; border-radius: {Layout.BORDER_RADIUS};
-                    height: 32px; padding: {Spacing.MD}; margin-bottom: {Spacing.MD}; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: 10px; height: 100%;">
+                    min-height: 32px; padding: {Spacing.MD}; margin-bottom: {Spacing.MD}; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                 <span style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM};
                             font-weight: {Fonts.WEIGHT_SEMIBOLD}; line-height: {LineHeight.NORMAL};
-                            color: {Colors.PRIMARY}; white-space: nowrap;">{title}</span>
-                <div style="flex: 1; height: 1px; background: {Colors.BORDER};"></div>
+                            color: {Colors.PRIMARY}; white-space: normal; word-wrap: break-word;">{title}</span>
+                <div style="flex: 1; height: 1px; background: {Colors.BORDER}; min-width: 80px;"></div>
                 {pagination_html}
+            </div>
+        </div>
+    """
+
+
+def build_section_second_header(title: str) -> str:
+    if not title:
+        return ""
+
+    return f"""
+        <div style="border: 1px solid {Colors.BORDER}; border-radius: {Layout.BORDER_RADIUS};
+                    min-height: 32px; padding: {Spacing.MD}; margin-bottom: {Spacing.MD}; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM};
+                            font-weight: {Fonts.WEIGHT_NORMAL}; line-height: {LineHeight.NORMAL};
+                            color: {Colors.PRIMARY}; white-space: normal; word-wrap: break-word;">{title}</span>
+                <div style="flex: 1; height: 1px; background: {Colors.BORDER}; min-width: 80px;"></div>
             </div>
         </div>
     """
@@ -533,7 +596,9 @@ def build_authorization_beneficiary(data: AuthorizationBeneficiaryConfig) -> str
     )
 
     # Beneficiary fields
-    beneficiary_fields_html = _build_fields_html(data.get("beneficiary_fields", []), Spacing.MD)
+    beneficiary_fields_html = _build_fields_html(
+        data.get("beneficiary_fields", []), Spacing.MD
+    )
 
     # Observation text (italic)
     observation_text = data.get("observation_text", "")
@@ -688,7 +753,9 @@ def build_proponent_declaration(data: ProponentDeclarationConfig) -> str:
     checkbox_text = data.get("checkbox_text", "")
     checkbox_checked = data.get("checkbox_checked", False)
     checkbox_align_str = data.get("checkbox_align", "top")
-    checkbox_align = CheckboxAlign.CENTER if checkbox_align_str == "center" else CheckboxAlign.TOP
+    checkbox_align = (
+        CheckboxAlign.CENTER if checkbox_align_str == "center" else CheckboxAlign.TOP
+    )
     checkbox_bold = data.get("checkbox_bold", False)
     checkbox_html = ""
     if checkbox_text:
@@ -706,9 +773,7 @@ def build_proponent_declaration(data: ProponentDeclarationConfig) -> str:
         center_label = triple_sig.get("center_label", "")
         right_label = triple_sig.get("right_label", "")
 
-        triple_sig_style = (
-            f"font-family: {Fonts.FAMILY}; font-weight: 400; font-size: 14px; line-height: 14px; text-align: center; color: {Colors.PRIMARY};"
-        )
+        triple_sig_style = f"font-family: {Fonts.FAMILY}; font-weight: 400; font-size: 14px; line-height: 14px; text-align: center; color: {Colors.PRIMARY};"
 
         triple_sig_html = f'''
             <div style="display: flex; margin-top: {Spacing.XL}; margin-bottom: {Spacing.LG}; border-top: 1px solid {Colors.BORDER}; border-bottom: 1px solid {Colors.BORDER}; height: 58px;">
@@ -849,7 +914,9 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
                     {decl}
                 </div>
             """
-        declarations_html = f'<div style="margin-bottom: {Spacing.LG};">{items_html}</div>'
+        declarations_html = (
+            f'<div style="margin-bottom: {Spacing.LG};">{items_html}</div>'
+        )
 
     # Data e assinatura
     signature_date_text = data.get("signature_date_text", "")
@@ -1005,10 +1072,14 @@ def build_state_subsidy_term(data: StateSubsidyTermConfig) -> str:
                     {decl}
                 </div>
             """
-        declarations_html = f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
+        declarations_html = (
+            f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
+        )
 
     # Data e local - usa o componente
-    date_location_html = build_date_location_line(date_location_text) if date_location_text else ""
+    date_location_html = (
+        build_date_location_line(date_location_text) if date_location_text else ""
+    )
 
     # Linha de assinatura
     signature_html = ""
@@ -1116,7 +1187,9 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
                     {decl}
                 </div>
             """
-        declarations_html = f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
+        declarations_html = (
+            f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
+        )
 
     # Data e local - texto centralizado simples
     date_location_html = ""

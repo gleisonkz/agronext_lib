@@ -313,4 +313,6 @@ class PDFData:
     state_subsidy_term: StateSubsidyTermData = field(default_factory=StateSubsidyTermData)
     state_authorization_term: StateAuthorizationTermData = field(default_factory=StateAuthorizationTermData)
     information_html_blocks: list[str] = field(default_factory=list)
+    propopent_notifications_html_block: str = ""
+    declarations_and_commitments_html_block: str = ""
     total_pages: int = 13

@@ -42,12 +42,18 @@ def build_quotation_risk_questionnaire(metadata: repositories.QuotationMetadata)
     else:
         other_culture_lands_question.answer = "Não"
 
+    conservation_unit_question = RiskQuestionItem(
+        question="Alguma parcela/talhão da área segurada está total ou parcialmente localizada em Unidade de Conservação (Federal/Estadual/Municipal), Áreas de Preservação Ambiental (exceto se houver aprovação oficial constante em plano de manejo), Área de Preservação Permanente, Reserva Legal, Área embargada por órgão ambiental (IBAMA, ICMBio ou órgão estadual/municipal), Terra Indígena, Território Quilombola ou qualquer área restrita, protegida ou embargada? (Estas informações são relevantes para a aceitação e precificação do seguro, conforme o art. 44 da Lei nº 15.040/2024. Omissões ou inexatidões podem implicar recusa da proposta, revisão de condições ou outras medidas previstas em lei e no contrato.)",
+        answer="Não"
+    )
+
     risk_questionnaire_data = RiskQuestionnaireData(
         questions=[
             another_insurance_question,
             pre_existing_damages_question,
             all_land_declared_question,
             other_culture_lands_question,
+            conservation_unit_question,
         ]
     )
     return risk_questionnaire_data
