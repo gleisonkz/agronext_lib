@@ -125,6 +125,7 @@ class QuestionCodes(IntEnum):
     PRE_EXISTING_DAMAGE = 109
     ANOTHER_PLOT_SAME_CROP = 106
     ANOTHER_INSURANCE = 107
+    ESG_COMPLIANT = 110
 
 
 ### === SUBVENÇÃO === ###
