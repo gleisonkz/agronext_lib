@@ -117,7 +117,7 @@ def create_router(
     :param tags: A list of strings for tagging routes.
     :return: An APIRouter instance.
     """
-    _prefix = prefix if prefix.startswith("/") else f"/{prefix}"
+    _prefix = f"/{prefix}" if prefix and not prefix.startswith("/") else prefix
     router = APIRouter(prefix=_prefix, tags=tags, **kwargs)
 
     return router
