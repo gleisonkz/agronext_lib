@@ -563,6 +563,7 @@ class PlugSDK:
     #
     async def list_parties(
         self,
+        person_id: Optional[str] = None,
         full_name: Optional[str] = None,
         birth_date: Optional[date] = None,
         document_number: Optional[str] = None,
@@ -574,6 +575,7 @@ class PlugSDK:
     ) -> PaginatedPartyResponse:
         """Retrieve paginated list of people"""
         params = PartySearchParams(
+            person_id=person_id,
             birth_date=birth_date,
             full_name=full_name,
             document_number=document_number,

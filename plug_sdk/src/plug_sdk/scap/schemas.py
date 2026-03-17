@@ -254,6 +254,7 @@ class BaseSearchParams(BaseModel):
 
 
 class PartySearchParams(BaseSearchParams):
+    person_id: Optional[str] = Field(alias="id", default=None)
     birth_date: Optional[date] = None
     document_number: Optional[str] = None
     full_name: Optional[str] = None
