@@ -102,8 +102,12 @@ class BaseAsyncClient(AsyncClient):
                     return response_model(**response_json)
                 return response_model(response_json)
             except Exception as e:
-                print(e)
-                raise ResponseError(f"Failed to parse response to {response_model}", response=response, exception=e) from None
+                logger.error(str(e))
+                raise ResponseError(
+                    f"Failed to parse response to {response_model}",
+                    response=response,
+                    exception=e,
+                ) from None
         return response
 
     async def _request(
@@ -130,9 +134,14 @@ class BaseAsyncClient(AsyncClient):
                 params=params,
                 **options,
             )
+            logger.info(
+                f"{method} {endpoint} - Status: {response.status_code} - Response: {response.text}"
+            )
             response = self._handle_response(response, response_model)
         except HTTPStatusError as e:
-            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            logger.error(
+                f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
+            )
             raise
         except RequestError as e:
             logger.error(f"An error occurred while requesting {e.request.url!r}.")

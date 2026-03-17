@@ -564,6 +564,7 @@ class PlugSDK:
     async def list_parties(
         self,
         person_id: Optional[str] = None,
+        role_ids: Optional[list[RoleIDs]] = None,
         full_name: Optional[str] = None,
         birth_date: Optional[date] = None,
         document_number: Optional[str] = None,
@@ -578,6 +579,7 @@ class PlugSDK:
             person_id=person_id,
             birth_date=birth_date,
             full_name=full_name,
+            role_id=role_ids,
             document_number=document_number,
             person_type_id=person_type_id,
             gender_type_id=gender_type_id,
@@ -709,6 +711,7 @@ class PlugSDK:
     async def list_brokers(
         self,
         cpf_cnpj: Optional[str] = None,
+        full_name: Optional[str] = None,
         email: Optional[str] = None,
         phone: Optional[str] = None,
         page: Optional[int] = None,
@@ -716,8 +719,10 @@ class PlugSDK:
         include: Optional[list[SearchIncludeOptions]] = None,
     ) -> PaginatedPartyResponse:
         role_id = RoleIDs.BROKER.value
+
         params = ERPPartySearchParams(
             role_id=role_id,
+            full_name=full_name,
             document_number=cpf_cnpj,
             email=email,
             phone=phone,
@@ -732,6 +737,7 @@ class PlugSDK:
             if include
             else None,
         )
+
         return await self.client.get(
             endpoint="/unified-person-registry/v1/people/search",
             params=params.model_dump(mode="json", by_alias=True, exclude_none=True),

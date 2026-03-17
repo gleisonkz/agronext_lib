@@ -258,12 +258,14 @@ class PartySearchParams(BaseSearchParams):
     birth_date: Optional[date] = None
     document_number: Optional[str] = None
     full_name: Optional[str] = None
+    role_id: Optional[list[Roles]] = None
     gender_type_id: Optional[DomainGender] = None
     person_type_id: Optional[DomainPerson] = None
 
 
 class ERPPartySearchParams(BaseSearchParams):
     document_number: Optional[str] = None
+    full_name: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     role_id: Optional[Roles] = None
