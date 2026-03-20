@@ -1,6 +1,10 @@
 from pydantic_settings import BaseSettings as PydanticBaseSettings
-from pydantic_settings import SettingsConfigDict
+from pydantic_settings import SettingsConfigDict  # noqa F401
+from pydantic import Field, computed_field
 
 
 class BaseSettings(PydanticBaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    pass
+
+
+__all__ = ["BaseSettings", "SettingsConfigDict", "Field", "computed_field"]

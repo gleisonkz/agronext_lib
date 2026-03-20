@@ -1,6 +1,6 @@
 [project]
 name = "agronext-api"
-version = "0.0.16"
+version = "0.0.17"
 description = "Opinionated FastAPI setup for Agronext services."
 readme = "README.md"
 requires-python = ">=3.12"

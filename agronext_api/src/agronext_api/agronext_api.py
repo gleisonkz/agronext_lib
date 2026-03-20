@@ -1,21 +1,18 @@
 from dataclasses import dataclass
-import inspect
 from collections.abc import Iterable
+from typing import AsyncGenerator, Awaitable, Callable, Optional, Any
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Awaitable, Callable, Optional
+import inspect
+import uvicorn
 
 from fastapi import (
     FastAPI,
     APIRouter,
     status,
-    Path,
-    Query,
 )
 from fastapi.responses import RedirectResponse
-import uvicorn
 
 from .apps.health_check.router import router as health_check_router
-from .config.settings import api_settings
 from .exceptions.base import StartupError, ShutdownError
 from .exceptions import init_error_handling
 from .extensions import init_extensions
@@ -36,19 +33,24 @@ class LifeSpanEvent:
     shutdown: LifecycleFn
 
 
-def create_lifespan_event(
+LIFESPAN_EVENTS_REGISTRY: list[LifeSpanEvent] = []
+
+
+def register_lifespan_event(
     startup: LifecycleFn,
     shutdown: LifecycleFn,
 ) -> LifeSpanEvent:
-    return LifeSpanEvent(
-        startup=startup,
-        shutdown=shutdown,
+    LIFESPAN_EVENTS_REGISTRY.append(
+        LifeSpanEvent(
+            startup=startup,
+            shutdown=shutdown,
+        )
     )
 
 
 class LifespanManager:
-    def __init__(self, custom_events: list[LifeSpanEvent]) -> None:
-        self.custom_events = custom_events
+    def __init__(self, events: list[LifeSpanEvent]) -> None:
+        self.events = events
 
     @asynccontextmanager
     async def __call__(self, app: FastAPI) -> AsyncGenerator:
@@ -61,7 +63,7 @@ class LifespanManager:
             # standard_startup_events
 
             ## Run custom startup events
-            for startup_event in (event.startup for event in self.custom_events):
+            for startup_event in (event.startup for event in self.events):
                 await startup_event() if inspect.iscoroutinefunction(
                     startup_event
                 ) else startup_event()
@@ -77,7 +79,7 @@ class LifespanManager:
         shutdown_errors = []
 
         ## Run custom shutdown events
-        for shutdown_event in (event.shutdown for event in self.custom_events):
+        for shutdown_event in (event.shutdown for event in self.events):
             try:
                 if inspect.iscoroutinefunction(shutdown_event):
                     await shutdown_event()
@@ -129,32 +131,25 @@ def create_api(
     title: str = "Agronext Backend API",
     version: str | None = None,
     description: str = "Backend for Agronext Platform",
-    custom_lifespan_events: Optional[Iterable[tuple[LifecycleFn, LifecycleFn]]] = None,
-    custom_extensions: Optional[dict[str, tuple[int, str]]] = None,
-    custom_exception_handlers: Optional[dict[str, tuple[int, str]]] = None,
-    custom_middlewares: Optional[list[tuple[str, str]]] = None,
+    log_level: str | int = DEBUG,
+    extensions: Optional[dict[str, tuple[int, str]]] = None,
+    exception_handlers: Optional[dict[str, tuple[int, str]]] = None,
+    middlewares: Optional[list[tuple[str, str]]] = None,
 ) -> FastAPI:
-    log_level = DEBUG if api_settings.DEBUG else api_settings.LOG_LEVEL
 
     init_logger(log_level)
-
-    lifespan_events = (
-        [create_lifespan_event(*event) for event in custom_lifespan_events]
-        if custom_lifespan_events
-        else []
-    )
 
     app = FastAPI(
         title=title,
         description=description,
         version=version,
-        lifespan=LifespanManager(lifespan_events),
+        lifespan=LifespanManager(LIFESPAN_EVENTS_REGISTRY),
     )
 
-    init_error_handling(app, custom_exception_handlers or [])
+    init_error_handling(app, exception_handlers or [])
     init_security(app)
-    init_middlewares(app, custom_middlewares or [])
-    init_extensions(app, custom_extensions or [])
+    init_middlewares(app, middlewares or [])
+    init_extensions(app, extensions or [])
 
     app.include_router(health_check_router)
 
@@ -176,10 +171,12 @@ def run(
     host: str,
     port: int,
     factory: bool,
+    **kwargs: Any,
 ) -> None:
     uvicorn.run(
         api,
         host=host,
         port=port,
         factory=factory,
+        **kwargs,
     )

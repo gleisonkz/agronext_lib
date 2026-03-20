@@ -2,7 +2,7 @@ from fastapi.exceptions import (
     HTTPException,
     RequestValidationError,
     ResponseValidationError,
-)  # noqa: F401
+)
 
 
 class BaseHTTPException(HTTPException):
@@ -35,3 +35,13 @@ class ShutdownError(Exception):
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.message = message
+
+
+__all__ = [
+    "BaseHTTPException",
+    "LifespanEventError",
+    "StartupError",
+    "ShutdownError",
+    "RequestValidationError",
+    "ResponseValidationError",
+]
