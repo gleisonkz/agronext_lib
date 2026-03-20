@@ -134,9 +134,9 @@ class BaseAsyncClient(AsyncClient):
                 params=params,
                 **options,
             )
-            logger.info(
-                f"{method} {endpoint} - Status: {response.status_code} - Response: {response.text}"
-            )
+            # logger.info(
+            #     f"{method} {endpoint} - Status: {response.status_code} - Response: {response.text}"
+            # )
             response = self._handle_response(response, response_model)
         except HTTPStatusError as e:
             logger.error(
