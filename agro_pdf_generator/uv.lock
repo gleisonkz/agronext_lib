@@ -4,7 +4,7 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "agro-pdf-generator"
-version = "0.0.7"
+version = "0.0.8"
 source = { editable = "." }
 dependencies = [
     { name = "agronext-procurement" },
@@ -15,24 +15,24 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agronext-procurement", specifier = ">=0.0.63" },
-    { name = "agronext-procurement-repositories", specifier = ">=0.0.64" },
+    { name = "agronext-procurement", specifier = ">=0.0.73" },
+    { name = "agronext-procurement-repositories", specifier = ">=0.0.77" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "weasyprint", specifier = ">=66.0" },
 ]
 
 [[package]]
 name = "agronext-procurement"
-version = "0.0.63"
+version = "0.0.73"
 source = { registry = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple" }
-sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement/0.0.63/agronext_procurement-0.0.63.tar.gz", hash = "sha256:b926da5c06fd52f3620b71a8003f6a1ad617a9026e7c90181224184003bb120f" }
+sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement/0.0.73/agronext_procurement-0.0.73.tar.gz", hash = "sha256:546ae0c6a1aea23e246212e97d5d05411e1aa2645061c6e1cbe0d8e2deadb622" }
 wheels = [
-    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement/0.0.63/agronext_procurement-0.0.63-py3-none-any.whl", hash = "sha256:dceec4294c70acaac829693cbe2c172af2f0c9ea581fbfe8d4c4319c90ea70cd" },
+    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement/0.0.73/agronext_procurement-0.0.73-py3-none-any.whl", hash = "sha256:0c4ad1f307ec08390374ef7af32fa28dd487d6edb1a98cd83e40ae70ee521e5d" },
 ]
 
 [[package]]
 name = "agronext-procurement-repositories"
-version = "0.0.64"
+version = "0.0.77"
 source = { registry = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple" }
 dependencies = [
     { name = "agronext-procurement" },
@@ -42,9 +42,9 @@ dependencies = [
     { name = "shapely" },
     { name = "sqlalchemy" },
 ]
-sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement-repositories/0.0.64/agronext_procurement_repositories-0.0.64.tar.gz", hash = "sha256:2188a67716a5dea37ff7552154e3bd44fee1d02626a4a907262809c2723eb03b" }
+sdist = { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement-repositories/0.0.77/agronext_procurement_repositories-0.0.77.tar.gz", hash = "sha256:cdb5c8b977ddccfab801648bb8c3264a0163171d856dad6b185de62ad187c7b8" }
 wheels = [
-    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement-repositories/0.0.64/agronext_procurement_repositories-0.0.64-py3-none-any.whl", hash = "sha256:fdbdafc92b80f7d9b905bd534896918030000f02635ab1a7253d5ffe655508d3" },
+    { url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/agronext-procurement-repositories/0.0.77/agronext_procurement_repositories-0.0.77-py3-none-any.whl", hash = "sha256:8eac61781e80eb2d4ec7b6abe2516d99f98af9f828d6df90cab4868dd263b80f" },
 ]
 
 [[package]]
