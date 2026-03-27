@@ -127,7 +127,7 @@ class Styles:
     HTML_BLOCK_TEXT = (
         f"font-family: {Fonts.FAMILY}; "
         f"font-weight: {Fonts.WEIGHT_NORMAL}; "
-        f"font-size: {Fonts.SIZE_SMALL}; "
+        f"font-size: {Fonts.SIZE_NORMAL}; "
         f"line-height: {LineHeight.LOOSE}; "
         f"color: {Colors.PRIMARY};"
     )
