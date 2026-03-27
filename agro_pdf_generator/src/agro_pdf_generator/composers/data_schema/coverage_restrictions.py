@@ -1,4 +1,4 @@
-def build_quotation_coverage_restrictions() -> str:
+def build_coverage_restrictions() -> str:
     # Coverage restrictions information
     coverage_restrictions_information = [
         "Para fins da Cláusula 8.1 - alínea d das Condições Gerais do Seguro, ",

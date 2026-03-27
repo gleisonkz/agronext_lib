@@ -131,7 +131,10 @@ class ProposalBlockBuilder:
                     {"label": "SUSEP", "value": h.susep, "width": "25%"},
                     {"label": "Código MAPA", "value": h.mapa_code, "width": "25%"},
                 ],
-                [{"label": "Proposta N°", "value": h.proposal_number, "width": "50%"}, {"label": "Apólice", "value": h.policy, "width": "50%"}],
+                [
+                    {"label": "Proposta N°", "value": h.proposal_number, "width": "50%"}, 
+                    {"label": "Apólice", "value": h.policy, "width": "50%"}
+                ],
             ],
         )
 
@@ -584,7 +587,7 @@ class ProposalBlockBuilder:
         return [
             BlockConfig(
                 type=BlockType.AUTHORIZATION_TERM,
-                section_header="Termo de Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
+                section_header="Termo Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
                 estimated_height=600,
                 authorization_term={
                     "fields": [

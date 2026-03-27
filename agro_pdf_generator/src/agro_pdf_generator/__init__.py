@@ -1,8 +1,8 @@
 from .builders.proposal_block_builder import ProposalBlockBuilder
 from .builders.quotation_block_builder import QuotationBlockBuilder
-from .generator import PdfGenerator
-from .composers.pdf_generator.pdf_composer import generate_quotation_pdf
 from .composers.data_schema.schema_composer import build_quotation_data_from_domain
+from .composers.pdf_generator.pdf_composer import generate_quotation_pdf
+from .generator import PdfGenerator
 from .schemas import (
     AddressData,
     ApplicantData,
@@ -25,6 +25,7 @@ from .schemas import (
     RiskQuestionItem,
     RiskQuestionnaireData,
     StateAuthorizationTermData,
+    StateSubsidyTermData,
     SubsidyData,
     SubsidyQuestionItem,
 )
@@ -40,6 +41,7 @@ __all__ = [
     "ModalityOption",
     "PDFData",
     "StateAuthorizationTermData",
+    "StateSubsidyTermData",
     "ProponentDeclarationData",
     "LgpdConsentData",
     "AuthorizationBeneficiaryData",

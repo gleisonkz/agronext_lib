@@ -3,7 +3,7 @@ import agronext_procurement_repositories as repositories
 from ...schemas import RiskQuestionItem, RiskQuestionnaireData
 
 
-def build_quotation_risk_questionnaire(
+def build_risk_questionnaire(
     metadata: repositories.QuotationMetadata,
 ) -> RiskQuestionnaireData:
     # Risk questionnaire

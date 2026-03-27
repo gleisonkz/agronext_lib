@@ -3,7 +3,7 @@ import agronext_procurement as procurement
 from ...schemas import ApplicantData
 
 
-def build_quotation_applicant(view: procurement.QuotationView) -> ApplicantData:
+def build_applicant(view: procurement.QuotationView) -> ApplicantData:
 
     # Applicant
     applicant_data = ApplicantData(
@@ -26,6 +26,9 @@ def build_quotation_applicant(view: procurement.QuotationView) -> ApplicantData:
         identity = view.applicant.identity
 
         applicant_data.name = identity.full_name
+        applicant_data.marital_status = (
+            identity.marital_status if identity.marital_status else ""
+        )
         applicant_data.cpf = identity.cpf.number
         applicant_data.birth_date = identity.birth_date.strftime("%d/%m/%Y")
         applicant_data.social_name = identity.social_name or ""

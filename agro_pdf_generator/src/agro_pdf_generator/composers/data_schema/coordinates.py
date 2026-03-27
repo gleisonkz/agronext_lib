@@ -1,7 +1,7 @@
 from agronext_procurement.views.common import PropertyView, CoordinatesView
 
 
-def build_quotation_coordinates(properties: list[PropertyView]) -> list[list[str]]:
+def build_coordinates(properties: list[PropertyView]) -> list[list[str]]:
     coordinates_data: list[list[str]] = []
     if not properties:
         return coordinates_data

@@ -1,4 +1,4 @@
-def build_quotation_acceptance() -> list[str]:
+def build_acceptance() -> list[str]:
     # Acceptance information
     acceptance_information = [
         """<p>A aceitação do seguro estará sujeita à análise do risco.</p>

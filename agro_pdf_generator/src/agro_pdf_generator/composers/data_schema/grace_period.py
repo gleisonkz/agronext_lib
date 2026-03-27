@@ -1,4 +1,4 @@
-def build_quotation_grace_period() -> str:
+def build_grace_period() -> str:
     # Grace period information
     grace_period_information = [
         "CARÊNCIA DA COBERTURA PRINCIPAL:",

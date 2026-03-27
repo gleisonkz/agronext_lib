@@ -1,7 +1,7 @@
 from agronext_procurement.views.common import CoverageFinancialsView, PropertyView
 
 
-def build_quotation_risk_data(
+def build_risk_data(
     properties: list[PropertyView],
     financials: CoverageFinancialsView,
 ) -> list[list[str]]:
@@ -14,7 +14,9 @@ def build_quotation_risk_data(
         for crop_fields in prop.crop_fields:
             for i, plot in enumerate(crop_fields.plots, start=1):
                 for plot_item in plot.items:
-                    partial_deductible = financials.deductible_details.percentage * plot_item.total_value
+                    partial_deductible = (
+                        financials.deductible_details.percentage * plot_item.total_value
+                    )
                     partial_premium = plot_item.total_value * financials.coverage_rate
                     risk_data.append(
                         [

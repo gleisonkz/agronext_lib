@@ -1,4 +1,4 @@
-def build_quotation_excluded_risks() -> str:
+def build_excluded_risks() -> str:
     # Excluded risks information
     excluded_risks_information = [
         "Conforme Cláusula 4 das Condições Gerais do Seguro:",

@@ -883,10 +883,11 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
         letters = "abcdefghijklmnopqrstuvwxyz"
         for i, opt in enumerate(modality_options):
             label = opt.get("label", "")
+            checked = opt.get("checked", False)
             letter = letters[i] if i < len(letters) else str(i + 1)
             items_html += f"""
                 <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-bottom: 4px;">
-                    {letter}) ( ) {label}
+                    {letter}) ({"X" if checked else " "}) {label}
                 </div>
             """
         modality_html = f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
@@ -1202,23 +1203,34 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
             </div>
         """
 
-    # Linha de assinatura com Nome e CPF abaixo
+    # Linha de assinatura com texto e Nome/CPF abaixo
     signature_html = ""
-    if name_cpf_text:
+    if name_cpf_text or signature_text:
+        signature_label_html = ""
+        if signature_text:
+            signature_label_html = f"""
+                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; text-align: center; margin-bottom: {Spacing.SM};">
+                    {signature_text}
+                </div>
+            """
+
         # Linha horizontal de assinatura (sem texto)
         signature_line = f"""
             <div style="border-top: 1px solid {Colors.BORDER}; width: 500px; margin: 0 auto; margin-bottom: {Spacing.MD};">
             </div>
         """
 
-        name_line = f"""
-            <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; text-align: center;">
-                {name_cpf_text}
-            </div>
-        """
+        name_line = ""
+        if name_cpf_text:
+            name_line = f"""
+                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; text-align: center;">
+                    {name_cpf_text}
+                </div>
+            """
 
         signature_html = f"""
             <div style="text-align: center; margin-top: {Spacing.LG};">
+                {signature_label_html}
                 {signature_line}
                 {name_line}
             </div>
