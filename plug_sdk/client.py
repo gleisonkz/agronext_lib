@@ -374,7 +374,7 @@ async def create_broker_user():
     settings = Settings()
     plug = PlugSDK(
         base_url="http://uatplug.essor.net/",
-        credentials={"api_key": "XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce"},
+        credentials={"api_key": settings.PLUG_API_KEY},
     )
     # response = await plug.list_parties(
     #     per_page=100,

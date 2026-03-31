@@ -1,6 +1,6 @@
 import asyncio
 import logging
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from plug_sdk import PlugSDK
 
 logging.basicConfig(level=logging.DEBUG)
@@ -195,13 +195,23 @@ async def cnpj_lookup(
     }
 
 
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    DEBUG: bool = True
+
+    LOG_LEVEL: str = "INFO"
+
+    PLUG_API_KEY: str = ""
+
+
 async def main() -> str:
     ### === RUNTIME SETUP === ###
+    settings = Settings()
     PLUG_URL = "http://uatplug.essor.net/"
 
     plug = PlugSDK(
         base_url=PLUG_URL,
-        credentials={"api_key": "XXU2YDUcRhxJqXWwPkMyW7JA5Kba3T1CIj9EZo6S4d44a7ce"},
+        credentials={"api_key": settings.PLUG_API_KEY},
     )
 
     email = "raphael.luzo@essor.com.br"
