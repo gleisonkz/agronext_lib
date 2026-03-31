@@ -1,6 +1,6 @@
 [project]
 name = "agro-pdf-generator"
-version = "0.0.8"
+version = "0.0.9"
 description = "Generic PDF generation library with automatic pagination"
 authors = [{ name = "AgroNext", email = "dev@agronext.com" }]
 requires-python = ">=3.12"
