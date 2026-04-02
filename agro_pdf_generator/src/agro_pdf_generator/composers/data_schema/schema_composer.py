@@ -58,6 +58,7 @@ def build_quotation_data_from_domain(
     payment_data = build_quotation_payment(
         metadata=metadata,
         financials=financials,
+        broker_data=broker_data,
         coverage_data=coverage_data,
     )
 
