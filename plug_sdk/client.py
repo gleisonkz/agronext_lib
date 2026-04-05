@@ -94,7 +94,7 @@ async def test_get_legal_entity_details(sdk: PlugSDK, cnpj: str):
 
 
 async def test_send_email(sdk: PlugSDK):
-    return await sdk.send_email(
+    response = await sdk.send_email(
         application=Applications.AGRONEXT,
         template=EmailTemplateTypes.EXTERNAL,
         subject="Test Email",
@@ -112,6 +112,7 @@ async def test_send_email(sdk: PlugSDK):
             },
         ],
     )
+    print(f"Email send response: {response}")
 
 
 def capture_response_error(func):
@@ -139,7 +140,7 @@ async def main():
     settings = Settings()
     plug = PlugSDK(
         base_url="http://uatplug.essor.net/",
-        credentials={"api_key": settings.PLUG_API_KEY},
+        # credentials={"api_key": settings.PLUG_API_KEY},
     )
 
     with open("tests/fixtures/valid_transmission_data.json") as f:
@@ -400,4 +401,9 @@ async def create_broker_user():
 
 
 if __name__ == "__main__":
-    asyncio.run(create_broker_user())
+    settings = Settings()
+    plug_client = PlugSDK(
+        base_url="http://uatplug.essor.net/",
+        credentials={"api_key": settings.PLUG_API_KEY},
+    )
+    asyncio.run(test_send_email(plug_client))

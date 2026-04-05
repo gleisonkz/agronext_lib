@@ -707,35 +707,16 @@ class PlugSDK:
             response_model=PaginatedDocumentResponse,
         )
 
-    #
-    async def list_brokers(
+    ## Utils
+    async def update_scap(
         self,
         cpf_cnpj: Optional[str] = None,
-        full_name: Optional[str] = None,
-        email: Optional[str] = None,
-        phone: Optional[str] = None,
-        page: Optional[int] = None,
-        per_page: Optional[int] = None,
-        include: Optional[list[SearchIncludeOptions]] = None,
     ) -> PaginatedPartyResponse:
-        role_id = RoleIDs.BROKER.value
+        role_id = RoleIDs.CLIENT.value
 
         params = ERPPartySearchParams(
             role_id=role_id,
-            full_name=full_name,
             document_number=cpf_cnpj,
-            email=email,
-            phone=phone,
-            page=page,
-            per_page=per_page,
-            include=[
-                i
-                for i in include
-                if i
-                not in [SearchIncludeOptions.PARTY, SearchIncludeOptions.PARTY_ROLES]
-            ]
-            if include
-            else None,
         )
 
         return await self.client.get(

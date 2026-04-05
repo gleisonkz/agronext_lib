@@ -215,13 +215,13 @@ async def main() -> str:
     )
 
     email = "raphael.luzo@essor.com.br"
-    cpf = "71166763099"
-    # cpf = "01368766099"
-    cnpj = "40929384000146"
+    # cpf = "71166763099"
+    cpf = "01368766099"
+    cnpj = "49598227000170"
     year = 2025
 
-    cadin = await plug.cadin_lookup(cpf)
-    logger.info(f"CADIN lookup for CPF {cpf}: {cadin}")
+    cadin = await plug.update_scap(cnpj)
+    logger.info(f"UPDATE Scap CPF {cpf}: {cadin}")
 
     # email_result = await email_lookup(email, plug, logger)
     # logger.info(f"Email lookup result: {email_result}")
