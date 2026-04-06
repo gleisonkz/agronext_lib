@@ -16,7 +16,7 @@ def build_proposal_beneficiaries(
         identity = b.identity
 
         name = identity.full_name
-        cpf = identity.cpf
+        cpf = identity.cpf.number
         birth_date = identity.birth_date
         if hasattr(birth_date, "strftime"):
             birth_date = birth_date.strftime("%d/%m/%Y")
