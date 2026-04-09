@@ -10,6 +10,7 @@ class CellConfig(TypedDict, total=False):
 
 @dataclass
 class ApplicantData:
+    # TODO: Create a LegalEntityApplicantData and NaturalPersonApplicantData if needed, to avoid having so many optional fields in this class
     name: str = ""
     cpf: str = ""
     birth_date: str = ""
@@ -125,6 +126,7 @@ class SubsidyData:
 
 @dataclass
 class BeneficiaryData:
+    # TODO: Create a LegalEntityBeneficiaryData and NaturalPersonBeneficiaryData if needed, to avoid having so many optional fields in this class
     name: str = ""
     cpf: str = ""
     birth_date: str = ""
