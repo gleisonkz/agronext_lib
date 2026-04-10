@@ -1,3 +1,5 @@
+from datetime import date
+
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
 from ..schemas import PDFData
@@ -142,7 +144,11 @@ class ProposalBlockBuilder:
                 ],
                 [
                     {"label": "Seguradora", "value": h.insurer, "width": "25%"},
-                    {"label": "CNPJ", "value": h.insurer_cnpj, "width": "25%"},
+                    {
+                        "label": "CNPJ",
+                        "value": self._format_cpf_or_cnpj(h.insurer_cnpj),
+                        "width": "25%",
+                    },
                     {"label": "SUSEP", "value": h.susep, "width": "25%"},
                     {"label": "Código MAPA", "value": h.mapa_code, "width": "25%"},
                 ],
@@ -166,7 +172,11 @@ class ProposalBlockBuilder:
             rows=[
                 [
                     {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
-                    {"label": "CPF", "value": p.cpf, "width": "25%"},
+                    {
+                        "label": "CPF",
+                        "value": self._format_cpf_or_cnpj(p.cpf),
+                        "width": "25%",
+                    },
                     {
                         "label": "Data de nascimento",
                         "value": p.birth_date,
@@ -225,7 +235,11 @@ class ProposalBlockBuilder:
             estimated_height=120,
             rows=[
                 [
-                    {"label": "CEP", "value": e.zip_code, "width": "20%"},
+                    {
+                        "label": "CEP",
+                        "value": self._format_zip_code(e.zip_code),
+                        "width": "20%",
+                    },
                     {"label": "País", "value": e.country, "width": "20%"},
                     {"label": "Estado", "value": e.state, "width": "20%"},
                     {"label": "Município", "value": e.city, "width": "20%"},
@@ -433,7 +447,11 @@ class ProposalBlockBuilder:
                     {"label": "Coordenadas", "value": prop.coordinates, "width": "25%"},
                 ],
                 [
-                    {"label": "Cep", "value": prop.zip_code, "width": "20%"},
+                    {
+                        "label": "Cep",
+                        "value": self._format_zip_code(prop.zip_code),
+                        "width": "20%",
+                    },
                     {"label": "País", "value": prop.country, "width": "20%"},
                     {"label": "Estado", "value": prop.state, "width": "20%"},
                     {"label": "Município", "value": prop.city, "width": "20%"},
@@ -572,7 +590,11 @@ class ProposalBlockBuilder:
                         "value": b.name,
                         "width": "25%",
                     },
-                    {"label": "CPF", "value": b.cpf, "width": "25%"},
+                    {
+                        "label": "CPF",
+                        "value": self._format_cpf_or_cnpj(b.cpf),
+                        "width": "25%",
+                    },
                     {
                         "label": "Data de nascimento",
                         "value": b.birth_date,
@@ -773,6 +795,8 @@ class ProposalBlockBuilder:
 
     def _build_authorization_term_block(self) -> list[BlockConfig]:
         term = self._data.authorization_term
+        current_year = date.today().year
+
         if not term.applicant_name:
             return []
 
@@ -807,7 +831,7 @@ class ProposalBlockBuilder:
                         },
                     ],
                     "closing_text": term.ratification_text,
-                    "date_text": "_________________________, _________________________ de 2025.",
+                    "date_text": f"_________________________, _________________________ de {current_year}.",
                     "signature_text": "Assinatura do proponente ou corretor",
                 },
             )
@@ -815,6 +839,7 @@ class ProposalBlockBuilder:
 
     def _build_authorization_beneficiary_block(self) -> list[BlockConfig]:
         ben = self._data.authorization_beneficiary
+        current_year = date.today().year
         if not ben.beneficiary_name:
             return []
 
@@ -839,7 +864,10 @@ class ProposalBlockBuilder:
                             "label": "Nome do beneficiário",
                             "value": ben.beneficiary_full_name,
                         },
-                        {"label": "CPF", "value": ben.beneficiary_cpf},
+                        {
+                            "label": "CPF",
+                            "value": self._format_cpf_or_cnpj(ben.beneficiary_cpf),
+                        },
                         {
                             "label": "Relação do favorecido",
                             "value": ben.beneficiary_relationship,
@@ -887,7 +915,7 @@ class ProposalBlockBuilder:
                         },
                     ],
                     "closing_text": ben.ratification_text,
-                    "date_text": "_________________________, _________________________ de 2025.",
+                    "date_text": f"_________________________, _________________________ de {current_year}.",
                     "signature_text": "Assinatura do segurado",
                     "footer_obs": [
                         "Pessoa física: Reconhecer firma por semelhança.",
@@ -902,7 +930,10 @@ class ProposalBlockBuilder:
         if not lgpd.title:
             return []
 
-        signature_text = f"{lgpd.signature_name} / CPF: {lgpd.signature_cpf}"
+        signature_text = (
+            f"{lgpd.signature_name} / CPF: "
+            f"{self._format_cpf_or_cnpj(lgpd.signature_cpf)}"
+        )
 
         return [
             BlockConfig(
@@ -1075,3 +1106,34 @@ class ProposalBlockBuilder:
             else f"<div>{item}</div>"
             for i, item in enumerate(items)
         )
+
+    def _format_zip_code(self, zip_code: str | None) -> str:
+        if not zip_code:
+            return ""
+
+        digits = "".join(char for char in zip_code if char.isdigit())
+        if len(digits) != 8:
+            return zip_code
+
+        return f"{digits[:2]}.{digits[2:5]}-{digits[5:]}"
+
+    def _format_cpf_or_cnpj(self, document: str | None) -> str:
+        if not document:
+            return ""
+
+        sanitized = "".join(char for char in document.upper() if char.isalnum())
+
+        if len(sanitized) == 11 and sanitized.isdigit():
+            return (
+                f"{sanitized[:3]}.{sanitized[3:6]}.{sanitized[6:9]}-"
+                f"{sanitized[9:]}"
+            )
+
+        # CNPJ now supports alphanumeric content, so we validate by length only.
+        if len(sanitized) == 14:
+            return (
+                f"{sanitized[:2]}.{sanitized[2:5]}.{sanitized[5:8]}/"
+                f"{sanitized[8:12]}-{sanitized[12:]}"
+            )
+
+        return document
