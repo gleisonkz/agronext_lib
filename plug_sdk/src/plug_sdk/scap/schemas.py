@@ -71,7 +71,7 @@ class Address(IDMixIn):
     state_id: DomainState = Field(alias="state_type_id")
     country: Optional[str] = None
     city: str
-    neighborhood: str = Field(alias="district")
+    neighborhood: Optional[str] = Field(alias="district", default=None)
     street: str
     number: str
     complement: Optional[str] = Field(alias="additional_information", default=None)
@@ -91,12 +91,12 @@ class AddressResponse(AddressRequest, TimeStampMixIn, PartyResponseMixIn):
 
 
 class BankingDetails(IDMixIn):
-    bank_number: str
-    bank_name: str
-    branch_number: int
-    branch_check_digit: int
-    account_number: int
-    account_check_digit: int
+    bank_number: Optional[str] = None
+    bank_name: Optional[str] = None
+    branch_number: Optional[int] = None
+    branch_check_digit: Optional[int] = None
+    account_number: Optional[int] = None
+    account_check_digit: Optional[int] = None
     payment_type: DomainPayment = Field(alias="payment_type_id")
     bank_account_type: DomainBankAccount = Field(alias="bank_account_type_id")
     is_active: bool = Field(default=True)
