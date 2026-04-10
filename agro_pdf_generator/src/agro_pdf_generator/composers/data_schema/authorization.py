@@ -20,10 +20,10 @@ def build_proposal_authorization_term(
     elif isinstance(view.applicant, procurement.LEApplicantView):
         applicant_name = view.applicant.identity.trade_name
     else:
-        applicant_name = ""
+        applicant_name = "Não informado"
 
     banking_details = view.applicant.banking_details if view.applicant else None
-
+    # TODO: user may not have a bank account, in this case the user needs to inform the bank and the agency number
     agency_number = ""
     agency_digit = ""
     account_number = ""

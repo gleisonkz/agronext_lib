@@ -5,14 +5,14 @@ from ...schemas import AddressData
 
 def build_proposal_address(view: procurement.ProposalView) -> AddressData:
     address_data = AddressData(
-        zip_code="",
-        country="",
-        state="",
-        city="",
-        neighborhood="",
-        street="",
-        number="",
-        complement="",
+        zip_code="Não informado",
+        country="Não informado",
+        state="Não informado",
+        city="Não informado",
+        neighborhood="Não informado",
+        street="Não informado",
+        number="Não informado",
+        complement="Não informado",
     )
 
     if not view.applicant:
@@ -29,6 +29,6 @@ def build_proposal_address(view: procurement.ProposalView) -> AddressData:
     address_data.neighborhood = mailing_address.neighborhood
     address_data.street = mailing_address.street
     address_data.number = mailing_address.number
-    address_data.complement = mailing_address.complement or ""
+    address_data.complement = mailing_address.complement or "Não informado"
 
     return address_data

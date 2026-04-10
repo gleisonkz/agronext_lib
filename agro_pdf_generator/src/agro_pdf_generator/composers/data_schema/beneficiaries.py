@@ -43,13 +43,13 @@ def build_proposal_beneficiaries(
             name = identity.full_name
             cpf = identity.cpf.number
             birth_date = _format_birth_date(identity.birth_date)
-            social_name = identity.social_name or ""
+            social_name = identity.social_name or "Não informado"
         else:
             identity = b.identity
             name = identity.trade_name
             cpf = identity.cnpj.number
-            birth_date = ""
-            social_name = ""
+            birth_date = "Não informado"
+            social_name = "Não informado"
 
         email = b.contact_information.email
         phone = _format_phone(
@@ -64,11 +64,11 @@ def build_proposal_beneficiaries(
                 cpf=cpf,
                 birth_date=birth_date,
                 social_name=social_name,
-                email=email or "",
+                email=email or "Não informado",
                 phone=phone,
-                percentage=str(percentage) if percentage is not None else "",
-                value="",  # TODO: determine what is this value
-                relationship=relationship or "",
+                percentage=str(percentage) if percentage is not None else "Não informado",
+                value="Não informado",  # TODO: determine what is this value
+                relationship=relationship or "Não informado",
             )
         )
     return result

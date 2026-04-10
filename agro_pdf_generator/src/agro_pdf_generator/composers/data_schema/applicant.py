@@ -29,7 +29,7 @@ def _fill_contact_info(
     applicant_data: ApplicantData,
     contact_information: ContactInformation,
 ) -> None:
-    applicant_data.main_email = contact_information.email or ""
+    applicant_data.main_email = contact_information.email or "Não informado"
 
     phone = contact_information.phones[0] if contact_information.phones else None
     applicant_data.phone_number = _format_phone(phone)
@@ -41,36 +41,36 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
 
     # Applicant
     applicant_data = ApplicantData(
-        name="",
-        cpf="",
-        birth_date="",
+        name="Não informado",
+        cpf="Não informado",
+        birth_date="Não informado",
         social_name="Não informado",
-        document_number="",
-        issuing_authority="",
-        issue_date="",
-        marital_status="",
-        main_email="",
-        phone_number="",
-        phone_type="",
-        is_whatsapp="",
-        professional_category="",
-        income="",
+        document_number="Não informado",
+        issuing_authority="Não informado",
+        issue_date="Não informado",
+        marital_status="Não informado",
+        main_email="Não informado",
+        phone_number="Não informado",
+        phone_type="Não informado",
+        is_whatsapp="Não informado",
+        professional_category="Não informado",
+        income="Não informado",
     )
     if isinstance(view.applicant, procurement.NPApplicantView):
         identity = view.applicant.identity
 
         applicant_data.name = identity.full_name
         applicant_data.marital_status = (
-            identity.marital_status if identity.marital_status else ""
+            identity.marital_status if identity.marital_status else "Não informado"
         )
         applicant_data.cpf = identity.cpf.number
         applicant_data.birth_date = identity.birth_date.strftime("%d/%m/%Y")
-        applicant_data.social_name = identity.social_name or ""
+        applicant_data.social_name = identity.social_name or "Não informado"
         applicant_data.document_number = view.applicant.document_number
         applicant_data.professional_category = (
-            identity.occupation.value if identity.occupation else ""
+            identity.occupation.value if identity.occupation else "Não informado"
         )
-        applicant_data.income = identity.income.value if identity.income else ""
+        applicant_data.income = identity.income.value if identity.income else "Não informado"
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
         for doc in identity.additional_documents or []:
