@@ -44,6 +44,7 @@ def build_quotation_data_from_domain(
     metadata: repositories.QuotationMetadata,
     broker_details: dict,
     croqui_bytes: bytes,
+    billing_info: list | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
@@ -60,6 +61,7 @@ def build_quotation_data_from_domain(
         financials=financials,
         broker_data=broker_data,
         coverage_data=coverage_data,
+        billing_info=billing_info,
     )
 
     # Removed stale TODO markers
@@ -103,6 +105,7 @@ def build_proposal_data_from_domain(
     metadata: repositories.ProposalMetadata,
     broker_details: dict,
     croqui_bytes: bytes,
+    billing_info: list | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
@@ -129,6 +132,7 @@ def build_proposal_data_from_domain(
         financials=financials,
         broker_data=broker_data,
         coverage_data=coverage_data,
+        billing_info=billing_info,
     )
 
     property_data = build_proposal_property(view)
@@ -196,7 +200,7 @@ def build_proposal_data_from_domain(
         available_documents_html=available_documents_data,
         proponent_declaration=proponent_declaration_data,
         excluded_risks_html=excluded_risks_data,
-        observations=quotation_metadata.observation or "",
+        observations=quotation_metadata.observation or "Não informado",
         state_authorization_term=state_authorization_term_data,
         state_subsidy_term=state_subsidy_term_data,
     )

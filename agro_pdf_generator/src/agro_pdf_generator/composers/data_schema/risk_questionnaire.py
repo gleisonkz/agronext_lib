@@ -35,12 +35,19 @@ def build_risk_questionnaire(
         all_land_declared_question.answer = "Sim"
     else:
         all_land_declared_question.answer = "Não"
+        all_land_declared_question.extra_fields = [
+            ("Motivo", metadata.land_not_declared_reason or "Não informado"),
+            ("Nome da Seguradora", metadata.other_insurance_company_name or "Não informado"),
+        ]
 
     other_culture_lands_question = RiskQuestionItem(
         question="O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
     )
     if metadata.another_plot_same_crop:
         other_culture_lands_question.answer = "Sim"
+        other_culture_lands_question.extra_fields = [
+            ("Distância", metadata.another_plot_range or "Não informado"),
+        ]
     else:
         other_culture_lands_question.answer = "Não"
 

@@ -75,6 +75,7 @@ class PaymentData:
 class BrokerData:
     name: str = ""
     susep: str = ""
+    social_name: str = ""
     commission_pct: str = ""
     phone: str = ""
     emails: list[str] = field(default_factory=list)

@@ -46,8 +46,8 @@ def build_proposal_authorization_term(
         bank_name=banking_details.bank_code if banking_details else "",
         agency_number=agency_number,
         agency_digit=agency_digit,
-        account_number=account_number,
-        account_digit=account_digit,
+        account_number=account_number if banking_details else "",
+        account_digit=account_digit if banking_details else "",
         account_type=banking_details.account_type if banking_details else "",
         joint_account=(
             "Sim" if banking_details and banking_details.joint_account else "Não"
@@ -110,8 +110,8 @@ def build_proposal_beneficiary_authorization(
         bank_name=banking_details.bank_code if banking_details else "",
         agency_number=agency_number,
         agency_digit=agency_digit,
-        account_number=account_number,
-        account_digit=account_digit,
+        account_number=account_number if banking_details else "",
+        account_digit=account_digit if banking_details else "",
         account_type=banking_details.account_type if banking_details else "",
         joint_account=(
             "Sim" if banking_details and banking_details.joint_account else "Não"

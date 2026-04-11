@@ -10,6 +10,7 @@ def build_quotation_payment(
     financials: CoverageFinancialsView,
     broker_data: BrokerData,
     coverage_data: CoverageData,
+    billing_info: list | None = None,
 ) -> PaymentData:
     # Payment
     payment_data = PaymentData(
@@ -30,25 +31,15 @@ def build_quotation_payment(
 
     if metadata.number_of_installments:
         broker_data.commission_pct = f"{financials.broker_comission_rate:.2f} %"
-        total_cents = int(round(financials.gross_premium * 100))
 
-        base = total_cents // metadata.number_of_installments
-        remainder = total_cents - (base * metadata.number_of_installments)
-        first = (base + remainder) / 100
-        others = base / 100
-
-        payment_values = [first] + [others] * (metadata.number_of_installments - 1)
-
-        for i, installment_amount in enumerate(payment_values):
-            payment_data.installments.append(
-                [
-                    f"Parcela {i + 1}",
-                    format_monetary_value(installment_amount),
-                    installments_date.strftime("%d/%m/%Y"),
-                ]
-            )
-            installments_date = next_month(installments_date)
-
+        payment_data.installments = [
+            [
+                installment.installment_number,
+                installment.total_amount,
+                installment.due_date,
+            ]
+            for installment in billing_info
+        ]
     return payment_data
 
 
@@ -57,6 +48,7 @@ def build_proposal_payment(
     financials: CoverageFinancialsView,
     broker_data: BrokerData,
     coverage_data: CoverageData,
+    billing_info: list | None = None,
 ) -> PaymentData:
     # Payment
     payment_data = PaymentData(
@@ -73,27 +65,17 @@ def build_proposal_payment(
     payment_data.number_of_installments = str(metadata.number_of_installments)
     payment_data.net_premium = coverage_data.net_premium
     payment_data.total_premium = coverage_data.applicant_value
-    installments_date = metadata.installments_start_date
 
     if metadata.number_of_installments:
         broker_data.commission_pct = f"{financials.broker_comission_rate:.2f} %"
-        total_cents = int(round(financials.gross_premium * 100))
 
-        base = total_cents // metadata.number_of_installments
-        remainder = total_cents - (base * metadata.number_of_installments)
-        first = (base + remainder) / 100
-        others = base / 100
-
-        payment_values = [first] + [others] * (metadata.number_of_installments - 1)
-
-        for i, installment_amount in enumerate(payment_values):
-            payment_data.installments.append(
-                [
-                    f"Parcela {i + 1}",
-                    format_monetary_value(installment_amount),
-                    installments_date.strftime("%d/%m/%Y"),
-                ]
-            )
-            installments_date = next_month(installments_date)
+        payment_data.installments = [
+            [
+                installment.installment_number,
+                installment.total_amount,
+                installment.due_date,
+            ]
+            for installment in billing_info
+        ]
 
     return payment_data

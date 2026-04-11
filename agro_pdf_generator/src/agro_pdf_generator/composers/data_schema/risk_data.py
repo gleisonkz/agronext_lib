@@ -1,5 +1,15 @@
 from agronext_procurement.views.common import CoverageFinancialsView, PropertyView
 
+from ...utils import format_monetary_value
+
+
+_SEPARATOR_TRANSLATION = str.maketrans({",": ".", ".": ","})
+
+
+def _format_number(value: float, precision: int) -> str:
+    formatted = f"{value:.{precision}f}"
+    return formatted.translate(_SEPARATOR_TRANSLATION)
+
 
 def build_risk_data(
     properties: list[PropertyView],
@@ -20,16 +30,16 @@ def build_risk_data(
                     partial_premium = plot_item.total_value * financials.coverage_rate
                     risk_data.append(
                         [
-                            str(i),
+                            str(i).rjust(2, "0"),
                             plot.name,
                             plot_item.name,
                             plot_item.crop_variety,
-                            f"{plot_item.yield_area_ha:.2f}",
-                            f"{plot_item.yield_ton_ha:.2f}",
-                            f"{plot_item.yield_output_tons:.2f}",
-                            f"{plot_item.total_value:,.2f}",
-                            f"{partial_deductible:,.2f}",
-                            f"{partial_premium:,.2f}",
+                            _format_number(plot_item.yield_area_ha, precision=2),
+                            _format_number(plot_item.yield_ton_ha, precision=3),
+                            _format_number(plot_item.yield_output_tons, precision=2),
+                            format_monetary_value(plot_item.total_value),
+                            format_monetary_value(partial_deductible),
+                            format_monetary_value(partial_premium),
                         ]
                     )
 

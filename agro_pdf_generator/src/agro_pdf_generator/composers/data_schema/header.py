@@ -21,21 +21,20 @@ def build_header(
         reception_date=metadata.transmitted_at.strftime("%d/%m/%Y") if metadata.transmitted_at else "",
         crop="",
         bacen_code="4304606",  # banco central
-        harvest=str(metadata.harvest),
+        harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",
         # Sempre essor
         insurer="ESSOR SEGUROS S.A.",
         insurer_cnpj="14.525.684/0001-50",
         susep="15414.004513/2012-47",
         mapa_code="12",
         # Apos a emissao da proposta
-        proposal_number=str(proposal_number) or "",
-        policy=str(policy_id) or "",
+        proposal_number=str(proposal_number) if proposal_number is not None else "Não informado",
+        policy=str(policy_id) if policy_id is not None else "Não informado",
     )
     if coverage:
         
         header_data.crop = repositories.CROP_TAXONOMY_DICT.get(coverage.conditions.crop.crop, "")
-        header_data.susep = str(coverage.susep_code)
-        header_data.validity_period = coverage.term.start_date.strftime("%d/%m/%Y") + " - " + coverage.term.end_date.strftime("%d/%m/%Y")
+        header_data.validity_period = coverage.term.start_date.strftime("%d/%m/%Y") + " - " + "31/05/2027"
 
     return header_data
 

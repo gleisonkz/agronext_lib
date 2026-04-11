@@ -38,8 +38,8 @@ class TitleTextItem(TypedDict, total=False):
 
 
 class AuthorizationTermConfig(TypedDict, total=False):
-    fields: list[LabelValueItem]  # Nome, Banco, Agência, etc.
     intro_text: str  # Texto de autorização antes dos dados bancários
+    fields: list[LabelValueItem]  # Nome, Banco, Agência, etc.
     sections: list[TitleTextItem]  # Quitação, Isenção, etc.
     closing_text: str  # Texto centralizado antes da data (Firmo...)
     date_text: str  # Linha de data (usa DATE_LINE internamente)

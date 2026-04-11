@@ -34,10 +34,6 @@ def build_proposal_subsidy_questions(
                 ("Número do CAD/PRO", quotation_metadata.cadpro or "Não informado")
             ],
         ),
-        SubsidyQuestionItem(
-            question="Situação no CADIN Federal",
-            answer=quotation_metadata.cadin_status or "Não informado",
-        ),
     ]
 
     return SubsidyData(questions=questions)

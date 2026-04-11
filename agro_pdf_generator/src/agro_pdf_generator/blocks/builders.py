@@ -403,7 +403,7 @@ def build_authorization_term(data: AuthorizationTermConfig) -> str:
         value = field.get("value", "")
         is_inline = field.get("inline", False)
 
-        field_content = f'<span style="font-weight: {Fonts.WEIGHT_SEMIBOLD};">{label}:</span> {value}'
+        field_content = f'<span style="font-weight: {Fonts.WEIGHT_SEMIBOLD};">{label}:</span> {value}' if label else f'{value}'
 
         if is_inline:
             # Add to current line with spacing
@@ -475,8 +475,8 @@ def build_authorization_term(data: AuthorizationTermConfig) -> str:
 
     return f"""
         <div style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_LARGE}; line-height: 1.4; color: {Colors.PRIMARY}; margin-bottom: {Spacing.LG};">
-            {fields_html}
             {intro_html}
+            {fields_html}
             {sections_html}
             {closing_html}
             {date_html}
@@ -537,7 +537,7 @@ def _build_fields_html(fields: list, spacing: str) -> str:
         is_inline = field.get("inline", False)
         gap_before = field.get("gap_before", False)
 
-        field_content = f'<span style="font-weight: {Fonts.WEIGHT_SEMIBOLD};">{label}:</span> {value}'
+        field_content = f'<span style="font-weight: {Fonts.WEIGHT_SEMIBOLD};">{label}:</span> {value}' if label else f'{value}'
 
         if is_inline:
             current_line += f" &nbsp;&nbsp;&nbsp; {field_content}"

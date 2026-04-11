@@ -4,8 +4,9 @@ from ...schemas import BrokerData
 def build_quotation_broker(broker_details: dict) -> BrokerData:
     # Broker
     broker_data = BrokerData(
-        name=broker_details.get("trade_name") or broker_details.get("preferred_name") or "Não informado",
+        name=broker_details.get("trade_name") or "Não informado",
         susep=broker_details.get("susep_code") or "Não informado",
+        social_name=broker_details.get("preferred_name") or "Não informado",
         commission_pct="0.0%",
         phone=broker_details.get("phone") or "Não informado",
         emails=[broker_details.get("email") or "Não informado"],
@@ -18,8 +19,9 @@ def build_quotation_broker(broker_details: dict) -> BrokerData:
 def build_proposal_broker(broker_details: dict) -> BrokerData:
     # Broker
     broker_data = BrokerData(
-        name=broker_details.get("trade_name") or broker_details.get("preferred_name") or "Não informado",
+        name=broker_details.get("trade_name") or "Não informado",
         susep= broker_details.get("susep_code") or "Não informado",
+        social_name=broker_details.get("preferred_name") or "Não informado",
         commission_pct="0.0%",
         phone=broker_details.get("phone") or "Não informado",
         emails=[broker_details.get("email") or "Não informado"],

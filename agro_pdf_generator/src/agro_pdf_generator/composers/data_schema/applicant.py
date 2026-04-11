@@ -3,7 +3,6 @@ import agronext_procurement as procurement
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
 
-
 def _format_phone(value: object | None) -> str:
     if value is None:
         return ""
@@ -74,12 +73,11 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
         for doc in identity.additional_documents or []:
-            if hasattr(doc, "issuing_authority") and getattr(doc, "issuing_authority"):
-                applicant_data.issuing_authority = getattr(doc, "issuing_authority")
-            if hasattr(doc, "issue_date") and getattr(doc, "issue_date"):
-                applicant_data.issue_date = getattr(doc, "issue_date").strftime(
-                    "%d/%m/%Y"
-                )
+            if doc.type == procurement.DocumentTypes.RG:
+                applicant_data.document_number = doc.number
+                applicant_data.issuing_authority = doc.issuing_authority
+                applicant_data.issue_date = doc.issue_date.strftime("%d/%m/%Y")
+
     elif isinstance(view.applicant, procurement.LEApplicantView):
         identity = view.applicant.identity
 

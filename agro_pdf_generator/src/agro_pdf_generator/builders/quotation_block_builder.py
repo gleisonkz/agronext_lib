@@ -1,3 +1,4 @@
+import agronext_procurement as procurement
 from datetime import date
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
@@ -109,7 +110,7 @@ class QuotationBlockBuilder:
                 [
                     {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
                     {
-                        "label": "CPF",
+                        "label": "CPF/CNPJ",
                         "value": self._format_cpf_or_cnpj(p.cpf),
                         "width": "25%",
                     },
@@ -122,7 +123,11 @@ class QuotationBlockBuilder:
                 ],
                 [
                     {"label": "E-mail", "value": p.main_email, "width": "25%"},
-                    {"label": "Telefone", "value": p.phone_number, "width": "25%"},
+                    {
+                        "label": "Telefone",
+                        "value": self._format_phone(p.phone_number),
+                        "width": "25%",
+                    },
                     {"label": "Tipo", "value": p.phone_type, "width": "25%"},
                     {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
                 ],
@@ -141,8 +146,17 @@ class QuotationBlockBuilder:
                         "label": "Cep",
                         "value": self._format_zip_code(e.zip_code),
                         "width": "20%",
-                    },                    {"label": "País", "value": e.country, "width": "20%"},
-                    {"label": "Estado", "value": e.state, "width": "20%"},
+                    },
+                    {
+                        "label": "País",
+                        "value": self._format_country(e.country),
+                        "width": "20%",
+                    },
+                    {
+                        "label": "Estado",
+                        "value": self._format_state(e.state),
+                        "width": "20%",
+                    },
                     {"label": "Município", "value": e.city, "width": "20%"},
                     {"label": "Bairro", "value": e.neighborhood, "width": "20%"},
                 ],
@@ -194,7 +208,7 @@ class QuotationBlockBuilder:
                 [
                     {"label": "Cobertura", "value": c.name, "width": "13%"},
                     {
-                        "label": "LMG/A (R$)",
+                        "label": "LMGA (R$)",
                         "value": c.policy_limit_brl,
                         "width": "11%",
                     },
@@ -216,7 +230,7 @@ class QuotationBlockBuilder:
                     },
                     {
                         "label": "Quadra/Talhão segurados (qtd)",
-                        "value": c.plot_count,
+                        "value": c.plot_count.rjust(2, "0"),
                         "width": "24%",
                     },
                 ],
@@ -301,7 +315,9 @@ class QuotationBlockBuilder:
     def _build_broker_block(self) -> BlockConfig:
         b = self._data.broker
         emails = self._format_list_items(b.emails)
-        phones = self._format_list_items(b.phones)
+        phones = self._format_list_items([
+            self._format_phone(phone) for phone in b.phones
+        ])
 
         return BlockConfig(
             type=BlockType.INFO_TABLE,
@@ -317,7 +333,11 @@ class QuotationBlockBuilder:
                         "value": b.commission_pct,
                         "width": "25%",
                     },
-                    {"label": "Telefone", "value": b.phone, "width": "25%"},
+                    {
+                        "label": "Telefone",
+                        "value": self._format_phone(b.phone),
+                        "width": "25%",
+                    },
                 ],
                 [
                     {"label": "E-mail", "value": emails, "width": "50%"},
@@ -341,7 +361,7 @@ class QuotationBlockBuilder:
                         "width": "50%",
                     },
                     {
-                        "label": "Tipo de segurado",
+                        "label": "Tipo de proponente",
                         "value": prop.ownership_type,
                         "width": "25%",
                     },
@@ -352,8 +372,17 @@ class QuotationBlockBuilder:
                         "label": "Cep",
                         "value": self._format_zip_code(prop.zip_code),
                         "width": "20%",
-                    },                    {"label": "País", "value": prop.country, "width": "20%"},
-                    {"label": "Estado", "value": prop.state, "width": "20%"},
+                    },
+                    {
+                        "label": "País",
+                        "value": self._format_country(prop.country),
+                        "width": "20%",
+                    },
+                    {
+                        "label": "Estado",
+                        "value": self._format_state(prop.state),
+                        "width": "20%",
+                    },
                     {"label": "Município", "value": prop.city, "width": "20%"},
                     {
                         "label": "BACEN do município",
@@ -530,7 +559,7 @@ class QuotationBlockBuilder:
                         "width": "25%",
                     },
                     {
-                        "label": "CPF",
+                        "label": "CPF/CNPJ",
                         "value": self._format_cpf_or_cnpj(b.cpf),
                         "width": "25%",
                     },
@@ -547,7 +576,11 @@ class QuotationBlockBuilder:
             rows.append(
                 [
                     {"label": "E-mail", "value": b.email, "width": "20%"},
-                    {"label": "Telefone", "value": b.phone, "width": "20%"},
+                    {
+                        "label": "Telefone",
+                        "value": self._format_phone(b.phone),
+                        "width": "20%",
+                    },
                     {"label": "Porcentagem (%)", "value": b.percentage, "width": "20%"},
                     {"label": "Valor (R$)", "value": b.value, "width": "20%"},
                     {"label": "Relação", "value": b.relationship, "width": "20%"},
@@ -583,7 +616,11 @@ class QuotationBlockBuilder:
                     {"label": "Nome", "value": p.name, "width": "25%"},
                     {"label": "Nome social", "value": p.social_name, "width": "25%"},
                     {"label": "Relação", "value": p.relationship, "width": "25%"},
-                    {"label": "Telefone", "value": p.phone, "width": "25%"},
+                    {
+                        "label": "Telefone",
+                        "value": self._format_phone(p.phone),
+                        "width": "25%",
+                    },
                 ]
             )
 
@@ -746,19 +783,13 @@ class QuotationBlockBuilder:
                         {"label": "Nome do proponente", "value": term.applicant_name},
                         {"label": "Número da proposta", "value": term.proposal_number},
                         {"label": "Possui conta", "value": term.has_account},
+                        {"label": "", "value": term.authorization_text},
                         {"label": "Banco", "value": term.bank_name},
                         {"label": "Nº Agência", "value": term.agency_number},
-                        {"label": "Dígito", "value": term.agency_digit, "inline": True},
                         {"label": "Nº da conta", "value": term.account_number},
-                        {
-                            "label": "Dígito",
-                            "value": term.account_digit,
-                            "inline": True,
-                        },
                         {"label": "Tipo de conta", "value": term.account_type},
                         {"label": "Conta conjunta", "value": term.joint_account},
                     ],
-                    "intro_text": term.authorization_text,
                     "sections": [
                         {"title": "Quitação", "text": term.discharge_text},
                         {
@@ -800,7 +831,7 @@ class QuotationBlockBuilder:
                             "value": ben.beneficiary_full_name,
                         },
                         {
-                            "label": "CPF",
+                            "label": "CPF/CNPJ",
                             "value": self._format_cpf_or_cnpj(ben.beneficiary_cpf),
                         },
                         {
@@ -813,13 +844,11 @@ class QuotationBlockBuilder:
                             "value": ben.agency_number,
                             "gap_before": True,
                         },
-                        {"label": "Dígito", "value": ben.agency_digit, "inline": True},
                         {
                             "label": "Nº da conta",
                             "value": ben.account_number,
                             "gap_before": True,
                         },
-                        {"label": "Dígito", "value": ben.account_digit, "inline": True},
                         {
                             "label": "Tipo de conta",
                             "value": ben.account_type,
@@ -1052,6 +1081,26 @@ class QuotationBlockBuilder:
 
         return f"{digits[:2]}.{digits[2:5]}-{digits[5:]}"
 
+    def _format_country(self, country: str | None) -> str:
+        if not country:
+            return ""
+
+        country_code = country.strip().upper()
+        if country_code in procurement.CountryDisplayNames.__members__:
+            return procurement.CountryDisplayNames[country_code].value
+
+        return country
+
+    def _format_state(self, state: str | None) -> str:
+        if not state:
+            return ""
+
+        state_code = state.strip().upper()
+        if state_code in procurement.BrazilianStateDisplayNames.__members__:
+            return procurement.BrazilianStateDisplayNames[state_code].value
+
+        return state
+
     def _format_cpf_or_cnpj(self, document: str | None) -> str:
         if not document:
             return ""
@@ -1072,3 +1121,17 @@ class QuotationBlockBuilder:
             )
 
         return document
+
+    def _format_phone(self, phone: str | None) -> str:
+        if not phone:
+            return ""
+
+        digits = "".join(char for char in phone if char.isdigit())
+
+        if len(digits) == 13 and digits.startswith("55"):
+            digits = digits[2:]
+
+        if len(digits) != 11:
+            return phone
+
+        return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
