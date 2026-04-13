@@ -192,7 +192,7 @@ class ProposalBlockBuilder:
                         "width": "25%",
                     },
                     {
-                        "label": "Orgão expedidor",
+                        "label": "Órgão expedidor",
                         "value": p.issuing_authority,
                         "width": "25%",
                     },
@@ -428,7 +428,7 @@ class ProposalBlockBuilder:
                     {"label": "Número SUSEP", "value": b.susep, "width": "25%"},
                     {
                         "label": "Participação",
-                        "value": b.commission_pct,
+                        "value": b.social_name,
                         "width": "25%",
                     },
                     {
@@ -860,7 +860,7 @@ class ProposalBlockBuilder:
                         },
                     ],
                     "closing_text": term.ratification_text,
-                    "date_text": f"_________________________, _________________________ de {current_year}.",
+                    "date_text": f"___________________________________, ________________________________ de {current_year}.",
                     "signature_text": "Assinatura do proponente ou corretor",
                 },
             )
@@ -1191,10 +1191,13 @@ class ProposalBlockBuilder:
 
         digits = "".join(char for char in phone if char.isdigit())
 
-        if len(digits) == 13 and digits.startswith("55"):
+        if digits.startswith("55") and len(digits) in {12, 13}:
             digits = digits[2:]
 
-        if len(digits) != 11:
-            return phone
+        if len(digits) == 11:
+            return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
 
-        return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
+        if len(digits) == 10:
+            return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
+
+        return phone

@@ -11,6 +11,6 @@ def build_coordinates(properties: list[PropertyView]) -> list[list[str]]:
             for i, plot in enumerate(crop_fields.plots, start=1):
                 coords = [CoordinatesView(latitude=latitude, longitude=longitude) for (latitude, longitude) in plot.polygon.coordinates]
                 centroid = plot.polygon._source._calculate_centroid(coords)
-                coordinates_data.append([str(i), f"({centroid.latitude:.6f}, {centroid.longitude:.6f})"])
+                coordinates_data.append([str(i), f"{centroid.latitude:.6f}, {centroid.longitude:.6f}"])
 
     return coordinates_data

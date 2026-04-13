@@ -2,7 +2,23 @@ import agronext_procurement_repositories as repositories
 from agronext_procurement.views.common import CoverageFinancialsView
 
 from ...schemas import BrokerData, CoverageData, PaymentData
-from ...utils import format_monetary_value, next_month
+
+
+def _build_installment_rows(billing_info: list | None) -> list[list[str]]:
+    if not billing_info:
+        return []
+
+    rows: list[list[str]] = []
+    for installment in billing_info:
+        rows.append(
+            [
+                str(installment.installment_number),
+                installment.total_amount,
+                str(installment.due_date),
+            ]
+        )
+
+    return rows
 
 
 def build_quotation_payment(
@@ -27,19 +43,10 @@ def build_quotation_payment(
     payment_data.number_of_installments = str(metadata.number_of_installments)
     payment_data.net_premium = coverage_data.net_premium
     payment_data.total_premium = coverage_data.applicant_value
-    installments_date = metadata.installments_start_date
 
     if metadata.number_of_installments:
         broker_data.commission_pct = f"{financials.broker_comission_rate:.2f} %"
-
-        payment_data.installments = [
-            [
-                installment.installment_number,
-                installment.total_amount,
-                installment.due_date,
-            ]
-            for installment in billing_info
-        ]
+        payment_data.installments = _build_installment_rows(billing_info)
     return payment_data
 
 
@@ -68,14 +75,6 @@ def build_proposal_payment(
 
     if metadata.number_of_installments:
         broker_data.commission_pct = f"{financials.broker_comission_rate:.2f} %"
-
-        payment_data.installments = [
-            [
-                installment.installment_number,
-                installment.total_amount,
-                installment.due_date,
-            ]
-            for installment in billing_info
-        ]
+        payment_data.installments = _build_installment_rows(billing_info)
 
     return payment_data
