@@ -16,7 +16,7 @@ def build_header(
     # Header
     header_data = HeaderData(
         logo_path=str(PDF_LOGO.absolute()),
-        main_coverage="101 - Granizo (Pêra)",
+        main_coverage="Pera - Granizo",
         validity_period="",
         reception_date=metadata.transmitted_at.strftime("%d/%m/%Y") if metadata.transmitted_at else "",
         crop="",
@@ -34,7 +34,7 @@ def build_header(
     if coverage:
         
         header_data.crop = repositories.CROP_TAXONOMY_DICT.get(coverage.conditions.crop.crop, "")
-        header_data.validity_period = coverage.term.start_date.strftime("%d/%m/%Y") + " - " + "31/05/2027"
+        header_data.validity_period = "Das 24 horas do dia " + coverage.term.start_date.strftime("%d/%m/%Y") + " até às 24 horas do dia " + "31/05/2027"
 
     return header_data
 

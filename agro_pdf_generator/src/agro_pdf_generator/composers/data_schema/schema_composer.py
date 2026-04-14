@@ -44,13 +44,19 @@ def build_quotation_data_from_domain(
     metadata: repositories.QuotationMetadata,
     broker_details: dict,
     croqui_bytes: bytes,
+    municipality_code: str | None = None,
     billing_info: list | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
 
     header_data = build_header(
-        view, metadata, coverage, proposal_number=None, policy_id=None
+        view,
+        metadata,
+        coverage,
+        proposal_number=None,
+        policy_id=None,
+        municipality_code=municipality_code,
     )
     applicant_data = build_applicant(view)
 
@@ -65,7 +71,7 @@ def build_quotation_data_from_domain(
     )
 
     # Removed stale TODO markers
-    property_data = build_quotation_property(view)
+    property_data = build_quotation_property(view, municipality_code=municipality_code)
     risk_data = build_risk_data(view.properties, financials)
     coords_data = build_coordinates(view.properties)
     risk_questionnaire_data = build_risk_questionnaire(metadata)
@@ -105,6 +111,7 @@ def build_proposal_data_from_domain(
     metadata: repositories.ProposalMetadata,
     broker_details: dict,
     croqui_bytes: bytes,
+    municipality_code: str | None = None,
     billing_info: list | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
@@ -135,7 +142,7 @@ def build_proposal_data_from_domain(
         billing_info=billing_info,
     )
 
-    property_data = build_proposal_property(view)
+    property_data = build_proposal_property(view, municipality_code=municipality_code)
     risk_data = build_risk_data(view.properties, financials)
     coords_data = build_coordinates(view.properties)
     risk_questionnaire_data = build_risk_questionnaire(quotation_metadata)

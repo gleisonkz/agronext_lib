@@ -1,5 +1,6 @@
 import agronext_procurement as procurement
 from datetime import date
+from html import escape
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
@@ -636,17 +637,28 @@ class QuotationBlockBuilder:
         )
 
     def _build_observations_block(self) -> BlockConfig:
+        observations = self._data.observations or ""
+        lines = observations.splitlines() or [observations]
+        estimated_lines = sum(max(1, len(line) / 120) for line in lines)
+        estimated_height = max(120, int(60 + estimated_lines * 20))
+        wrapped_value = (
+            '<span style="display: block; white-space: pre-wrap; '
+            'overflow-wrap: anywhere; word-break: break-word;">'
+            f"{escape(observations)}"
+            "</span>"
+        )
+
         # INFO_TABLE with one row, one column: label "Observações" (bold) and value with text
         # Section header is "Dados Complementares"
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Dados Complementares",
-            estimated_height=120,
+            estimated_height=estimated_height,
             rows=[
                 [
                     {
                         "label": "Observações",
-                        "value": self._data.observations,
+                        "value": wrapped_value,
                         "width": "100%",
                     }
                 ]

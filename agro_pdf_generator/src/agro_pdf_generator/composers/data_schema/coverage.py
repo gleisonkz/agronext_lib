@@ -31,8 +31,8 @@ def build_quotation_coverage(view: procurement.QuotationView, coverage: Coverage
 
         coverage_data.tariff_premium = format_monetary_value(coverage.financials.broker_comission_rate)
         coverage_data.net_premium = format_monetary_value(coverage.financials.net_estimated_premium)
-        coverage_data.federal_subsidy_brl = format_monetary_value(coverage.financials.federal_subsidy.max_amount_brl)
-        coverage_data.state_subsidy_brl = format_monetary_value(coverage.financials.state_subsidy.max_amount_brl)
+        coverage_data.federal_subsidy_brl = format_monetary_value(coverage.financials.federal_subsidy_discount)
+        coverage_data.state_subsidy_brl = format_monetary_value(coverage.financials.state_subsidy_discount)
         coverage_data.applicant_value = format_monetary_value(coverage.financials.gross_premium)
 
 
@@ -70,13 +70,13 @@ def build_proposal_coverage(view: procurement.ProposalView, coverage: CoverageDe
         coverage_data.policy_limit_brl = format_monetary_value(coverage.financials.policy_limit)
         coverage_data.deductible_pct = f"{coverage.financials.deductible_details.percentage:.2f}%"
 
-        coverate_rate_pct = coverage.financials.coverage_rate * 100 / coverage.financials.gross_premium
+        coverate_rate_pct = coverage.financials.coverage_rate
         coverage_data.coverage_rate_pct = f"{coverate_rate_pct:.2f}%"
 
         coverage_data.tariff_premium = format_monetary_value(coverage.financials.broker_comission_rate)
         coverage_data.net_premium = format_monetary_value(coverage.financials.net_estimated_premium)
-        coverage_data.federal_subsidy_brl = format_monetary_value(coverage.financials.federal_subsidy.max_amount_brl)
-        coverage_data.state_subsidy_brl = format_monetary_value(coverage.financials.state_subsidy.max_amount_brl)
+        coverage_data.federal_subsidy_brl = format_monetary_value(coverage.financials.federal_subsidy_discount)
+        coverage_data.state_subsidy_brl = format_monetary_value(coverage.financials.state_subsidy_discount)
         coverage_data.applicant_value = format_monetary_value(coverage.financials.gross_premium)
 
 

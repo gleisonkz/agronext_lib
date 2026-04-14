@@ -23,7 +23,12 @@ def build_proposal_authorization_term(
         applicant_name = "Não informado"
 
     banking_details = view.applicant.banking_details if view.applicant else None
-    # TODO: user may not have a bank account, in this case the user needs to inform the bank and the agency number
+    has_bank_account = bool(
+        banking_details
+        and banking_details.account_number
+        and banking_details.account_number.strip()
+    )
+
     agency_number = ""
     agency_digit = ""
     account_number = ""
@@ -34,23 +39,25 @@ def build_proposal_authorization_term(
         agency_number = agency_parts[0]
         agency_digit = agency_parts[1] if len(agency_parts) > 1 else ""
 
-        account_parts = banking_details.account_number.split("-", 1)
-        account_number = account_parts[0]
+        account_parts = banking_details.account_number.split("-", 1) if banking_details.account_number else ["", ""]
+        account_number = account_parts[0] if account_parts else ""
         account_digit = account_parts[1] if len(account_parts) > 1 else ""
 
     return AuthorizationTermData(
         applicant_name=applicant_name,
         proposal_number=proposal_number,
-        has_account="Sim" if banking_details else "Não",
+        has_account="Sim" if has_bank_account else "Não",
         authorization_text=authorization_text,
         bank_name=banking_details.bank_code if banking_details else "",
         agency_number=agency_number,
         agency_digit=agency_digit,
-        account_number=account_number if banking_details else "",
-        account_digit=account_digit if banking_details else "",
-        account_type=banking_details.account_type if banking_details else "",
+        account_number=account_number if has_bank_account else "",
+        account_digit=account_digit if has_bank_account else "",
+        account_type=banking_details.account_type if has_bank_account else "",
         joint_account=(
-            "Sim" if banking_details and banking_details.joint_account else "Não"
+            "Sim"
+            if has_bank_account and banking_details and banking_details.joint_account
+            else "Não" if has_bank_account else ""
         ),
         discharge_text=DISCHARD_TEXT,
         liability_text=LIABILITY_TEXT,

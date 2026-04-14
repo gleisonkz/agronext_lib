@@ -3,7 +3,10 @@ import agronext_procurement as procurement
 from ...schemas import PropertyData
 
 
-def build_quotation_property(view: procurement.QuotationView) -> PropertyData:
+def build_quotation_property(
+    view: procurement.QuotationView,
+    municipality_code: str | None = None,
+) -> PropertyData:
     # Property
     property_data = PropertyData(
         name="",
@@ -13,7 +16,7 @@ def build_quotation_property(view: procurement.QuotationView) -> PropertyData:
         country="",
         state="",
         city="",
-        bacen_code="",
+        bacen_code=municipality_code or "",
         neighborhood="",
         street="",
         number="",
@@ -34,7 +37,10 @@ def build_quotation_property(view: procurement.QuotationView) -> PropertyData:
     return property_data
 
 
-def build_proposal_property(view: procurement.ProposalView) -> PropertyData:
+def build_proposal_property(
+    view: procurement.ProposalView,
+    municipality_code: str | None = None,
+) -> PropertyData:
     # Property
     property_data = PropertyData(
         name="",
@@ -44,7 +50,7 @@ def build_proposal_property(view: procurement.ProposalView) -> PropertyData:
         country="",
         state="",
         city="",
-        bacen_code="",
+        bacen_code=municipality_code or "",
         neighborhood="",
         street="",
         number="",

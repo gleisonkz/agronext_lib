@@ -104,7 +104,7 @@ def build_proposal_state_authorization_term(
         declarations=declarations,
         date_location_text="______________________________, ____ de __________________ de ______.",
         signature_text="Assinatura do Produtor Rural ou Pessoa Jurídica, o que couber.",
-        name_cpf_text="Nome ______________________________________  CPF ou CNPJ ______________________________________",
+        name_cpf_text="Nome ______________________________________  - CPF ou CNPJ ______________________________________ do Produtor Rural ou Pessoa Jurídica",
     )
 
 

@@ -1,5 +1,6 @@
 import agronext_procurement as procurement
 from datetime import date
+from html import escape
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
@@ -116,32 +117,37 @@ class ProposalBlockBuilder:
         h = self._data.header
         return BlockConfig(
             type=BlockType.INFO_TABLE,
-            estimated_height=200,
+            estimated_height=150,
             repeat_on_pages=True,  # Controlado por stops_header_repeat no proponent_declaration
             no_margin=False,
             rows=[
                 [
                     {
-                        "label": "Cobertura Principal",
-                        "value": h.main_coverage,
-                        "width": "15%",
-                    },
-                    {
-                        "label": "Vigência do contrato de seguro",
-                        "value": h.validity_period,
-                        "width": "50%",
+                        "label": "Proposta de seguro Nº",
+                        "value": h.proposal_number,
+                        "width": "18%",
                     },
                     {
                         "label": "Data da recepção da proposta",
                         "value": h.reception_date,
-                        "width": "25%",
+                        "width": "23%",
+                    },
+                    {
+                        "label": "Vigência do contrato de seguro",
+                        "value": h.validity_period,
+                        "width": "49%",
                     },
                     {"label": "Página", "value": "{{page}}", "width": "10%"},
                 ],
                 [
-                    {"label": "Cultura", "value": h.crop, "width": "33.33%"},
-                    {"label": "BACEN", "value": h.bacen_code, "width": "33.33%"},
-                    {"label": "Safra", "value": h.harvest, "width": "33.34%"},
+                    {
+                        "label": "Cobertura principal",
+                        "value": h.main_coverage,
+                        "width": "20%",
+                    },
+                    {"label": "Cultura", "value": h.crop, "width": "27%"},
+                    {"label": "BACEN", "value": h.bacen_code, "width": "26%"},
+                    {"label": "Safra", "value": h.harvest, "width": "27%"},
                 ],
                 [
                     {"label": "Seguradora", "value": h.insurer, "width": "25%"},
@@ -152,14 +158,6 @@ class ProposalBlockBuilder:
                     },
                     {"label": "SUSEP", "value": h.susep, "width": "25%"},
                     {"label": "Código MAPA", "value": h.mapa_code, "width": "25%"},
-                ],
-                [
-                    {
-                        "label": "Proposta N°",
-                        "value": h.proposal_number,
-                        "width": "50%",
-                    },
-                    {"label": "Apólice", "value": h.policy, "width": "50%"},
                 ],
             ],
         )
@@ -698,17 +696,28 @@ class ProposalBlockBuilder:
         if not self._data.observations:
             return
 
+        observations = self._data.observations
+        lines = observations.splitlines() or [observations]
+        estimated_lines = sum(max(1, len(line) / 120) for line in lines)
+        estimated_height = max(120, int(60 + estimated_lines * 20))
+        wrapped_value = (
+            '<span style="display: block; white-space: pre-wrap; '
+            'overflow-wrap: anywhere; word-break: break-word;">'
+            f"{escape(observations)}"
+            "</span>"
+        )
+
         # INFO_TABLE with one row, one column: label "Observações" (bold) and value with text
         # Section header is "Dados Complementares"
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Dados Complementares",
-            estimated_height=120,
+            estimated_height=estimated_height,
             rows=[
                 [
                     {
                         "label": "Observações",
-                        "value": self._data.observations,
+                        "value": wrapped_value,
                         "width": "100%",
                     }
                 ]
