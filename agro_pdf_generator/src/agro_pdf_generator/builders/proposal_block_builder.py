@@ -87,11 +87,6 @@ class ProposalBlockBuilder:
         if proponent_declaration:
             blocks.extend(proponent_declaration)
 
-        # Add federal subsidy term block
-        federal_subsidy_term = self._build_federal_subsidy_term_block()
-        if federal_subsidy_term:
-            blocks.extend(federal_subsidy_term)
-
         # Add state subsidy term block
         state_subsidy_term = self._build_state_subsidy_term_block()
         if state_subsidy_term:
@@ -101,6 +96,11 @@ class ProposalBlockBuilder:
         state_authorization_term = self._build_state_authorization_term_block()
         if state_authorization_term:
             blocks.extend(state_authorization_term)
+
+        # Add federal subsidy term block
+        federal_subsidy_term = self._build_federal_subsidy_term_block()
+        if federal_subsidy_term:
+            blocks.extend(federal_subsidy_term)
 
         return blocks
 
@@ -185,7 +185,12 @@ class ProposalBlockBuilder:
                 ],
                 [
                     {
-                        "label": "N° Documento",
+                        "label": "Documento",
+                        "value": "RG",
+                        "width": "25%",
+                    },
+                    {
+                        "label": "RG",
                         "value": p.document_number,
                         "width": "25%",
                     },
@@ -199,11 +204,6 @@ class ProposalBlockBuilder:
                         "value": p.issue_date,
                         "width": "25%",
                     },
-                    {
-                        "label": "Estado civil",
-                        "value": p.marital_status,
-                        "width": "25%",
-                    },
                 ],
                 [
                     {"label": "E-mail", "value": p.main_email, "width": "25%"},
@@ -213,7 +213,7 @@ class ProposalBlockBuilder:
                         "width": "25%",
                     },
                     {
-                        "label": "Tipo de telefone",
+                        "label": "Tipo",
                         "value": p.phone_type,
                         "width": "25%",
                     },
@@ -967,8 +967,8 @@ class ProposalBlockBuilder:
             return []
 
         signature_text = (
-            f"{lgpd.signature_name} / CPF: "
-            f"{self._format_cpf_or_cnpj(lgpd.signature_cpf)}"
+            f"{lgpd.signature_name} / {'CPF' if lgpd.signature_cpf else 'CNPJ'}: "
+            f"{self._format_cpf_or_cnpj(lgpd.signature_cpf or lgpd.signature_cnpj)}"
         )
 
         return [
@@ -1026,6 +1026,7 @@ class ProposalBlockBuilder:
                 section_header_pagination=True,
                 estimated_height=1500,
                 federal_subsidy_term={
+                    "logo_path": term.logo_path,
                     "ministry_header": term.ministry_header,
                     "committee_text": term.committee_text,
                     "secretariat_text": term.secretariat_text,
@@ -1061,6 +1062,7 @@ class ProposalBlockBuilder:
                     force_page_break=True,
                     estimated_height=400,
                     federal_subsidy_term={
+                        "logo_path": term.logo_path,
                         "ministry_header": term.ministry_header,
                         "committee_text": term.committee_text,
                         "secretariat_text": term.secretariat_text,
@@ -1087,7 +1089,7 @@ class ProposalBlockBuilder:
 
     def _build_state_subsidy_term_block(self) -> list[BlockConfig]:
         term = self._data.state_subsidy_term
-        if not term.government_header:
+        if not term.logo_path and not term.government_header:
             return []
 
         return [
@@ -1098,6 +1100,7 @@ class ProposalBlockBuilder:
                 force_page_break=True,
                 estimated_height=1200,
                 state_subsidy_term={
+                    "logo_path": term.logo_path,
                     "government_header": term.government_header,
                     "annex_title": term.annex_title,
                     "intro_text": term.intro_text,

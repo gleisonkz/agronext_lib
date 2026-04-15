@@ -1,9 +1,6 @@
 import agronext_procurement as procurement
 import agronext_procurement_repositories as repositories
 
-from agro_pdf_generator.composers.data_schema.prop_declaration import (
-    build_proposal_proponent_declaration,
-)
 
 from ...schemas import PDFData
 from .acceptance import build_acceptance
@@ -16,19 +13,22 @@ from .authorization import (
 from .authorized import build_proposal_authorized_persons
 from .available_documents import build_available_documents
 from .beneficiaries import build_proposal_beneficiaries
-from .broker import build_proposal_broker, build_quotation_broker
+from .broker import build_broker
 from .coordinates import build_coordinates
-from .coverage import build_proposal_coverage, build_quotation_coverage
+from .coverage import build_coverage
 from .coverage_restrictions import build_coverage_restrictions
 from .declarations import build_declarations
 from .excluded_risks import build_excluded_risks
 from .grace_period import build_grace_period
 from .header import build_header
-from .land_property import build_proposal_property, build_quotation_property
+from .land_property import build_property
 from .lgpd import build_lgpd_consent
 from .notifications import build_proponent_notifications
-from .payment import build_proposal_payment, build_quotation_payment
+from .payment import build_payment
 from .political_exposure import build_proposal_political_exposure
+from .prop_declaration import (
+    build_proposal_proponent_declaration,
+)
 from .risk_data import build_risk_data
 from .risk_questionnaire import build_risk_questionnaire
 from .subsidy import (
@@ -56,13 +56,12 @@ def build_quotation_data_from_domain(
         coverage,
         proposal_number=None,
         policy_id=None,
-        municipality_code=municipality_code,
     )
     applicant_data = build_applicant(view)
 
-    coverage_data = build_quotation_coverage(view, coverage)
-    broker_data = build_quotation_broker(broker_details)
-    payment_data = build_quotation_payment(
+    coverage_data = build_coverage(view, coverage)
+    broker_data = build_broker(broker_details)
+    payment_data = build_payment(
         metadata=metadata,
         financials=financials,
         broker_data=broker_data,
@@ -70,15 +69,14 @@ def build_quotation_data_from_domain(
         billing_info=billing_info,
     )
 
-    # Removed stale TODO markers
-    property_data = build_quotation_property(view, municipality_code=municipality_code)
+    property_data = build_property(view, municipality_code=municipality_code)
     risk_data = build_risk_data(view.properties, financials)
     coords_data = build_coordinates(view.properties)
     risk_questionnaire_data = build_risk_questionnaire(metadata)
     acceptance_data = build_acceptance()
     grace_period_data = build_grace_period()
     coverage_restrictions_data = build_coverage_restrictions()
-    available_documents_data = build_available_documents(["Cobertura 101 - Granizo (Pêra)"])
+    available_documents_data = build_available_documents(metadata.documents)
     excluded_risks_data = build_excluded_risks()
     notifications_data = build_proponent_notifications()
     declarations_data = build_declarations()
@@ -121,7 +119,7 @@ def build_proposal_data_from_domain(
         view,
         quotation_metadata,
         coverage,
-        proposal_number=metadata.public_id,
+        proposal_number=metadata.proposal_id,
         policy_id=metadata.policy_id,
     )
     applicant_data = build_applicant(view)
@@ -132,9 +130,9 @@ def build_proposal_data_from_domain(
         applicant_data, quotation_metadata.has_political_exposure
     )
 
-    coverage_data = build_proposal_coverage(view, coverage)
-    broker_data = build_proposal_broker(broker_details)
-    payment_data = build_proposal_payment(
+    coverage_data = build_coverage(view, coverage)
+    broker_data = build_broker(broker_details)
+    payment_data = build_payment(
         metadata=quotation_metadata,
         financials=financials,
         broker_data=broker_data,
@@ -142,7 +140,7 @@ def build_proposal_data_from_domain(
         billing_info=billing_info,
     )
 
-    property_data = build_proposal_property(view, municipality_code=municipality_code)
+    property_data = build_property(view, municipality_code=municipality_code)
     risk_data = build_risk_data(view.properties, financials)
     coords_data = build_coordinates(view.properties)
     risk_questionnaire_data = build_risk_questionnaire(quotation_metadata)
@@ -155,13 +153,13 @@ def build_proposal_data_from_domain(
     acceptance_data = build_acceptance()
     grace_period_data = build_grace_period()
     coverage_restrictions_data = build_coverage_restrictions()
-    available_documents_data = build_available_documents(["Cobertura 101 - Granizo (Pêra)"])
+    available_documents_data = build_available_documents(quotation_metadata.documents)
     excluded_risks_data = build_excluded_risks()
 
     authorization_data = build_proposal_authorization_term(
         view=view,
-        proposal_number=str(metadata.public_id)
-        if metadata.public_id is not None
+        proposal_number=str(metadata.proposal_id)
+        if metadata.proposal_id is not None
         else "",
     )
     authorization_beneficiary_data = build_proposal_beneficiary_authorization(
@@ -172,6 +170,7 @@ def build_proposal_data_from_domain(
 
     proponent_declaration_data = build_proposal_proponent_declaration()
 
+    quotation_metadata.applied_for_state_subsidy = True
     federal_subsidy_term_data = build_proposal_federal_subsidy_term(quotation_metadata)
 
     subsidy_data = build_proposal_subsidy_questions(quotation_metadata)

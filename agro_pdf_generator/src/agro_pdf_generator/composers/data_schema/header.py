@@ -18,7 +18,7 @@ def build_header(
         logo_path=str(PDF_LOGO.absolute()),
         main_coverage="Pera - Granizo",
         validity_period="",
-        reception_date=metadata.transmitted_at.strftime("%d/%m/%Y") if metadata.transmitted_at else "",
+        reception_date=metadata.transmitted_at.strftime("%d/%m/%Y - Hora: %H:%M") if metadata.transmitted_at else "",
         crop="",
         bacen_code="4304606",  # banco central
         harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",
@@ -32,7 +32,6 @@ def build_header(
         policy=str(policy_id) if policy_id is not None else "Não informado",
     )
     if coverage:
-        
         header_data.crop = repositories.CROP_TAXONOMY_DICT.get(coverage.conditions.crop.crop, "")
         header_data.validity_period = "Das 24 horas do dia " + coverage.term.start_date.strftime("%d/%m/%Y") + " até às 24 horas do dia " + "31/05/2027"
 

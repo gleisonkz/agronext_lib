@@ -86,6 +86,7 @@ class ProponentDeclarationConfig(TypedDict, total=False):
 
 
 class FederalSubsidyTermConfig(TypedDict, total=False):
+    logo_path: str
     ministry_header: str  # Título do ministério
     committee_text: str  # Comitê Gestor
     secretariat_text: str  # Secretaria-Executiva
@@ -108,6 +109,7 @@ class FederalSubsidyTermConfig(TypedDict, total=False):
 
 
 class StateSubsidyTermConfig(TypedDict, total=False):
+    logo_path: str  # Caminho para a logo do estado
     government_header: str  # Ex: "GOVERNO DO ESTADO DO PARANÁ..."
     annex_title: str  # Ex: "ANEXO III - TERMO DE RESPONSABILIDADE"
     intro_text: str  # Texto introdutório com dados do produtor

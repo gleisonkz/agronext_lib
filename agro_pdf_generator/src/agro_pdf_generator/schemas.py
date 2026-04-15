@@ -196,6 +196,7 @@ class LgpdConsentData:
     consent_text: str = ""
     signature_name: str = ""
     signature_cpf: str = ""
+    signature_cnpj: str = ""
 
 
 @dataclass
@@ -221,6 +222,7 @@ class ModalityOption:
 
 @dataclass
 class FederalSubsidyTermData:
+    logo_path: str = ""
     ministry_header: str = ""
     committee_text: str = ""
     secretariat_text: str = ""
@@ -244,6 +246,7 @@ class FederalSubsidyTermData:
 
 @dataclass
 class StateSubsidyTermData:
+    logo_path: str = ""
     government_header: str = ""
     annex_title: str = ""
     intro_text: str = ""

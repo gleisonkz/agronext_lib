@@ -832,26 +832,19 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
         return ""
 
     # Header do Ministério
-    ministry_header = data.get("ministry_header", "")
-    committee_text = data.get("committee_text", "")
-    secretariat_text = data.get("secretariat_text", "")
-    main_title = data.get("main_title", "")
+    logo_path = data.get("logo_path", "")
 
     header_html = ""
-    if ministry_header:
+    if logo_path:
+        logo_html = ""
+        if logo_path:
+            logo_html = f'''
+                <img src="{logo_path}" style="height: 240px; margin-bottom: 8px;" />
+            '''
         header_html = f"""
             <div style="text-align: center; margin-bottom: {Spacing.LG};">
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; font-weight: 600; color: {Colors.PRIMARY}; margin-bottom: 4px;">
-                    {ministry_header}
-                </div>
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-bottom: 2px;">
-                    {committee_text}
-                </div>
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-bottom: {Spacing.MD};">
-                    {secretariat_text}
-                </div>
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; font-weight: 600; color: {Colors.PRIMARY};">
-                    {main_title}
+                <div style="text-align: center; margin-bottom: 24px;">
+                    {logo_html}
                 </div>
             </div>
         """
@@ -887,7 +880,7 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
             letter = letters[i] if i < len(letters) else str(i + 1)
             items_html += f"""
                 <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-bottom: 4px;">
-                    {letter}) ({"X" if checked else " "}) {label}
+                    &nbsp;&nbsp;&nbsp;&nbsp;{letter}) ({" X " if checked else "   "}) {label}
                 </div>
             """
         modality_html = f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
@@ -1024,7 +1017,7 @@ def build_state_subsidy_term(data: StateSubsidyTermConfig) -> str:
     if not data:
         return ""
 
-    government_header = data.get("government_header", "")
+    logo_path = data.get("logo_path", "")
     annex_title = data.get("annex_title", "")
     intro_text = data.get("intro_text", "")
     declarations = data.get("declarations", [])
@@ -1034,12 +1027,16 @@ def build_state_subsidy_term(data: StateSubsidyTermConfig) -> str:
 
     # Header do governo
     header_html = ""
-    if government_header:
+    if logo_path:
+        logo_html = ""
+        if logo_path:
+            logo_html = f'''
+                <img src="{logo_path}" style="height: 80px; margin-bottom: 8px;" />
+            '''
+
         header_html = f"""
             <div style="text-align: center; margin-bottom: 24px;">
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; font-weight: 600; color: {Colors.PRIMARY};">
-                    {government_header}
-                </div>
+                {logo_html}
             </div>
         """
 
@@ -1077,10 +1074,16 @@ def build_state_subsidy_term(data: StateSubsidyTermConfig) -> str:
             f'<div style="margin-bottom: {Spacing.MD};">{items_html}</div>'
         )
 
-    # Data e local - usa o componente
-    date_location_html = (
-        build_date_location_line(date_location_text) if date_location_text else ""
-    )
+    # Data e local - texto centralizado simples
+    date_location_html = ""
+    if date_location_text:
+        date_location_html = f"""
+            <div style="text-align: center; margin-top: 24px; margin-bottom: 48px;">
+                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY};">
+                    {date_location_text}
+                </div>
+            </div>
+        """
 
     # Linha de assinatura
     signature_html = ""
@@ -1122,8 +1125,6 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
         return ""
 
     logo_path = data.get("logo_path", "")
-    government_header = data.get("government_header", "")
-    government_subheader = data.get("government_subheader", "")
     annex_title = data.get("annex_title", "")
     intro_text = data.get("intro_text", "")
     declarations = data.get("declarations", [])
@@ -1133,28 +1134,16 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
 
     # Header com logo do governo
     header_html = ""
-    if logo_path or government_header:
+    if logo_path:
         logo_html = ""
         if logo_path:
             logo_html = f'''
                 <img src="{logo_path}" style="height: 80px; margin-bottom: 8px;" />
             '''
 
-        subheader_html = ""
-        if government_subheader:
-            subheader_html = f"""
-                <div style="font-family: {Fonts.FAMILY}; font-size: 12px; color: {Colors.PRIMARY};">
-                    {government_subheader}
-                </div>
-            """
-
         header_html = f"""
             <div style="text-align: center; margin-bottom: 24px;">
                 {logo_html}
-                <div style="font-family: {Fonts.FAMILY}; font-size: 14px; font-weight: 600; color: {Colors.PRIMARY};">
-                    {government_header}
-                </div>
-                {subheader_html}
             </div>
         """
 
@@ -1209,16 +1198,12 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
         signature_label_html = ""
         if signature_text:
             signature_label_html = f"""
-                <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; text-align: center; margin-bottom: {Spacing.SM};">
-                    {signature_text}
+                <div style="text-align: center; margin-top: {Spacing.LG}; margin-bottom: {Spacing.SM};">
+                    <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; border-top: 1px solid {Colors.BORDER}; display: inline-block; padding-top: {Spacing.SM}; min-width: 300px;">
+                        {signature_text}
+                    </div>
                 </div>
             """
-
-        # Linha horizontal de assinatura (sem texto)
-        signature_line = f"""
-            <div style="border-top: 1px solid {Colors.BORDER}; width: 500px; margin: 0 auto; margin-bottom: {Spacing.MD};">
-            </div>
-        """
 
         name_line = ""
         if name_cpf_text:
@@ -1231,7 +1216,6 @@ def build_state_authorization_term(data: StateAuthorizationTermConfig) -> str:
         signature_html = f"""
             <div style="text-align: center; margin-top: {Spacing.LG};">
                 {signature_label_html}
-                {signature_line}
                 {name_line}
             </div>
         """

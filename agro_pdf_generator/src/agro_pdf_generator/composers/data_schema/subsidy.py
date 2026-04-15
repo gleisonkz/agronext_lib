@@ -12,7 +12,8 @@ from ...schemas import (
 )
 
 RESOURCES_DIR = Path(__file__).resolve().parents[4] / "resources"
-STATE_AUTHORIZATION_LOGO_PATH = RESOURCES_DIR / "pdf" / "images" / "Logo Parana.png"
+STATE_LOGO_PATH = RESOURCES_DIR / "pdf" / "images" / "Logo_Parana.png"
+FEDERAL_LOGO_PATH = RESOURCES_DIR / "pdf" / "images" / "Logo_Federal.png"
 
 
 def _to_sim_nao(value: bool | None) -> str:
@@ -47,14 +48,16 @@ def build_proposal_state_subsidy_term(
 
     intro_text = (
         "Pelo presente Termo, eu, ______________________________________, produtor(a) rural, "
-        f"inscrito(a) no Cadastro do Produtor Rural (CAD/PRO) sob nº {quotation_metadata.cadpro or '________________'}, "
+        "inscrito(a) no Cadastro do Produtor Rural (CAD/PRO) sob nº _________________, "
+        "(qualificação civil) __________________________________, residente e domiciliado no município de ________________________,"
+        " Estado do Paraná, com propriedade rural em exploração no município ____________________________, Paraná, "
         "na condição de beneficiário(a) da Subvenção Econômica estadual ao prêmio do seguro rural, "
-        "na modalidade __________________________ (indicar agrícola, pecuário ou florestal e o tipo de cobertura), "
-        "para a cultura/atividade __________________________, declaro que:"
+        "na modalidade (indicar agrícola, pecuário ou florestal e o tipo de cobertura multirriscos, nomeado...) __________________________ , "
+        "para a cultura de __________________________, declaro que:"
     )
 
     declarations = [
-        "I - Atender a todos os requisitos, referente ao exercício de 2024, para fazer jus à Subvenção Econômica estadual ao prêmio do seguro rural, as regras estabelecidas na Lei nº 16.166/09, regulamentada pelo Decreto nº 3.375/2019, os normativos aprovados pelo Comitê Gestor para a Subvenção ao Prêmio de Seguro Rural e homologadas pelo titular da Secretaria de Estado da Agricultura e Abastecimento;",
+        "I - Atender a todos os requisitos, referente ao exercício de 20__, para fazer jus à Subvenção Econômica estadual ao prêmio do seguro rural, as regras estabelecidas na Lei nº 16.166/09, regulamentada pelo Decreto nº 3.375/2019, os normativos aprovados pelo Comitê Gestor para a Subvenção ao Prêmio de Seguro Rural e homologadas pelo titular da Secretaria de Estado da Agricultura e Abastecimento;",
         "II - Estar adimplente com a Administração Pública Estadual, bem como estar ciente de que será verificada a minha regularidade perante a FOMENTO PARANÁ e ao FDE e, ainda, será verificada minha regularidade junto ao CADIN estadual, e de que, caso haja alguma restrição, não poderei me beneficiar da Subvenção Econômica estadual para o pagamento do prêmio do seguro ao seguro rural;",
         "III - Estar ciente de que não me é permitido receber a Subvenção Econômica ao prêmio do seguro rural, para a mesma atividade e área em que já existe cobertura do Programa de Garantia de Atividade Agropecuária (PROAGRO);",
         "IV - Estar ciente de que a Subvenção Econômica estadual não é complementar à Subvenção Econômica federal, devendo a aplicação do percentual e limite máximo da Subvenção Econômica Estadual observar o valor do prêmio do seguro rural;",
@@ -67,13 +70,14 @@ def build_proposal_state_subsidy_term(
     ]
 
     return StateSubsidyTermData(
+        logo_path=str(STATE_LOGO_PATH),
         government_header="GOVERNO DO ESTADO DO PARANÁ. SECRETARIA DE AGRICULTURA E ABASTECIMENTO SEAB DEPARTAMENTO DE ECONOMIA RURAL - DERAL.",
         annex_title="ANEXO III - TERMO DE RESPONSABILIDADE",
         intro_text=intro_text,
         declarations=declarations,
-        date_location_text="______________________________, _____ de _____________________ de ________",
-        signature_text="Assinatura do Produtor Rural ou Pessoa Jurídica, o que couber",
-        name_cpf_text="Nome ______________________________________ - CPF/CNPJ ______________________________________",
+        date_location_text="______________________________, _____ de _____________________ de ________<br/><br/>",
+        signature_text="Assinatura do Produtor Rural ou Pessoa Jurídica, o que couber<br/><br/>",
+        name_cpf_text="Nome ______________________________________ - CPF ou CNPJ ______________________________________ do Produtor Rural ou Pessoa Jurídica",
     )
 
 
@@ -87,23 +91,26 @@ def build_proposal_state_authorization_term(
         "Pelo presente Termo eu, ______________________________________, produtor(a) rural inscrito(a) no CPF/MF "
         "(CNPJ se for pessoa jurídica) nº ____________________________, portador(a) da Carteira de Identidade nº "
         "____________________________, residente e domiciliado(a) no município de ____________________________, "
-        f"com registro no CAD PRO nº {quotation_metadata.cadpro or '________________________'}, expressamente autorizo:"
+        "à Rua __________________, nº _________, CEP ________________ com propriedade rural no município de "
+        "_______________________"
+        "com registro no CAD PRO nº ________________________, expressamente autorizo:"
     )
 
     declarations = [
-        "I - que o pagamento do valor referente à Subvenção Econômica estadual ao Prêmio de Seguro Rural que me foi concedida com recursos do Fundo de Desenvolvimento Econômico do Estado do Paraná (FDE), referente ao seguro rural da proposta, por meio de seu gestor, a Fomento do Paraná, seja feito diretamente à Seguradora Essor Seguros S.A., CNPJ nº 14.525.684/0001-50, com sede no município do Rio de Janeiro, Estado do Rio de Janeiro.",
+        "I - que o pagamento do valor referente à Subvenção Econômica estadual ao Prêmio de Seguro Rural que me foi concedida com recursos do Fundo de Desenvolvimento Econômico do Estado do Paraná (FDE), referente ao seguro _____________________ (nomear a cultura ou espécie animal), para a safra ________/20____, por meio de sua gestora a Fomento do Paraná seja feito diretamente à Seguradora Essor Seguros S.A., CNPJ nº 14.525.684/0001-50, com sede no município do Rio de Janeiro, Estado do Rio de Janeiro.",
         "II - Autorizo que o valor total da Subvenção Econômica concedida pelo Estado do Paraná, com recursos do Tesouro estadual, aportados no Fundo de Desenvolvimento Econômico (FDE), ora concedida, seja utilizada exclusivamente para deduzir do valor total do prêmio de seguro rural por mim contratado com a Seguradora Essor Seguros S.A., CNPJ nº 14.525.684/0001-50, com sede no município do Rio de Janeiro, Estado do Rio de Janeiro.",
+        "X - Para todos os fins de direito, declaro que as informações por mim prestadas no presente Termo e na proposta do seguro são completas e verídicas, não contendo quaisquer omissões ou inexatidões.",
     ]
 
     return StateAuthorizationTermData(
-        logo_path=str(STATE_AUTHORIZATION_LOGO_PATH),
+        logo_path=str(STATE_LOGO_PATH),
         government_header="GOVERNO DO ESTADO",
         government_subheader="SECRETARIA DA AGRICULTURA E DO ABASTECIMENTO",
         annex_title="ANEXO IV – TERMO DE AUTORIZAÇÃO",
         intro_text=intro_text,
         declarations=declarations,
-        date_location_text="______________________________, ____ de __________________ de ______.",
-        signature_text="Assinatura do Produtor Rural ou Pessoa Jurídica, o que couber.",
+        date_location_text="______________________________, ____ de __________________ de ______.<br/><br/>",
+        signature_text="Assinatura do Produtor Rural ou Pessoa Jurídica, o que couber.<br/><br/>",
         name_cpf_text="Nome ______________________________________  - CPF ou CNPJ ______________________________________ do Produtor Rural ou Pessoa Jurídica",
     )
 
@@ -115,26 +122,27 @@ def build_proposal_federal_subsidy_term(
         return FederalSubsidyTermData()
 
     declarations = [
-        "a) Concordo com a fiscalização a ser realizada por preposto do Ministério da Agricultura, Pecuária e Abastecimento – MAPA; autorizo o seu acesso ao empreendimento objeto do seguro rural subvencionado e concordo em oferecer as condições necessárias ao desempenho do trabalho, facultando inclusive o acesso aos documentos relativos ao empreendimento;",
-        "b) Estou ciente de que não posso contratar seguro rural, com subvenção econômica do Governo Federal ao prêmio, para a mesma lavoura em que eu for beneficiário do Programa de Garantia da Atividade Agropecuária – PROAGRO. Por isso, informo que a cultura referente a esta proposta, para a qual estou pleiteando a subvenção federal: ( ) Não é beneficiária do PROAGRO; ( ) É beneficiária do PROAGRO, na mesma propriedade rural e, por isso, estou anexando a esta proposta croqui ou documento contendo as coordenadas geográficas da lavoura que deverá ser objeto de subvenção federal;",
-        "c) O valor recebido do PSR do Governo Federal, por ano civil, a partir de 1º de janeiro de 2024, não ultrapassa o limite total de R$ 120.000,00 (cento e vinte mil reais) e de R$ 60.000,00 (sessenta mil reais) em cada um dos grupos de atividades de seguro abaixo: 1. Grãos; 2. Frutas, olerícolas, café e cana-de-açúcar; 3. Florestas; 4. Pecuária; 5. Aquicultura;",
-        f"d) Estou ciente de que será consultada a minha adimplência junto ao Cadastro Informativo de créditos não quitados do setor público federal (Cadin), em decorrência do disposto no artigo 60 da Lei 10.522, de 19 de julho de 2002, e de que, caso haja alguma restrição, não poderei me beneficiar da subvenção ao prêmio do seguro rural. Situação informada: {quotation_metadata.cadin_status or 'Não informado'};",
-        "e) Comprometo-me a cumprir as recomendações estabelecidas nas portarias de zoneamento agrícola de risco climático do MAPA (cultivar, data do plantio e tipo de solo), na forma disciplinada no Plano Trienal do Seguro Rural – PTSR;",
-        "f) Caso eu descumpra qualquer condição do Programa e, consequentemente, haja o cancelamento da subvenção federal ao prêmio, estou ciente de que terei de devolver integralmente o valor da subvenção federal acrescido das sanções previstas no Regulamento de Operacionalização da Subvenção;",
-        "g) Estou anexando à Proposta de Seguro, para efeito de comprovação de regularidade fiscal (somente para pessoa jurídica ou firma individual): Certificado de Regularidade do FGTS e certidão conjunta dos débitos da Secretaria da Receita Federal e quanto às contribuições sociais;",
-        "h) Estou ciente de que esta proposta de seguro não confere direito subjetivo à subvenção federal, pois ainda será submetida ao MAPA, podendo ser aprovada ou reprovada, de acordo com os critérios estabelecidos no PSR, principalmente no que se refere ao limite orçamentário do Programa;",
-        "i.1) A contratação desta apólice de seguro rural está vinculada a uma exigência de um contrato de financiamento agrícola? ( ) Não está vinculada; ( ) Sim, está vinculada. Informar o nome da instituição financeira e verificar a Seção II: ________________________________;",
-        "i.2) Se sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora? ( ) Não foi oferecido; ( ) Sim, foi oferecido. Informar o(s) nome(s) da(s) seguradora(s): ________________________________;",
-        "j) As informações por mim prestadas no presente Termo e na Proposta de Seguro são completas e verídicas, não contendo quaisquer omissões ou inexatidões.",
+        "<br/>a) Concordo com a fiscalização a ser realizada por preposto do Ministério da Agricultura, Pecuária e Abastecimento – MAPA; autorizo o seu acesso ao empreendimento objeto do seguro rural subvencionado e concordo em oferecer as condições necessárias ao desempenho do trabalho, facultando inclusive o acesso aos documentos relativos ao empreendimento;",
+        "<br/>b) Estou ciente de que não posso contratar seguro rural, com subvenção econômica do Governo Federal ao prêmio, para a mesma lavoura em que eu for beneficiário do Programa de Garantia da Atividade Agropecuária – PROAGRO. Por isso, informo que a cultura referente a esta proposta, para a qual estou pleiteando a subvenção federal:<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Não é beneficiária do PROAGRO;<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) É beneficiária do PROAGRO, na mesma propriedade rural e, por isso, estou anexando a esta proposta croqui ou documento contendo as coordenadas geográficas da lavoura que deverá ser objeto de subvenção federal;",
+        "<br/>c) O valor recebido do PSR do Governo Federal, por ano civil, a partir de 1º de janeiro de 2024, não ultrapassa o limite total de R$ 120.000,00 (cento e vinte mil reais) e de R$ 60.000,00 (sessenta mil reais) em cada um dos grupos de atividades de seguro abaixo:<br/><br/>1. Grãos;<br/>2. Frutas, olerícolas, café e cana-de-açúcar;<br/>3. Florestas;<br/>4. Pecuária;<br/>5. Aquicultura;",
+        "<br/>d) Estou ciente de que será consultada a minha adimplência junto ao Cadastro Informativo de créditos não quitados do setor público federal (Cadin), em decorrência do disposto no artigo 6º da Lei 10.522, de 19 de julho de 2002, e de que, caso haja alguma restrição, não poderei me beneficiar da subvenção ao prêmio do seguro rural.;",
+        "<br/>e) Comprometo-me a cumprir as recomendações estabelecidas nas portarias de zoneamento agrícola de risco climático do MAPA (cultivar, data do plantio e tipo de solo), na forma disciplinada no Plano Trienal do Seguro Rural – PTSR;",
+        "<br/>f) Caso eu descumpra qualquer condição do Programa e, consequentemente, haja o cancelamento da subvenção federal ao prêmio, estou ciente de que terei de devolver integralmente o valor da subvenção federal acrescido das sanções previstas no Regulamento de Operacionalização da Subvenção;",
+        "<br/>g) Estou anexando à Proposta de Seguro, para efeito de comprovação de regularidade fiscal (somente para pessoa jurídica ou firma individual):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certificado de Regularidade do FGTS, na forma do artigo 27, alínea \"c\", da lei nº 8.036, de 11/5/1990, e do artigo 44 inciso III, do Decreto nº 99.684, de 8/11/1990;<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certidão da Secretaria de Receira Previdenciária quanto às contribuições sociais, na forma estabelecida no Decreto nº 5.586, de 19 de novembro de 2005",
+        "<br/>h) <strong><u>Estou ciente de que esta proposta de seguro não confere direito subjetivo à subvenção federal, pois ainda será submetida ao MAPA, podendo ser aprovada ou reprovada, de acordo com os critérios estabelecidos no PSR, principalmente no que se refere ao limite orçamentário do Programa;</u></strong>",
+        "<br/>i.1) A contratação desta apólice de seguro rural está vinculada a uma exigência de um contrato de financiamento agrícola?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Não está vinculada;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Sim, está vinculada. Informar o nome da instituição financeira e verificar a Seção II: ________________________________;",
+        "<br/>i.2) Se sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Não foi oferecido;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Sim, foi oferecido. <strong>Informar o(s) nome(s) da(s) seguradora(s):</strong> ________________________________;",
+        "<br/>j) As informações por mim prestadas no presente Termo e na Proposta de Seguro são completas e verídicas, não contendo quaisquer omissões ou inexatidões.",
     ]
 
     return FederalSubsidyTermData(
+        logo_path=str(FEDERAL_LOGO_PATH),
         ministry_header="MINISTÉRIO DA AGRICULTURA, PECUÁRIA E ABASTECIMENTO",
         committee_text="Comitê Gestor Interministerial do Seguro Rural",
         secretariat_text="Secretaria-Executiva",
         main_title="TERMO DE RESPONSABILIDADE PARA PARTICIPAÇÃO NO PROGRAMA DE SUBVENÇÃO AO PRÊMIO DO SEGURO RURAL",
-        section_title="SEÇÃO I (para preenchimento pelo beneficiário):",
-        intro_text="Informo que estou ciente de minha responsabilidade como beneficiário do Programa de Subvenção ao Prêmio do Seguro Rural – PSR: a) Na modalidade agrícola, para a cultura de __________________________; b) Na modalidade pecuário; c) Na modalidade florestas; d) Na modalidade aquícola.",
+        section_title="<strong>SEÇÃO I (para preenchimento pelo beneficiário):</strong>",
+        intro_text="Informo que estou ciente de minha responsabilidade como beneficiário do Programa de Subvenção ao Prêmio do Seguro Rural – PSR:",
         modality_options=[
             ModalityOption(
                 label="Na modalidade agrícola, para a cultura de __________________________",
@@ -144,20 +152,20 @@ def build_proposal_federal_subsidy_term(
             ModalityOption(label="Na modalidade florestas", checked=False),
             ModalityOption(label="Na modalidade aquícola", checked=False),
         ],
-        declaration_intro="Para o correto enquadramento do seguro que estou propondo, DECLARO que:",
+        declaration_intro="<br/><br/>Para o correto enquadramento do seguro que estou propondo, DECLARO que:",
         declarations=declarations,
         signature_date_text="Data: ____/____/__________",
-        signature_text="Assinatura do Proponente: ____________________________________________",
+        signature_text="<strong>Assinatura do Proponente:</strong> ____________________________________________",
         section2_title="SEÇÃO II (para preenchimento pelo responsável da instituição financeira onde foi realizado o contrato de financiamento agrícola, se for o caso)",
-        section2_question="a) Foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora (Lei nº 13.195, de 25 de novembro de 2015)?",
+        section2_question="  a) Foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora (Lei nº 13.195, de 25 de novembro de 2015)?",
         section2_options=[
-            "Não foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras;",
-            "Não foi oferecido ao financiado pois o produtor apresentou uma outra apólice de seguro;",
-            "Não foi oferecido ao financiado pois não há outra seguradora operando neste município para essa cultura/modalidade;",
-            "Sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras. Informar o(s) nome(s) da(s) seguradora(s): ________________________________;",
+            "Não foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras;<br/><br/>",
+            "Não foi oferecido ao financiado pois o produtor apresentou uma outra apólice de seguro;<br/><br/>",
+            "Não foi oferecido ao financiado pois não há outra seguradora operando neste município para essa cultura/modalidade;<br/><br/>",
+            "Sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras. <strong>Informar o(s) nome(s) da(s) seguradora(s):</strong> ________________________________;<br/><br/>",
         ],
-        section2_date_text="Data: ____/____/__________",
-        section2_responsible_text="Dados do responsável da instituição financeira: Nome completo: _______________________________________________",
-        section2_cpf_text="CPF: ________________________________",
-        section2_signature_text="Assinatura: ________________________________",
+        section2_date_text="<br/><strong>Data:</strong> ____/____/__________",
+        section2_responsible_text="<strong>Dados do responsável da instituição financeira:<br/>Nome completo:</strong> _______________________________________________",
+        section2_cpf_text="<br/><strong>CPF:</strong> ________________________________",
+        section2_signature_text="<br/><strong>Assinatura:</strong> ________________________________",
     )

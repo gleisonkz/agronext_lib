@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import agronext_procurement_repositories as repositories
 from agronext_procurement.views.common import CoverageFinancialsView
 
@@ -12,9 +14,9 @@ def _build_installment_rows(billing_info: list | None) -> list[list[str]]:
     for installment in billing_info:
         rows.append(
             [
-                str(installment.installment_number),
+                str(installment.installment_number).rjust(2, "0"),
                 installment.total_amount,
-                str(installment.due_date),
+                datetime.strptime(installment.due_date, "%Y-%m-%d").strftime("%d/%m/%Y"),
             ]
         )
 
@@ -58,39 +60,7 @@ def _apply_subsidy_installment_rule(
     return filtered_installments
 
 
-def build_quotation_payment(
-    metadata: repositories.QuotationMetadata,
-    financials: CoverageFinancialsView,
-    broker_data: BrokerData,
-    coverage_data: CoverageData,
-    billing_info: list | None = None,
-) -> PaymentData:
-    # Payment
-    payment_data = PaymentData(
-        payment_method="",
-        number_of_installments="",
-        net_premium="",
-        policy_cost="R$ 0,00",
-        iof="Isento",
-        total_premium="",
-        installments=[],
-    )
-
-    payment_data.payment_method = metadata.payment_condition
-    payment_data.number_of_installments = str(metadata.number_of_installments)
-    payment_data.net_premium = coverage_data.net_premium
-    payment_data.total_premium = coverage_data.applicant_value
-
-    if metadata.number_of_installments:
-        broker_data.commission_pct = f"{financials.broker_comission_rate:.2f} %"
-        payment_data.installments = _apply_subsidy_installment_rule(
-            _build_installment_rows(billing_info),
-            coverage_data,
-        )
-    return payment_data
-
-
-def build_proposal_payment(
+def build_payment(
     metadata: repositories.QuotationMetadata,
     financials: CoverageFinancialsView,
     broker_data: BrokerData,

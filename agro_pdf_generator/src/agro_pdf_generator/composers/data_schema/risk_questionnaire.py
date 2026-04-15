@@ -46,7 +46,7 @@ def build_risk_questionnaire(
     if metadata.another_plot_same_crop:
         other_culture_lands_question.answer = "Sim"
         other_culture_lands_question.extra_fields = [
-            ("Distância", metadata.another_plot_range or "Não informado"),
+            ("Distância", metadata.another_plot_range.replace("-", " ") if metadata.another_plot_range else "Não informado"),
         ]
     else:
         other_culture_lands_question.answer = "Não"
