@@ -101,11 +101,10 @@ class QuotationBlockBuilder:
 
     def _build_applicant_block(self) -> BlockConfig:
         p = self._data.applicant
-        return BlockConfig(
-            type=BlockType.INFO_TABLE,
-            section_header="Dados Iniciais",
-            estimated_height=100,
-            rows=[
+        document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
+        is_cnpj = len(document) == 14
+
+        rows = [
                 [
                     {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
                     {
@@ -120,17 +119,80 @@ class QuotationBlockBuilder:
                     },
                     {"label": "Nome social", "value": p.social_name, "width": "25%"},
                 ],
-                [
-                    {"label": "E-mail", "value": p.main_email, "width": "25%"},
-                    {
-                        "label": "Telefone",
-                        "value": self._format_phone(p.phone_number),
-                        "width": "25%",
-                    },
-                    {"label": "Tipo", "value": p.phone_type, "width": "25%"},
-                    {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
-                ],
-            ],
+        ]
+
+        if is_cnpj:
+            rows.append([
+                {
+                    "label": "Documento",
+                    "value": "RG",
+                    "width": "25%",
+                },
+                {
+                    "label": "RG",
+                    "value": p.document_number,
+                    "width": "25%",
+                },
+                {
+                    "label": "Órgão expedidor",
+                    "value": p.issuing_authority,
+                    "width": "25%",
+                },
+                {
+                    "label": "Data de expedição",
+                    "value": p.issue_date,
+                    "width": "25%",
+                },
+            ])
+        
+        rows.append([
+            {"label": "E-mail", "value": p.main_email, "width": "25%"},
+            {
+                "label": "Telefone",
+                "value": self._format_phone(p.phone_number),
+                "width": "25%",
+            },
+            {
+                "label": "Tipo",
+                "value": p.phone_type,
+                "width": "25%",
+            },
+            {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
+        ])
+
+        if is_cnpj:
+            rows.append([
+                {
+                    "label": "Atividade economica",
+                    "value": p.business_activity,
+                    "width": "33.33%",
+                },
+                {
+                    "label": "Receita operacional brutal anual",
+                    "value": p.annual_gross_revenue,
+                    "width": "33.33%",
+                },
+                {
+                    "label": "Patrimonio liquido",
+                    "value": p.net_worth,
+                    "width": "33.34%",
+                },
+            ])
+        else:
+            rows.append([
+                {
+                    "label": "Profissão",
+                    "value": p.professional_category,
+                    "width": "50%",
+                },
+                {"label": "Renda mensal", "value": p.income, "width": "50%"},
+            ])
+
+        return BlockConfig(
+            type=BlockType.INFO_TABLE,
+            section_header="Dados Iniciais",
+            estimated_height=140,
+            rows=rows,
         )
 
     def _build_address_block(self) -> BlockConfig:
