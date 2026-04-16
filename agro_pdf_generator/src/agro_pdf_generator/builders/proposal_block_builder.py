@@ -1043,6 +1043,9 @@ class ProposalBlockBuilder:
         ben = self._data.authorization_beneficiary
         current_year = date.today().year
 
+        if not ben.beneficiary_name:
+            return []
+
         return [
             BlockConfig(
                 type=BlockType.AUTHORIZATION_BENEFICIARY,
