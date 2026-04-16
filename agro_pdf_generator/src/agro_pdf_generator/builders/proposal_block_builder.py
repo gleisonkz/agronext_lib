@@ -184,7 +184,7 @@ class ProposalBlockBuilder:
                 ],
         ]
 
-        if is_cnpj:
+        if not is_cnpj:
             rows.append([
                 {
                     "label": "Documento",
