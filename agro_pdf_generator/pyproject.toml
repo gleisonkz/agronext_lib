@@ -1,13 +1,13 @@
 [project]
 name = "agro-pdf-generator"
-version = "0.0.14"
+version = "0.0.15"
 description = "Generic PDF generation library with automatic pagination"
 authors = [{ name = "AgroNext", email = "dev@agronext.com" }]
 requires-python = ">=3.12"
 dependencies = [
     "weasyprint>=66.0",
     "pydantic>=2.0.0",
-    "agronext-procurement>=0.0.75",
+    "agronext-procurement>=0.0.76",
     "agronext-procurement-repositories>=0.0.86",
 ]
 

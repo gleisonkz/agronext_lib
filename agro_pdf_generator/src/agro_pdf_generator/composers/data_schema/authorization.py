@@ -9,6 +9,19 @@ RATIFICATION_TEXT = (
 )
 
 
+def _bank_code_to_name(bank_code: str | None) -> str:
+    if not bank_code:
+        return ""
+
+    normalized_code = str(bank_code).strip()
+    try:
+        bank_code_enum = procurement.BankCodes(normalized_code)
+    except ValueError:
+        return normalized_code
+
+    return procurement.BankDisplayNames[bank_code_enum.name].value
+
+
 def build_proposal_authorization_term(
     view: procurement.ProposalView,
     proposal_number: str,
@@ -48,7 +61,7 @@ def build_proposal_authorization_term(
         proposal_number=proposal_number,
         has_account="Sim" if has_bank_account else "Não",
         authorization_text=authorization_text,
-        bank_name=banking_details.bank_code if banking_details else "",
+        bank_name=_bank_code_to_name(banking_details.bank_code) if banking_details else "",
         agency_number=agency_number,
         agency_digit=agency_digit,
         account_number=account_number if has_bank_account else "",
@@ -72,15 +85,35 @@ def build_proposal_beneficiary_authorization(
     authorization_text = "Nessa situação, autorizo que o crédito referente ao pagamento de qualquer restituição ou devolução de prêmio atinente ao seguro proposto seja efetuado em conta bancária de titularidade do beneficiário da garantia, conforme dados abaixo indicado, de minha responsabilidade."
     observation_text = "*É obrigatória a manifestação de vontade do próprio proponente para autorizar o crédito na conta de beneficiário, sendo expressamente vedada esta declaração por terceiros (incluindo corretor de seguros)."
 
-    if not beneficiaries:
-        return AuthorizationBeneficiaryData()
-
     premium_refund_beneficiary = next(
         (beneficiary for beneficiary in beneficiaries if beneficiary.premium_refund),
         None,
-    )
+    ) if beneficiaries else None
+
     if premium_refund_beneficiary is None:
-        return AuthorizationBeneficiaryData()
+        return AuthorizationBeneficiaryData(
+            beneficiary_name="",
+            proposal_number="",
+            authorization_question="Autoriza o pagamento ou devolução de crédito em conta bancária do beneficiário da garantia?",
+            authorization_answer="Não",
+            authorization_text=authorization_text,
+            beneficiary_full_name="",
+            beneficiary_cpf="",
+            beneficiary_relationship="",
+            bank_name="",
+            agency_number="",
+            agency_digit="",
+            account_number="",
+            account_digit="",
+            account_type="",
+            joint_account="",
+            pix_type="",
+            pix_key="",
+            observation_text=observation_text,
+            discharge_text=DISCHARD_TEXT,
+            liability_text=LIABILITY_TEXT,
+            ratification_text=RATIFICATION_TEXT,
+        )
 
     if isinstance(premium_refund_beneficiary, procurement.NPBeneficiaryView):
         beneficiary_full_name = premium_refund_beneficiary.identity.full_name
@@ -114,7 +147,7 @@ def build_proposal_beneficiary_authorization(
         beneficiary_full_name=beneficiary_full_name,
         beneficiary_cpf=beneficiary_cpf,
         beneficiary_relationship=premium_refund_beneficiary.relationship_to_applicant,
-        bank_name=banking_details.bank_code if banking_details else "",
+        bank_name=_bank_code_to_name(banking_details.bank_code) if banking_details else "",
         agency_number=agency_number,
         agency_digit=agency_digit,
         account_number=account_number if banking_details else "",

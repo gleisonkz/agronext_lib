@@ -59,7 +59,7 @@ def build_quotation_data_from_domain(
     )
     applicant_data = build_applicant(view)
 
-    coverage_data = build_coverage(view, coverage)
+    coverage_data = build_coverage(view, coverage, metadata)
     broker_data = build_broker(broker_details)
     payment_data = build_payment(
         metadata=metadata,
@@ -78,8 +78,8 @@ def build_quotation_data_from_domain(
     coverage_restrictions_data = build_coverage_restrictions()
     available_documents_data = build_available_documents(metadata.documents)
     excluded_risks_data = build_excluded_risks()
-    notifications_data = build_proponent_notifications()
-    declarations_data = build_declarations()
+    notifications_data = build_proponent_notifications(is_quotation=True)
+    declarations_data = build_declarations(is_quotation=True)
 
     data = PDFData(
         header=header_data,
@@ -130,7 +130,7 @@ def build_proposal_data_from_domain(
         applicant_data, quotation_metadata.has_political_exposure
     )
 
-    coverage_data = build_coverage(view, coverage)
+    coverage_data = build_coverage(view, coverage, quotation_metadata)
     broker_data = build_broker(broker_details)
     payment_data = build_payment(
         metadata=quotation_metadata,
@@ -151,10 +151,12 @@ def build_proposal_data_from_domain(
     )
 
     acceptance_data = build_acceptance()
+    notifications_data = build_proponent_notifications(is_quotation=False)
     grace_period_data = build_grace_period()
     coverage_restrictions_data = build_coverage_restrictions()
     available_documents_data = build_available_documents(quotation_metadata.documents)
     excluded_risks_data = build_excluded_risks()
+    declarations_data = build_declarations(is_quotation=False)
 
     authorization_data = build_proposal_authorization_term(
         view=view,
@@ -170,7 +172,6 @@ def build_proposal_data_from_domain(
 
     proponent_declaration_data = build_proposal_proponent_declaration()
 
-    quotation_metadata.applied_for_state_subsidy = True
     federal_subsidy_term_data = build_proposal_federal_subsidy_term(quotation_metadata)
 
     subsidy_data = build_proposal_subsidy_questions(quotation_metadata)
@@ -201,11 +202,13 @@ def build_proposal_data_from_domain(
         risk_questionnaire=risk_questionnaire_data,
         authorized_persons=authorized_data,
         information_html_blocks=acceptance_data,
+        propopent_notifications_html_block=notifications_data,
         grace_period_html=grace_period_data,
         coverage_restrictions_html=coverage_restrictions_data,
         available_documents_html=available_documents_data,
         proponent_declaration=proponent_declaration_data,
         excluded_risks_html=excluded_risks_data,
+        declarations_and_commitments_html_block=declarations_data,
         observations=quotation_metadata.observation or "Não informado",
         state_authorization_term=state_authorization_term_data,
         state_subsidy_term=state_subsidy_term_data,

@@ -34,11 +34,30 @@ def build_risk_questionnaire(
     if metadata.all_land_declared:
         all_land_declared_question.answer = "Sim"
     else:
+        land_not_declared_reason = metadata.land_not_declared_reason or "Não informado"
+        normalized_reason = land_not_declared_reason.strip().casefold()
+
+        extra_fields = [("Motivo", land_not_declared_reason)]
+        if normalized_reason == "essor":
+            extra_fields.append(
+                (
+                    "Informe o número do contrato",
+                    metadata.another_insurance_policy_number or "Não informado",
+                )
+            )
+        elif normalized_reason in {"proagro", "arrendamento", "contrato de arrendamento"}:
+            # Proagro and Arrendamento do not require an additional detail field.
+            pass
+        else:
+            extra_fields.append(
+                (
+                    "Nome da Seguradora",
+                    metadata.other_insurance_company_name or "Não informado",
+                )
+            )
+
         all_land_declared_question.answer = "Não"
-        all_land_declared_question.extra_fields = [
-            ("Motivo", metadata.land_not_declared_reason or "Não informado"),
-            ("Nome da Seguradora", metadata.other_insurance_company_name or "Não informado"),
-        ]
+        all_land_declared_question.extra_fields = extra_fields
 
     other_culture_lands_question = RiskQuestionItem(
         question="O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
@@ -57,6 +76,12 @@ def build_risk_questionnaire(
     )
 
     risk_questionnaire_data = RiskQuestionnaireData(
+        attention_title="Atenção:",
+        attention_text=(
+            "É fundamental que todas as informações fornecidas na formação do contrato de seguro sejam completas e "
+            "precisas. O descumprimento do dever de informar pode resultar na perda de direitos ou na anulação do "
+            "contrato de seguro. Caso tenha dúvidas sobre quais informações são relevantes, consulte nosso atendimento"
+        ),
         questions=[
             another_insurance_question,
             pre_existing_damages_question,

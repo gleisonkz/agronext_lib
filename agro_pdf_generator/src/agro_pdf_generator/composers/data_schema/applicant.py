@@ -3,6 +3,27 @@ import agronext_procurement as procurement
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
 
+
+_REVENUE_RANGE_LABELS = {
+    procurement.RevenueRange.UP_TO_1_2M.value: "Até 1.200.000,00",
+    procurement.RevenueRange.FROM_1_2M_TO_10_5M.value: "De 1.200.000,01 até 10.500.000,00",
+    procurement.RevenueRange.FROM_10_5M_TO_60M.value: "De 10.500.000,01 até 60.000.000,00",
+    procurement.RevenueRange.ABOVE_60M.value: "Acima de 60.000.000,00",
+}
+
+
+def _format_revenue_range(value: object | None) -> str:
+    if value is None:
+        return "Não informado"
+
+    raw_value = getattr(value, "value", value)
+    normalized = str(raw_value).strip()
+
+    if not normalized:
+        return "Não informado"
+
+    return _REVENUE_RANGE_LABELS.get(normalized, normalized)
+
 def _format_phone(value: object | None) -> str:
     if value is None:
         return ""
@@ -54,6 +75,9 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         is_whatsapp="Não informado",
         professional_category="Não informado",
         income="Não informado",
+        business_activity="Não informado",
+        annual_gross_revenue="Não informado",
+        net_worth="Não informado",
     )
     if isinstance(view.applicant, procurement.NPApplicantView):
         identity = view.applicant.identity
@@ -84,6 +108,9 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         applicant_data.name = identity.trade_name
         applicant_data.cpf = identity.cnpj.number
         applicant_data.document_number = view.applicant.document_number
+        applicant_data.business_activity = identity.business_activity or "Não informado"
+        applicant_data.annual_gross_revenue = _format_revenue_range(identity.gross_revenue)
+        applicant_data.net_worth = _format_revenue_range(identity.net_worth)
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
     return applicant_data

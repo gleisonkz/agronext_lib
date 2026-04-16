@@ -18,7 +18,7 @@ def build_header(
         logo_path=str(PDF_LOGO.absolute()),
         main_coverage="Pera - Granizo",
         validity_period="",
-        reception_date=metadata.transmitted_at.strftime("%d/%m/%Y - Hora: %H:%M") if metadata.transmitted_at else "",
+        reception_date=metadata.transmitted_at.strftime("%d/%m/%Y - Hora: %Hh%M") if metadata.transmitted_at else "",
         crop="",
         bacen_code="4304606",  # banco central
         harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",

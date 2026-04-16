@@ -379,12 +379,9 @@ def build_section_second_header(title: str) -> str:
     return f"""
         <div style="border: 1px solid {Colors.BORDER}; border-radius: {Layout.BORDER_RADIUS};
                     min-height: 32px; padding: {Spacing.MD}; margin-bottom: {Spacing.MD}; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <span style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM};
-                            font-weight: {Fonts.WEIGHT_NORMAL}; line-height: {LineHeight.NORMAL};
-                            color: {Colors.PRIMARY}; white-space: normal; word-wrap: break-word;">{title}</span>
-                <div style="flex: 1; height: 1px; background: {Colors.BORDER}; min-width: 80px;"></div>
-            </div>
+            <div style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM};
+                        font-weight: {Fonts.WEIGHT_NORMAL}; line-height: {LineHeight.NORMAL};
+                        color: {Colors.PRIMARY}; white-space: normal; word-wrap: break-word;">{title}</div>
         </div>
     """
 
@@ -833,6 +830,7 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
 
     # Header do Ministério
     logo_path = data.get("logo_path", "")
+    main_title = data.get("main_title", "")
 
     header_html = ""
     if logo_path:
@@ -852,6 +850,18 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
     # Seção título e intro
     section_title = data.get("section_title", "")
     intro_text = data.get("intro_text", "")
+
+    main_title_html = (
+        f"""
+        <div style="display: flex; justify-content: center; margin-bottom: {Spacing.LG};">
+            <div style="font-family: {Fonts.FAMILY}; font-size: 18px; font-weight: 700; color: {Colors.PRIMARY}; line-height: 1.35; text-align: center; max-width: 90%; margin: 0 auto;">
+                {main_title}
+            </div>
+        </div>
+    """
+        if main_title and section_title
+        else ""
+    )
 
     section_html = (
         f"""
@@ -1003,6 +1013,7 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
     return f"""
         <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-top: 16px; margin-bottom: {Spacing.LG};">
             {header_html}
+            {main_title_html}
             {section_html}
             {modality_html}
             {declaration_intro_html}

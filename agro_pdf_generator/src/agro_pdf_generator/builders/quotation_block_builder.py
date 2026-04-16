@@ -54,17 +54,17 @@ class QuotationBlockBuilder:
                 [
                     {
                         "label": "Cotação de Seguro Nº",
-                        "value": h.proposal_number,
+                        "value": self._format_proposal_number(h.proposal_number),
                         "width": "17%",
                     },
                     {
                         "label": "Data da Cotação",
-                        "value": "22/07/2025 - Hora: 11h45",
+                        "value": h.reception_date,
                         "width": "22%",
                     },
                     {
                         "label": "Versão",
-                        "value": "1.0.0 - Data: 22/07/2025 - Hora: 11h45",
+                        "value": f"1.0.0 - Data: {h.reception_date}",
                         "width": "28%",
                     },
                     {
@@ -195,7 +195,7 @@ class QuotationBlockBuilder:
                     },
                     {
                         "label": "Área segurada (ha)",
-                        "value": c.insured_area_ha,
+                        "value": self._format_decimal_separator(c.insured_area_ha),
                         "width": "16%",
                     },
                     {
@@ -285,9 +285,7 @@ class QuotationBlockBuilder:
     def _build_broker_block(self) -> BlockConfig:
         b = self._data.broker
         emails = self._format_list_items(b.emails)
-        phones = self._format_list_items([
-            self._format_phone(phone) for phone in b.phones
-        ])
+        phones = self._format_list_items(b.phones)
 
         return BlockConfig(
             type=BlockType.INFO_TABLE,
@@ -305,7 +303,7 @@ class QuotationBlockBuilder:
                     },
                     {
                         "label": "Telefone",
-                        "value": self._format_phone(b.phone),
+                        "value": b.phone,
                         "width": "25%",
                     },
                 ],
@@ -459,6 +457,12 @@ class QuotationBlockBuilder:
 
     def _build_risk_questionnaire_block(self) -> BlockConfig:
         rq = self._data.risk_questionnaire
+        section_second_header = None
+        if rq.attention_title or rq.attention_text:
+            section_second_header = (
+                f'<div style="font-weight: 600;">{rq.attention_title}</div>'
+                f"<div>{rq.attention_text}</div>"
+            )
 
         # Build rows for INFO_TABLE - each question is one row with full width
         rows = []
@@ -475,11 +479,8 @@ class QuotationBlockBuilder:
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Questionário de Risco",
-            section_second_header=(
-                '<div style="font-weight: 600;">Atenção:</div>'
-                "<div>É fundamental que todas as informações fornecidas na formação do contrato de seguro sejam completas e precisas. O descumprimento do dever de informar pode resultar na perda de direitos ou na anulação do contrato de seguro. Caso tenha dúvidas sobre quais informações são relevantes, consulte nosso atendimento</div>"
-            ),
-            estimated_height=150 + len(rq.questions) * 60,
+            section_second_header=section_second_header,
+            estimated_height=(150 if section_second_header else 50) + len(rq.questions) * 60,
             rows=rows,
             force_page_break=True,
         )
@@ -500,7 +501,7 @@ class QuotationBlockBuilder:
         if len(digits) != 8:
             return zip_code
 
-        return f"{digits[:2]}.{digits[2:5]}-{digits[5:]}"
+        return f"{digits[:5]}-{digits[5:]}"
 
     def _format_country(self, country: str | None) -> str:
         if not country:
@@ -522,9 +523,34 @@ class QuotationBlockBuilder:
 
         return state
 
+    def _format_decimal_separator(self, value: str | None) -> str:
+        if not value:
+            return ""
+
+        trimmed = value.strip()
+        if "," in trimmed:
+            return value
+
+        if trimmed.count(".") == 1:
+            integer_part, decimal_part = trimmed.split(".", 1)
+            if integer_part.isdigit() and decimal_part.isdigit():
+                return f"{integer_part},{decimal_part}"
+
+        return value
+
+    def _format_proposal_number(self, proposal_number: str | None) -> str:
+        if not proposal_number:
+            return "Não informado"
+
+        digits = "".join(char for char in proposal_number if char.isdigit())
+        if len(digits) != 15:
+            return proposal_number
+
+        return f"{digits[0]}.{digits[1:4]}.{digits[4:8]}.{digits[8:14]}-{digits[14]}"
+
     def _format_cpf_or_cnpj(self, document: str | None) -> str:
         if not document:
-            return ""
+            return "Não informado"
 
         sanitized = "".join(char for char in document.upper() if char.isalnum())
 
@@ -559,3 +585,4 @@ class QuotationBlockBuilder:
             return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
 
         return phone
+

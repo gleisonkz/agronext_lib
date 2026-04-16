@@ -23,10 +23,17 @@ def _to_sim_nao(value: bool | None) -> str:
 def build_proposal_subsidy_questions(
     quotation_metadata: repositories.QuotationMetadata,
 ) -> SubsidyData:
+    federal_extra_fields = []
+    if quotation_metadata.applied_for_federal_subsidy:
+        federal_extra_fields.append(
+            ("Zoneamento Utilizado", "Outros zoneamentos - Cod.2")
+        )
+
     questions = [
         SubsidyQuestionItem(
             question="Solicitou subvenção federal para esta proposta?",
             answer=_to_sim_nao(quotation_metadata.applied_for_federal_subsidy),
+            extra_fields=federal_extra_fields,
         ),
         SubsidyQuestionItem(
             question="Solicitou subvenção estadual para esta proposta?",
@@ -43,9 +50,6 @@ def build_proposal_subsidy_questions(
 def build_proposal_state_subsidy_term(
     quotation_metadata: repositories.QuotationMetadata,
 ) -> StateSubsidyTermData:
-    if not quotation_metadata.applied_for_state_subsidy:
-        return StateSubsidyTermData()
-
     intro_text = (
         "Pelo presente Termo, eu, ______________________________________, produtor(a) rural, "
         "inscrito(a) no Cadastro do Produtor Rural (CAD/PRO) sob nº _________________, "
@@ -53,18 +57,20 @@ def build_proposal_state_subsidy_term(
         " Estado do Paraná, com propriedade rural em exploração no município ____________________________, Paraná, "
         "na condição de beneficiário(a) da Subvenção Econômica estadual ao prêmio do seguro rural, "
         "na modalidade (indicar agrícola, pecuário ou florestal e o tipo de cobertura multirriscos, nomeado...) __________________________ , "
-        "para a cultura de __________________________, declaro que:"
+        "para a cultura de __________________________, expressamente declaro (a):"
     )
 
     declarations = [
         "I - Atender a todos os requisitos, referente ao exercício de 20__, para fazer jus à Subvenção Econômica estadual ao prêmio do seguro rural, as regras estabelecidas na Lei nº 16.166/09, regulamentada pelo Decreto nº 3.375/2019, os normativos aprovados pelo Comitê Gestor para a Subvenção ao Prêmio de Seguro Rural e homologadas pelo titular da Secretaria de Estado da Agricultura e Abastecimento;",
-        "II - Estar adimplente com a Administração Pública Estadual, bem como estar ciente de que será verificada a minha regularidade perante a FOMENTO PARANÁ e ao FDE e, ainda, será verificada minha regularidade junto ao CADIN estadual, e de que, caso haja alguma restrição, não poderei me beneficiar da Subvenção Econômica estadual para o pagamento do prêmio do seguro ao seguro rural;",
+        "II - Estar adimplente com a Administração Pública Estadual, bem como estar ciente de que será verificada a minha regularidade perante a FOMENTO PARANÁ e ao FDE e, ainda, será verificada minha regularidade junto ao CADIN estadual, e de que, caso haja alguma restrição, não poderei me beneficiar da Subvenção Econômica estadual para o pagamento do prêmio ao seguro rural;",
         "III - Estar ciente de que não me é permitido receber a Subvenção Econômica ao prêmio do seguro rural, para a mesma atividade e área em que já existe cobertura do Programa de Garantia de Atividade Agropecuária (PROAGRO);",
         "IV - Estar ciente de que a Subvenção Econômica estadual não é complementar à Subvenção Econômica federal, devendo a aplicação do percentual e limite máximo da Subvenção Econômica Estadual observar o valor do prêmio do seguro rural;",
-        "V - Para todos os fins de direito, visando o correto enquadramento do seguro rural proposto, estou ciente dos percentuais e valores máximos de Subvenção Estadual para pagamento do prêmio do seguro rural para as culturas aprovadas pelo Comitê Gestor do PSR/PR e homologadas pelo Titular da SEAB;",
-        "VI - Estar ciente de que a Subvenção Econômica estadual ao prêmio de seguro rural não poderá exceder o limite de R$ 4.400,00, por CPF/CNPJ, cultura ou espécies animais de R$ 8.800,00, no ano civil;",
+        "V - Para todos os fins de direito, visando o correto enquadramento do seguro rural proposto, que estou ciente dos percentuais e valores máximos de Subvenção Estadual para pagamento do prêmio do seguro rural para as culturas aprovadas pelo Comitê Gestor do PSR/PR e homologadas pelo Titular da SEAB;",
+        "VI - Estar ciente de que a Subvenção Econômica estadual ao prêmio de seguro rural não poderá exceder o limite de R$ 4.400,00(Quatro mil e quatrocentos reais), por CPF/CNPJ, cultura ou espécies animais de R$ 8.800,00(Oito mil e oitocentos reais), por ano civil por CPF/CNPJ;",
         "VII - Estar ciente da obrigatoriedade do cumprimento das recomendações estabelecidas nas portarias de Zoneamento Agrícola de Risco Climático (ZARC), publicado pelo Ministério da Agricultura, Pecuária e Abastecimento - MAPA;",
-        "VIII - Estar ciente das hipóteses de cancelamento das operações de seguro rural, previstas no Decreto nº 3.375/2019, e que sendo o responsável pela situação de irregularidade que determinou o cancelamento, ficarei impedido(a) de participar do programa de subvenção econômica pelo prazo legal e terei que restituir ao Fundo de Desenvolvimento Econômico (FDE), por intermédio da Fomento do Paraná, o valor da Subvenção Econômica estadual referente à operação, com atualização monetária pela variação da Taxa Selic;",
+        "VIII - Estar ciente das hipóteses de cancelamento das operações de seguro rural, previstas no Decreto nº 3.375/2019, e que sendo o responsável pela situação de irregularidade que determinou o cancelamento:",
+        "a. Serei impedido(a) de participar do programa de subvenção econômica pelo prazo de cinco anos em alinho ao Inciso II, alineas a e b, Item 14.9 e 14.11 da Resolução 121/2019;",
+        "b. Terei que restituir ao Fundo de Desenvolvimento Econômico (FDE) por intermédio da Fomento do Paraná o valor da Subvenção Econômica estadual referente à operação, com atualização monetária pela variação da Taxa Selic;",
         "IX - Estar ciente de que as operações subvencionadas serão objeto de fiscalização pela SEAB/DERAL e pela Fomento Paraná ou por entidade pública ou privada por elas designadas, e comprometo-me, desde já, a oferecer as condições necessárias ao desempenho dos trabalhos de fiscalização, permitindo o acesso ao meu empreendimento e, disponibilizando, quando solicitado, os documentos que se fizerem necessários;",
         "X - Para todos os fins de direito, declaro que as informações por mim prestadas no presente Termo e na proposta de seguro são completas e verídicas, não contendo quaisquer omissões ou inexatidões.",
     ]
@@ -84,9 +90,6 @@ def build_proposal_state_subsidy_term(
 def build_proposal_state_authorization_term(
     quotation_metadata: repositories.QuotationMetadata,
 ) -> StateAuthorizationTermData:
-    if not quotation_metadata.applied_for_state_subsidy:
-        return StateAuthorizationTermData()
-
     intro_text = (
         "Pelo presente Termo eu, ______________________________________, produtor(a) rural inscrito(a) no CPF/MF "
         "(CNPJ se for pessoa jurídica) nº ____________________________, portador(a) da Carteira de Identidade nº "
@@ -125,13 +128,13 @@ def build_proposal_federal_subsidy_term(
         "<br/>a) Concordo com a fiscalização a ser realizada por preposto do Ministério da Agricultura, Pecuária e Abastecimento – MAPA; autorizo o seu acesso ao empreendimento objeto do seguro rural subvencionado e concordo em oferecer as condições necessárias ao desempenho do trabalho, facultando inclusive o acesso aos documentos relativos ao empreendimento;",
         "<br/>b) Estou ciente de que não posso contratar seguro rural, com subvenção econômica do Governo Federal ao prêmio, para a mesma lavoura em que eu for beneficiário do Programa de Garantia da Atividade Agropecuária – PROAGRO. Por isso, informo que a cultura referente a esta proposta, para a qual estou pleiteando a subvenção federal:<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Não é beneficiária do PROAGRO;<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) É beneficiária do PROAGRO, na mesma propriedade rural e, por isso, estou anexando a esta proposta croqui ou documento contendo as coordenadas geográficas da lavoura que deverá ser objeto de subvenção federal;",
         "<br/>c) O valor recebido do PSR do Governo Federal, por ano civil, a partir de 1º de janeiro de 2024, não ultrapassa o limite total de R$ 120.000,00 (cento e vinte mil reais) e de R$ 60.000,00 (sessenta mil reais) em cada um dos grupos de atividades de seguro abaixo:<br/><br/>1. Grãos;<br/>2. Frutas, olerícolas, café e cana-de-açúcar;<br/>3. Florestas;<br/>4. Pecuária;<br/>5. Aquicultura;",
-        "<br/>d) Estou ciente de que será consultada a minha adimplência junto ao Cadastro Informativo de créditos não quitados do setor público federal (Cadin), em decorrência do disposto no artigo 6º da Lei 10.522, de 19 de julho de 2002, e de que, caso haja alguma restrição, não poderei me beneficiar da subvenção ao prêmio do seguro rural.;",
+        "<br/>d) Estou ciente de que será consultada a minha adimplência junto ao Cadastro Informativo de créditos não quitados do setor público federal (Cadin), em decorrência do disposto no artigo 6º da Lei 10.522, de 19 de julho de 2002, e de que, caso haja alguma restrição, não poderei me beneficiar da subvenção ao prêmio do seguro rural;",
         "<br/>e) Comprometo-me a cumprir as recomendações estabelecidas nas portarias de zoneamento agrícola de risco climático do MAPA (cultivar, data do plantio e tipo de solo), na forma disciplinada no Plano Trienal do Seguro Rural – PTSR;",
         "<br/>f) Caso eu descumpra qualquer condição do Programa e, consequentemente, haja o cancelamento da subvenção federal ao prêmio, estou ciente de que terei de devolver integralmente o valor da subvenção federal acrescido das sanções previstas no Regulamento de Operacionalização da Subvenção;",
-        "<br/>g) Estou anexando à Proposta de Seguro, para efeito de comprovação de regularidade fiscal (somente para pessoa jurídica ou firma individual):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certificado de Regularidade do FGTS, na forma do artigo 27, alínea \"c\", da lei nº 8.036, de 11/5/1990, e do artigo 44 inciso III, do Decreto nº 99.684, de 8/11/1990;<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certidão da Secretaria de Receira Previdenciária quanto às contribuições sociais, na forma estabelecida no Decreto nº 5.586, de 19 de novembro de 2005",
+        "<br/>g) Estou anexando à Proposta de Seguro, para efeito de comprovação de regularidade fiscal (somente para pessoa jurídica ou firma individual):<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certificado de Regularidade do FGTS, na forma do artigo 27, alínea \"c\", da lei nº 8.036, de 11/5/1990, e do artigo 44 inciso III, do Decreto nº 99.684, de 8/11/1990;<br/>&nbsp;&nbsp;&nbsp;&nbsp;- Certidão da Secretaria de Receita Previdenciária quanto às contribuições sociais, na forma estabelecida no Decreto nº 5.586, de 19 de novembro de 2005",
         "<br/>h) <strong><u>Estou ciente de que esta proposta de seguro não confere direito subjetivo à subvenção federal, pois ainda será submetida ao MAPA, podendo ser aprovada ou reprovada, de acordo com os critérios estabelecidos no PSR, principalmente no que se refere ao limite orçamentário do Programa;</u></strong>",
-        "<br/>i.1) A contratação desta apólice de seguro rural está vinculada a uma exigência de um contrato de financiamento agrícola?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Não está vinculada;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Sim, está vinculada. Informar o nome da instituição financeira e verificar a Seção II: ________________________________;",
-        "<br/>i.2) Se sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Não foi oferecido;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Sim, foi oferecido. <strong>Informar o(s) nome(s) da(s) seguradora(s):</strong> ________________________________;",
+        "<br/>i.1) A contratação dessa apólice de seguro rural está vinculada a uma exigência de um contrato de financiamento agrícola?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Não está vinculada a uma exigência de um contrato de financiamento agrícola;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(  ) Sim, está vinculada a uma exigência de um contrato de financiamento agrícola. Informar o nome da instituição financeira e verificar a Seção II: ________________________________;",
+        "<br/>i.2) Se sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora (Lei nº 13.195, de 25 de novembro de 2015)?<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Não foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras;<br/>&nbsp;&nbsp;&nbsp;&nbsp;(   ) Sim, foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras. <strong>Informar o(s) nome(s) da(s) seguradora(s):</strong> ________________________________;",
         "<br/>j) As informações por mim prestadas no presente Termo e na Proposta de Seguro são completas e verídicas, não contendo quaisquer omissões ou inexatidões.",
     ]
 

@@ -25,6 +25,9 @@ class ApplicantData:
     is_whatsapp: str = ""
     professional_category: str = ""
     income: str = ""
+    business_activity: str = ""
+    annual_gross_revenue: str = ""
+    net_worth: str = ""
 
 
 @dataclass
@@ -108,6 +111,8 @@ class RiskQuestionItem:
 
 @dataclass
 class RiskQuestionnaireData:
+    attention_title: str = ""
+    attention_text: str = ""
     questions: list[RiskQuestionItem] = field(default_factory=list)
 
 
@@ -207,11 +212,6 @@ class ProponentDeclarationData:
     checkbox_checked: bool = False
     checkbox_align: str = "top"  # "top" ou "center"
     checkbox_bold: bool = False
-    left_label: str = ""
-    center_label: str = ""
-    right_label: str = ""
-    observation_text: str = ""
-    footer_bordered_text: str = ""
 
 
 @dataclass

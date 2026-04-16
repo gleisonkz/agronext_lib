@@ -1,10 +1,13 @@
 import agronext_procurement as procurement
 from datetime import date
+from decimal import Decimal, InvalidOperation
 from html import escape
+import re
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
 from ..schemas import PDFData
+from ..utils import format_monetary_value
 
 
 class ProposalBlockBuilder:
@@ -44,28 +47,30 @@ class ProposalBlockBuilder:
         if observations:
             blocks.append(observations)
 
-        # Add information blocks
-        blocks.extend(self._build_information_blocks())
+        # Add proponent notifications block (replaces information section)
+        proponent_notifications = self._build_proponent_notifications_block()
+        if proponent_notifications:
+            blocks.extend(proponent_notifications)
 
-        # Add grace period block (after information)
+        # Add grace period block
         grace_period = self._build_grace_period_block()
         if grace_period:
             blocks.append(grace_period)
 
-        # Add coverage restrictions block
-        coverage_restrictions = self._build_coverage_restrictions_block()
-        if coverage_restrictions:
-            blocks.append(coverage_restrictions)
-
-        # Add available documents block
-        available_documents = self._build_available_documents_block()
-        if available_documents:
-            blocks.append(available_documents)
-
-        # Add excluded risks block
+        # Replace coverage restrictions with excluded risks section
         excluded_risks = self._build_excluded_risks_block()
         if excluded_risks:
             blocks.append(excluded_risks)
+
+        # Replace available documents with broker declarations section
+        broker_declarations = self._build_proponent_declaration_block()
+        if broker_declarations:
+            blocks.extend(broker_declarations)
+
+        # Replace excluded risks page with proponent declarations and commitments
+        declarations_and_commitments = self._build_declarations_and_commitments_block()
+        if declarations_and_commitments:
+            blocks.extend(declarations_and_commitments)
 
         # Add authorization term block
         authorization_term = self._build_authorization_term_block()
@@ -81,11 +86,6 @@ class ProposalBlockBuilder:
         lgpd_consent = self._build_lgpd_consent_block()
         if lgpd_consent:
             blocks.extend(lgpd_consent)
-
-        # Add proponent declaration block
-        proponent_declaration = self._build_proponent_declaration_block()
-        if proponent_declaration:
-            blocks.extend(proponent_declaration)
 
         # Add state subsidy term block
         state_subsidy_term = self._build_state_subsidy_term_block()
@@ -124,7 +124,7 @@ class ProposalBlockBuilder:
                 [
                     {
                         "label": "Proposta de seguro Nº",
-                        "value": h.proposal_number,
+                        "value": self._format_proposal_number(h.proposal_number),
                         "width": "18%",
                     },
                     {
@@ -167,7 +167,7 @@ class ProposalBlockBuilder:
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Dados Iniciais",
-            estimated_height=160,
+            estimated_height=140,
             rows=[
                 [
                     {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
@@ -184,28 +184,6 @@ class ProposalBlockBuilder:
                     {"label": "Nome social", "value": p.social_name, "width": "25%"},
                 ],
                 [
-                    {
-                        "label": "Documento",
-                        "value": "RG",
-                        "width": "25%",
-                    },
-                    {
-                        "label": "RG",
-                        "value": p.document_number,
-                        "width": "25%",
-                    },
-                    {
-                        "label": "Órgão expedidor",
-                        "value": p.issuing_authority,
-                        "width": "25%",
-                    },
-                    {
-                        "label": "Data de expedição",
-                        "value": p.issue_date,
-                        "width": "25%",
-                    },
-                ],
-                [
                     {"label": "E-mail", "value": p.main_email, "width": "25%"},
                     {
                         "label": "Telefone",
@@ -219,16 +197,41 @@ class ProposalBlockBuilder:
                     },
                     {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
                 ],
-                [
-                    {
-                        "label": "Profissão",
-                        "value": p.professional_category,
-                        "width": "50%",
-                    },
-                    {"label": "Renda mensal", "value": p.income, "width": "50%"},
-                ],
+                self._build_applicant_profile_row(),
             ],
         )
+
+    def _build_applicant_profile_row(self) -> list[dict[str, str]]:
+        p = self._data.applicant
+        document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
+
+        if len(document) == 14:
+            return [
+                {
+                    "label": "Atividade economica",
+                    "value": p.business_activity,
+                    "width": "33.33%",
+                },
+                {
+                    "label": "Receita operacional brutal anual",
+                    "value": p.annual_gross_revenue,
+                    "width": "33.33%",
+                },
+                {
+                    "label": "Patrimonio liquido",
+                    "value": p.net_worth,
+                    "width": "33.34%",
+                },
+            ]
+
+        return [
+            {
+                "label": "Profissão",
+                "value": p.professional_category,
+                "width": "50%",
+            },
+            {"label": "Renda mensal", "value": p.income, "width": "50%"},
+        ]
 
     def _build_address_block(self) -> BlockConfig:
         e = self._data.residential_address
@@ -321,7 +324,7 @@ class ProposalBlockBuilder:
                     },
                     {
                         "label": "Área segurada (ha)",
-                        "value": c.insured_area_ha,
+                        "value": self._format_decimal_separator(c.insured_area_ha),
                         "width": "16%",
                     },
                     {
@@ -411,9 +414,7 @@ class ProposalBlockBuilder:
     def _build_broker_block(self) -> BlockConfig:
         b = self._data.broker
         emails = self._format_list_items(b.emails)
-        phones = self._format_list_items([
-            self._format_phone(phone) for phone in b.phones
-        ])
+        phones = self._format_list_items(b.phones)
 
         return BlockConfig(
             type=BlockType.INFO_TABLE,
@@ -431,7 +432,7 @@ class ProposalBlockBuilder:
                     },
                     {
                         "label": "Telefone",
-                        "value": self._format_phone(b.phone),
+                        "value": b.phone,
                         "width": "25%",
                     },
                 ],
@@ -528,11 +529,16 @@ class ProposalBlockBuilder:
         )
 
     def _build_coordinates_block(self) -> BlockConfig:
+        formatted_coordinates = [
+            [row[0].rjust(2, "0"), *row[1:]] if row else row
+            for row in self._data.plot_coordinates
+        ]
+
         return BlockConfig(
             type=BlockType.DATA_TABLE,
             estimated_height=50 + len(self._data.plot_coordinates) * 30,
             headers=["Quadra/ Talhão", "Ponto central do polígono"],
-            data_rows=self._data.plot_coordinates,
+            data_rows=formatted_coordinates,
             widths=["50%", "50%"],
             variant=DataTableVariant.CENTERED_NORMAL,
         )
@@ -550,6 +556,12 @@ class ProposalBlockBuilder:
 
     def _build_risk_questionnaire_block(self) -> BlockConfig:
         rq = self._data.risk_questionnaire
+        section_second_header = None
+        if rq.attention_title or rq.attention_text:
+            section_second_header = (
+                f'<div style="font-weight: 600;">{rq.attention_title}</div>'
+                f"<div>{rq.attention_text}</div>"
+            )
 
         # Build rows for INFO_TABLE - each question is one row with full width
         rows = []
@@ -566,7 +578,8 @@ class ProposalBlockBuilder:
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Questionário de Risco",
-            estimated_height=50 + len(rq.questions) * 60,
+            section_second_header=section_second_header,
+            estimated_height=(150 if section_second_header else 50) + len(rq.questions) * 60,
             rows=rows,
             force_page_break=True,
         )
@@ -605,8 +618,16 @@ class ProposalBlockBuilder:
         # Build rows for INFO_TABLE - each beneficiary has 2 rows
         rows = []
         row_gap_after = []
+        premium_amount = self._get_beneficiary_premium_base()
 
         for i, b in enumerate(self._data.beneficiaries):
+            percentage_value = self._parse_percentage(b.percentage)
+            formatted_percentage = self._format_percentage(b.percentage)
+            calculated_value = self._calculate_beneficiary_value(
+                premium_amount,
+                percentage_value,
+            )
+
             # Row 1: Beneficiário N + Name | CPF | Data de nascimento | Nome social
             rows.append(
                 [
@@ -638,8 +659,16 @@ class ProposalBlockBuilder:
                         "value": self._format_phone(b.phone),
                         "width": "20%",
                     },
-                    {"label": "Porcentagem (%)", "value": b.percentage, "width": "20%"},
-                    {"label": "Valor (R$)", "value": b.value, "width": "20%"},
+                    {
+                        "label": "Porcentagem (%)",
+                        "value": formatted_percentage,
+                        "width": "20%",
+                    },
+                    {
+                        "label": "Valor (R$)",
+                        "value": calculated_value,
+                        "width": "20%",
+                    },
                     {"label": "Relação", "value": b.relationship, "width": "20%"},
                 ]
             )
@@ -670,13 +699,12 @@ class ProposalBlockBuilder:
         for p in self._data.authorized_persons:
             rows.append(
                 [
-                    {"label": "Nome", "value": p.name, "width": "25%"},
-                    {"label": "Nome social", "value": p.social_name, "width": "25%"},
-                    {"label": "Relação", "value": p.relationship, "width": "25%"},
+                    {"label": "Nome", "value": p.name, "width": "33.33%"},
+                    {"label": "Relação", "value": p.relationship, "width": "33.33%"},
                     {
                         "label": "Telefone",
                         "value": self._format_phone(p.phone),
-                        "width": "25%",
+                        "width": "33.34%",
                     },
                 ]
             )
@@ -792,6 +820,71 @@ class ProposalBlockBuilder:
 
         return blocks
 
+    def _estimate_html_block_height(
+        self,
+        html_content: str,
+        *,
+        minimum: int = 50,
+        extra_padding: int = 0,
+    ) -> int:
+        estimated_lines = len(html_content) / 120
+        estimated_height = int(estimated_lines * 20 + html_content.count("</p>") * 8)
+        return max(minimum, estimated_height + extra_padding)
+
+    def _split_html_into_chunks(
+        self,
+        html_content: str,
+        *,
+        max_chunk_height: int,
+    ) -> list[str]:
+        segments = [
+            segment.strip()
+            for segment in re.split(r"\n\s*\n", html_content)
+            if segment.strip()
+        ]
+        if not segments:
+            return [html_content]
+
+        chunks: list[str] = []
+        current_segments: list[str] = []
+        current_height = 0
+
+        for segment in segments:
+            segment_height = self._estimate_html_block_height(segment, minimum=36)
+            if current_segments and current_height + segment_height > max_chunk_height:
+                chunks.append("\n\n".join(current_segments))
+                current_segments = [segment]
+                current_height = segment_height
+                continue
+
+            current_segments.append(segment)
+            current_height += segment_height
+
+        if current_segments:
+            chunks.append("\n\n".join(current_segments))
+
+        return chunks
+
+    def _build_proponent_notifications_block(self) -> list[BlockConfig]:
+        html_content = self._data.propopent_notifications_html_block
+        if not html_content:
+            return []
+
+        chunks = self._split_html_into_chunks(html_content, max_chunk_height=1100)
+        blocks: list[BlockConfig] = []
+        for index, chunk in enumerate(chunks):
+            blocks.append(
+                BlockConfig(
+                    type=BlockType.HTML_BLOCK,
+                    section_header="Avisos Importantes para o Proponente",
+                    estimated_height=self._estimate_html_block_height(chunk),
+                    content=chunk,
+                    force_page_break=index == 0,
+                )
+            )
+
+        return blocks
+
     def _build_available_documents_block(self) -> BlockConfig | None:
         if not self._data.available_documents_html:
             return None
@@ -830,12 +923,54 @@ class ProposalBlockBuilder:
 
         return BlockConfig(
             type=BlockType.TEXT_BLOCK,
-            section_header="Riscos Excluídos, Perdas Não Cobertas e/ou Condições Particulares",
+            section_header="Riscos Excluídos, Perdas Não Cobertas, Condições Complementares e/ou Condições Particulares",
             estimated_height=estimated_height,
             content=content,
             text_bordered=False,
             text_bold=True,
         )
+
+    def _build_declarations_and_commitments_block(self) -> list[BlockConfig]:
+        html_content = self._data.declarations_and_commitments_html_block
+        if not html_content:
+            return []
+
+        section_title = "DECLARAÇÕES E COMPROMISSOS DO PROPONENTE RELACIONADAS À EXECUÇÃO E CONFORMIDADE CONTRATUAL"
+        chunks = self._split_html_into_chunks(html_content, max_chunk_height=1000)
+        blocks: list[BlockConfig] = []
+
+        for index, chunk in enumerate(chunks):
+            is_last_chunk = index == len(chunks) - 1
+            proponent_declaration_data = {"content_html": chunk}
+
+            if is_last_chunk:
+                proponent_declaration_data = {
+                    "content_html": chunk,
+                    "checkbox_checked": True,
+                    "checkbox_align": "center",
+                    "checkbox_bold": True,
+                    "checkbox_text": "Eu me responsabilizo e declaro estar formalmente autorizado e/ou ser o responsável legal, pelo titular destes dados pessoais a fornecê-los a Essor.",
+                    "triple_signature": {
+                        "left_label": "Local e data:",
+                        "center_label": "Assinatura do proponente:",
+                        "right_label": "Assinatura do corretor:",
+                    },
+                }
+
+            blocks.append(
+                BlockConfig(
+                    type=BlockType.PROPONENT_DECLARATION,
+                    section_header=section_title,
+                    estimated_height=self._estimate_html_block_height(
+                        chunk,
+                        minimum=160 if is_last_chunk else 80,
+                        extra_padding=120 if is_last_chunk else 0,
+                    ),
+                    proponent_declaration=proponent_declaration_data,
+                )
+            )
+
+        return blocks
 
     def _build_authorization_term_block(self) -> list[BlockConfig]:
         term = self._data.authorization_term
@@ -849,10 +984,14 @@ class ProposalBlockBuilder:
                 type=BlockType.AUTHORIZATION_TERM,
                 section_header="Termo Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
                 estimated_height=600,
+                force_page_break=True,
                 authorization_term={
                     "fields": [
                         {"label": "Nome do proponente", "value": term.applicant_name},
-                        {"label": "Número da proposta", "value": term.proposal_number},
+                        {
+                            "label": "Número da proposta",
+                            "value": self._format_proposal_number(term.proposal_number),
+                        },
                         {"label": "Possui conta", "value": term.has_account},
                         {"label": "", "value": term.authorization_text},
                         {"label": "Banco", "value": term.bank_name},
@@ -878,21 +1017,23 @@ class ProposalBlockBuilder:
     def _build_authorization_beneficiary_block(self) -> list[BlockConfig]:
         ben = self._data.authorization_beneficiary
         current_year = date.today().year
-        if not ben.beneficiary_name:
-            return []
 
         return [
             BlockConfig(
                 type=BlockType.AUTHORIZATION_BENEFICIARY,
                 section_header="Autorização para pagamento ou devolução de crédito por depósito em conta bancária do beneficiário",
                 estimated_height=800,
+                force_page_break=True,
                 authorization_beneficiary={
                     "initial_fields": [
                         {
                             "label": "Nome do beneficiário",
                             "value": ben.beneficiary_name,
                         },
-                        {"label": "Número da proposta", "value": ben.proposal_number},
+                        {
+                            "label": "Número da proposta",
+                            "value": self._format_proposal_number(ben.proposal_number),
+                        },
                     ],
                     "authorization_question": ben.authorization_question,
                     "authorization_answer": ben.authorization_answer,
@@ -951,7 +1092,7 @@ class ProposalBlockBuilder:
                         },
                     ],
                     "closing_text": ben.ratification_text,
-                    "date_text": f"_________________________, _________________________ de {current_year}.",
+                    "date_text": f"_______________________________, _______________________________ de {current_year}.",
                     "signature_text": "Assinatura do segurado",
                     "footer_obs": [
                         "Pessoa física: Reconhecer firma por semelhança.",
@@ -977,6 +1118,7 @@ class ProposalBlockBuilder:
                 section_header="Consentimento para Tratamento de Dados Pessoais - LGPD",
                 estimated_height=200,
                 force_page_break=True,
+                stops_header_repeat=True,
                 lgpd_consent={
                     "title": lgpd.title,
                     "consent_text": lgpd.consent_text,
@@ -993,9 +1135,9 @@ class ProposalBlockBuilder:
         return [
             BlockConfig(
                 type=BlockType.PROPONENT_DECLARATION,
-                section_header="Declaração do Proponente",
+                section_header="DECLARAÇÕES DO CORRETOR DE SEGUROS",
                 estimated_height=400,
-                stops_header_repeat=True,  # Para de repetir header/logo após este bloco
+                force_page_break=True,
                 proponent_declaration={
                     "content_html": decl.content_html,
                     "content_bold": decl.content_bold,
@@ -1003,13 +1145,6 @@ class ProposalBlockBuilder:
                     "checkbox_checked": decl.checkbox_checked,
                     "checkbox_align": decl.checkbox_align,
                     "checkbox_bold": decl.checkbox_bold,
-                    "triple_signature": {
-                        "left_label": decl.left_label,
-                        "center_label": decl.center_label,
-                        "right_label": decl.right_label,
-                    },
-                    "observation_text": decl.observation_text,
-                    "footer_bordered_text": decl.footer_bordered_text,
                 },
             )
         ]
@@ -1154,7 +1289,7 @@ class ProposalBlockBuilder:
         if len(digits) != 8:
             return zip_code
 
-        return f"{digits[:2]}.{digits[2:5]}-{digits[5:]}"
+        return f"{digits[:5]}-{digits[5:]}"
 
     def _format_country(self, country: str | None) -> str:
         if not country:
@@ -1176,9 +1311,34 @@ class ProposalBlockBuilder:
 
         return state
 
+    def _format_proposal_number(self, proposal_number: str | None) -> str:
+        if not proposal_number:
+            return "Não informado"
+
+        digits = "".join(char for char in proposal_number if char.isdigit())
+        if len(digits) != 15:
+            return proposal_number
+
+        return f"{digits[0]}.{digits[1:4]}.{digits[4:8]}.{digits[8:14]}-{digits[14]}"
+
+    def _format_decimal_separator(self, value: str | None) -> str:
+        if not value:
+            return ""
+
+        trimmed = value.strip()
+        if "," in trimmed:
+            return value
+
+        if trimmed.count(".") == 1:
+            integer_part, decimal_part = trimmed.split(".", 1)
+            if integer_part.isdigit() and decimal_part.isdigit():
+                return f"{integer_part},{decimal_part}"
+
+        return value
+
     def _format_cpf_or_cnpj(self, document: str | None) -> str:
         if not document:
-            return ""
+            return "Não informado"
 
         sanitized = "".join(char for char in document.upper() if char.isalnum())
 
@@ -1213,3 +1373,60 @@ class ProposalBlockBuilder:
             return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
 
         return phone
+
+    def _parse_brl_to_decimal(self, value: str | None) -> Decimal | None:
+        if not value:
+            return None
+
+        normalized = "".join(ch for ch in value if ch.isdigit() or ch in ",.-")
+        if not normalized:
+            return None
+
+        if "," in normalized and "." in normalized:
+            normalized = normalized.replace(".", "").replace(",", ".")
+        elif "," in normalized:
+            normalized = normalized.replace(",", ".")
+
+        try:
+            return Decimal(normalized)
+        except (InvalidOperation, ValueError):
+            return None
+
+    def _parse_percentage(self, value: str | None) -> Decimal | None:
+        amount = self._parse_brl_to_decimal(value)
+        if amount is None:
+            return None
+        return amount
+
+    def _format_percentage(self, value: str | None) -> str:
+        parsed = self._parse_percentage(value)
+        if parsed is None:
+            return value or ""
+
+        return f"{parsed:.2f}".replace(".", ",") + "%"
+
+    def _get_beneficiary_premium_base(self) -> Decimal | None:
+        candidates = [
+            self._data.payment.total_premium,
+            self._data.payment.net_premium,
+            self._data.coverage.applicant_value,
+            self._data.coverage.net_premium,
+        ]
+
+        for candidate in candidates:
+            parsed = self._parse_brl_to_decimal(candidate)
+            if parsed is not None:
+                return parsed
+
+        return None
+
+    def _calculate_beneficiary_value(
+        self,
+        premium_amount: Decimal | None,
+        percentage: Decimal | None,
+    ) -> str:
+        if premium_amount is None or percentage is None:
+            return "Não informado"
+
+        beneficiary_value = premium_amount * (percentage / Decimal("100"))
+        return format_monetary_value(float(beneficiary_value))
