@@ -2,7 +2,7 @@ import agronext_procurement as procurement
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
-from ..schemas import PDFData
+from ..schemas import ApplicantData, PDFData
 
 
 class QuotationBlockBuilder:
@@ -101,8 +101,7 @@ class QuotationBlockBuilder:
 
     def _build_applicant_block(self) -> BlockConfig:
         p = self._data.applicant
-        document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
-        is_cnpj = len(document) == 14
+        is_cnpj = self._is_cnpj_applicant(p)
 
         rows = [
                 [
@@ -121,7 +120,7 @@ class QuotationBlockBuilder:
                 ],
         ]
 
-        if is_cnpj:
+        if not is_cnpj:
             rows.append([
                 {
                     "label": "Documento",
@@ -160,7 +159,7 @@ class QuotationBlockBuilder:
             {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
         ])
 
-        if not is_cnpj:
+        if is_cnpj:
             rows.append([
                 {
                     "label": "Atividade economica",
@@ -194,6 +193,46 @@ class QuotationBlockBuilder:
             estimated_height=140,
             rows=rows,
         )
+
+    def _is_cnpj_applicant(self, applicant: ApplicantData) -> bool:
+        # Prefer data-based signals over document length to avoid misclassifying PF as PJ.
+        has_pf_indicators = any(
+            self._is_informative_value(value)
+            for value in [
+                applicant.birth_date,
+                applicant.professional_category,
+                applicant.income,
+                applicant.document_number,
+                applicant.issuing_authority,
+                applicant.issue_date,
+            ]
+        )
+        has_pj_indicators = any(
+            self._is_informative_value(value)
+            for value in [
+                applicant.business_activity,
+                applicant.annual_gross_revenue,
+                applicant.net_worth,
+            ]
+        )
+
+        if has_pf_indicators and not has_pj_indicators:
+            return False
+
+        if has_pj_indicators and not has_pf_indicators:
+            return True
+
+        document = "".join(
+            char for char in (applicant.cpf or "").upper() if char.isalnum()
+        )
+        return len(document) == 14
+
+    def _is_informative_value(self, value: str | None) -> bool:
+        if not value:
+            return False
+
+        normalized = value.strip().lower()
+        return normalized not in {"", "não informado", "nao informado"}
 
     def _build_address_block(self) -> BlockConfig:
         e = self._data.residential_address

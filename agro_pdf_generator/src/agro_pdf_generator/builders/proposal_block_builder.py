@@ -6,7 +6,7 @@ import re
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
-from ..schemas import PDFData
+from ..schemas import ApplicantData, PDFData
 from ..utils import format_monetary_value
 
 
@@ -81,11 +81,6 @@ class ProposalBlockBuilder:
         authorization_beneficiary = self._build_authorization_beneficiary_block()
         if authorization_beneficiary:
             blocks.extend(authorization_beneficiary)
-
-        # Add LGPD consent block
-        lgpd_consent = self._build_lgpd_consent_block()
-        if lgpd_consent:
-            blocks.extend(lgpd_consent)
 
         # Add state subsidy term block
         state_subsidy_term = self._build_state_subsidy_term_block()
@@ -164,8 +159,7 @@ class ProposalBlockBuilder:
 
     def _build_applicant_block(self) -> BlockConfig:
         p = self._data.applicant
-        document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
-        is_cnpj = len(document) == 14
+        is_cnpj = self._is_cnpj_applicant(p)
 
         rows = [
                 [
@@ -257,6 +251,46 @@ class ProposalBlockBuilder:
             estimated_height=140,
             rows=rows,
         )
+
+    def _is_cnpj_applicant(self, applicant: ApplicantData) -> bool:
+        # Prefer data-based signals over document length to avoid misclassifying PF as PJ.
+        has_pf_indicators = any(
+            self._is_informative_value(value)
+            for value in [
+                applicant.birth_date,
+                applicant.professional_category,
+                applicant.income,
+                applicant.document_number,
+                applicant.issuing_authority,
+                applicant.issue_date,
+            ]
+        )
+        has_pj_indicators = any(
+            self._is_informative_value(value)
+            for value in [
+                applicant.business_activity,
+                applicant.annual_gross_revenue,
+                applicant.net_worth,
+            ]
+        )
+
+        if has_pf_indicators and not has_pj_indicators:
+            return False
+
+        if has_pj_indicators and not has_pf_indicators:
+            return True
+
+        document = "".join(
+            char for char in (applicant.cpf or "").upper() if char.isalnum()
+        )
+        return len(document) == 14
+
+    def _is_informative_value(self, value: str | None) -> bool:
+        if not value:
+            return False
+
+        normalized = value.strip().lower()
+        return normalized not in {"", "não informado", "nao informado"}
 
     def _build_address_block(self) -> BlockConfig:
         e = self._data.residential_address
