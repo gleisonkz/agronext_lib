@@ -2,7 +2,7 @@ import agronext_procurement as procurement
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
-from ..schemas import ApplicantData, PDFData
+from ..schemas import PDFData
 
 
 class QuotationBlockBuilder:
@@ -101,7 +101,8 @@ class QuotationBlockBuilder:
 
     def _build_applicant_block(self) -> BlockConfig:
         p = self._data.applicant
-        is_cnpj = self._is_cnpj_applicant(p)
+        document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
+        is_cnpj = len(document) == 14
 
         rows = [
                 [
@@ -193,39 +194,6 @@ class QuotationBlockBuilder:
             estimated_height=140,
             rows=rows,
         )
-
-    def _is_cnpj_applicant(self, applicant: ApplicantData) -> bool:
-        # Prefer data-based signals over document length to avoid misclassifying PF as PJ.
-        has_pf_indicators = any(
-            self._is_informative_value(value)
-            for value in [
-                applicant.birth_date,
-                applicant.professional_category,
-                applicant.income,
-                applicant.document_number,
-                applicant.issuing_authority,
-                applicant.issue_date,
-            ]
-        )
-        has_pj_indicators = any(
-            self._is_informative_value(value)
-            for value in [
-                applicant.business_activity,
-                applicant.annual_gross_revenue,
-                applicant.net_worth,
-            ]
-        )
-
-        if has_pf_indicators and not has_pj_indicators:
-            return False
-
-        if has_pj_indicators and not has_pf_indicators:
-            return True
-
-        document = "".join(
-            char for char in (applicant.cpf or "").upper() if char.isalnum()
-        )
-        return len(document) == 14
 
     def _is_informative_value(self, value: str | None) -> bool:
         if not value:
