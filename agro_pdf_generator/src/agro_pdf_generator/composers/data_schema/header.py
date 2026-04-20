@@ -12,10 +12,11 @@ def build_header(
     coverage: CoverageDetailsView,
     policy_id: str | None,
     proposal_number: str | None,
+    logo_path: str | None = None,
 ) -> HeaderData:
     # Header
     header_data = HeaderData(
-        logo_path=str(PDF_LOGO.absolute()),
+        logo_path=logo_path or str(PDF_LOGO.absolute()),
         main_coverage="Pera - Granizo",
         validity_period="",
         reception_date=metadata.transmitted_at.strftime("%d/%m/%Y - Hora: %Hh%M") if metadata.transmitted_at else "",

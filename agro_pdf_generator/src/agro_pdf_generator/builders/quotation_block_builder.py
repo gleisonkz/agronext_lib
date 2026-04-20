@@ -121,7 +121,7 @@ class QuotationBlockBuilder:
                 ],
         ]
 
-        if is_cnpj:
+        if not is_cnpj:
             rows.append([
                 {
                     "label": "Documento",
@@ -160,7 +160,7 @@ class QuotationBlockBuilder:
             {"label": "WhatsApp", "value": p.is_whatsapp, "width": "25%"},
         ])
 
-        if not is_cnpj:
+        if is_cnpj:
             rows.append([
                 {
                     "label": "Atividade economica",

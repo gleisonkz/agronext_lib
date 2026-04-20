@@ -82,11 +82,6 @@ class ProposalBlockBuilder:
         if authorization_beneficiary:
             blocks.extend(authorization_beneficiary)
 
-        # Add LGPD consent block
-        lgpd_consent = self._build_lgpd_consent_block()
-        if lgpd_consent:
-            blocks.extend(lgpd_consent)
-
         # Add state subsidy term block
         state_subsidy_term = self._build_state_subsidy_term_block()
         if state_subsidy_term:
@@ -1009,6 +1004,7 @@ class ProposalBlockBuilder:
                 type=BlockType.AUTHORIZATION_TERM,
                 section_header="Termo Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
                 estimated_height=600,
+                stops_header_repeat=True,
                 force_page_break=True,
                 authorization_term={
                     "fields": [

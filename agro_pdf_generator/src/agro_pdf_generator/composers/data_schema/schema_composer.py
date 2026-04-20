@@ -46,6 +46,7 @@ def build_quotation_data_from_domain(
     croqui_bytes: bytes,
     municipality_code: str | None = None,
     billing_info: list | None = None,
+    header_logo_path: str | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
@@ -56,6 +57,7 @@ def build_quotation_data_from_domain(
         coverage,
         proposal_number=None,
         policy_id=None,
+        logo_path=header_logo_path,
     )
     applicant_data = build_applicant(view)
 
@@ -111,6 +113,9 @@ def build_proposal_data_from_domain(
     croqui_bytes: bytes,
     municipality_code: str | None = None,
     billing_info: list | None = None,
+    header_logo_path: str | None = None,
+    federal_subsidy_logo_path: str | None = None,
+    state_subsidy_logo_path: str | None = None,
 ) -> PDFData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
@@ -121,6 +126,7 @@ def build_proposal_data_from_domain(
         coverage,
         proposal_number=metadata.proposal_id,
         policy_id=metadata.policy_id,
+        logo_path=header_logo_path,
     )
     applicant_data = build_applicant(view)
 
@@ -172,12 +178,19 @@ def build_proposal_data_from_domain(
 
     proponent_declaration_data = build_proposal_proponent_declaration()
 
-    federal_subsidy_term_data = build_proposal_federal_subsidy_term(quotation_metadata)
+    federal_subsidy_term_data = build_proposal_federal_subsidy_term(
+        quotation_metadata,
+        federal_logo_path=federal_subsidy_logo_path,
+    )
 
     subsidy_data = build_proposal_subsidy_questions(quotation_metadata)
-    state_subsidy_term_data = build_proposal_state_subsidy_term(quotation_metadata)
+    state_subsidy_term_data = build_proposal_state_subsidy_term(
+        quotation_metadata,
+        state_logo_path=state_subsidy_logo_path,
+    )
     state_authorization_term_data = build_proposal_state_authorization_term(
-        quotation_metadata
+        quotation_metadata,
+        state_logo_path=state_subsidy_logo_path,
     )
 
     data = PDFData(
