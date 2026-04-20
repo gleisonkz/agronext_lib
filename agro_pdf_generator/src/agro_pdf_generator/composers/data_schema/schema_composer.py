@@ -42,6 +42,7 @@ from .subsidy import (
 def build_quotation_data_from_domain(
     view: procurement.QuotationView,
     metadata: repositories.QuotationMetadata,
+    proposal_metadata: repositories.ProposalMetadata | None,
     broker_details: dict,
     croqui_bytes: bytes,
     municipality_code: str | None = None,
@@ -55,8 +56,8 @@ def build_quotation_data_from_domain(
         view,
         metadata,
         coverage,
-        proposal_number=None,
-        policy_id=None,
+        proposal_number=proposal_metadata.proposal_id if proposal_metadata else None,
+        policy_id=proposal_metadata.policy_id if proposal_metadata else None,
         logo_path=header_logo_path,
     )
     applicant_data = build_applicant(view)
