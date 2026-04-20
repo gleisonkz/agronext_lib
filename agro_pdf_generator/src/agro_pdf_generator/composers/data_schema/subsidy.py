@@ -51,6 +51,9 @@ def build_proposal_state_subsidy_term(
     quotation_metadata: repositories.QuotationMetadata,
     state_logo_path: str | None = None,
 ) -> StateSubsidyTermData:
+    if not quotation_metadata.applied_for_state_subsidy:
+        return StateAuthorizationTermData()
+
     intro_text = (
         "Pelo presente Termo, eu, ______________________________________, produtor(a) rural, "
         "inscrito(a) no Cadastro do Produtor Rural (CAD/PRO) sob nº _________________, "
@@ -92,6 +95,9 @@ def build_proposal_state_authorization_term(
     quotation_metadata: repositories.QuotationMetadata,
     state_logo_path: str | None = None,
 ) -> StateAuthorizationTermData:
+    if not quotation_metadata.applied_for_state_subsidy:
+        return StateAuthorizationTermData()
+    
     intro_text = (
         "Pelo presente Termo eu, ______________________________________, produtor(a) rural inscrito(a) no CPF/MF "
         "(CNPJ se for pessoa jurídica) nº ____________________________, portador(a) da Carteira de Identidade nº "
