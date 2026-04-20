@@ -49,6 +49,7 @@ def build_proposal_subsidy_questions(
 
 def build_proposal_state_subsidy_term(
     quotation_metadata: repositories.QuotationMetadata,
+    state_logo_path: str | None = None,
 ) -> StateSubsidyTermData:
     intro_text = (
         "Pelo presente Termo, eu, ______________________________________, produtor(a) rural, "
@@ -76,7 +77,7 @@ def build_proposal_state_subsidy_term(
     ]
 
     return StateSubsidyTermData(
-        logo_path=str(STATE_LOGO_PATH),
+        logo_path=state_logo_path or str(STATE_LOGO_PATH),
         government_header="GOVERNO DO ESTADO DO PARANÁ. SECRETARIA DE AGRICULTURA E ABASTECIMENTO SEAB DEPARTAMENTO DE ECONOMIA RURAL - DERAL.",
         annex_title="ANEXO III - TERMO DE RESPONSABILIDADE",
         intro_text=intro_text,
@@ -89,6 +90,7 @@ def build_proposal_state_subsidy_term(
 
 def build_proposal_state_authorization_term(
     quotation_metadata: repositories.QuotationMetadata,
+    state_logo_path: str | None = None,
 ) -> StateAuthorizationTermData:
     intro_text = (
         "Pelo presente Termo eu, ______________________________________, produtor(a) rural inscrito(a) no CPF/MF "
@@ -106,7 +108,7 @@ def build_proposal_state_authorization_term(
     ]
 
     return StateAuthorizationTermData(
-        logo_path=str(STATE_LOGO_PATH),
+        logo_path=state_logo_path or str(STATE_LOGO_PATH),
         government_header="GOVERNO DO ESTADO",
         government_subheader="SECRETARIA DA AGRICULTURA E DO ABASTECIMENTO",
         annex_title="ANEXO IV – TERMO DE AUTORIZAÇÃO",
@@ -120,6 +122,7 @@ def build_proposal_state_authorization_term(
 
 def build_proposal_federal_subsidy_term(
     quotation_metadata: repositories.QuotationMetadata,
+    federal_logo_path: str | None = None,
 ) -> FederalSubsidyTermData:
     if not quotation_metadata.applied_for_federal_subsidy:
         return FederalSubsidyTermData()
@@ -139,7 +142,7 @@ def build_proposal_federal_subsidy_term(
     ]
 
     return FederalSubsidyTermData(
-        logo_path=str(FEDERAL_LOGO_PATH),
+        logo_path=federal_logo_path or str(FEDERAL_LOGO_PATH),
         ministry_header="MINISTÉRIO DA AGRICULTURA, PECUÁRIA E ABASTECIMENTO",
         committee_text="Comitê Gestor Interministerial do Seguro Rural",
         secretariat_text="Secretaria-Executiva",

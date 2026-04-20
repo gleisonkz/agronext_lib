@@ -1004,6 +1004,7 @@ class ProposalBlockBuilder:
                 type=BlockType.AUTHORIZATION_TERM,
                 section_header="Termo Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
                 estimated_height=600,
+                stops_header_repeat=True,
                 force_page_break=True,
                 authorization_term={
                     "fields": [
