@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 import agronext_procurement as procurement
 import agronext_procurement_repositories as repositories
 from agronext_procurement.views.common import CoverageDetailsView
@@ -14,12 +16,17 @@ def build_header(
     proposal_number: str | None,
     logo_path: str | None = None,
 ) -> HeaderData:
+    reception_date = ""
+    if metadata.created_at:
+        reception_date = metadata.created_at.astimezone(ZoneInfo("America/Sao_Paulo"))
+        reception_date = reception_date.strftime("%d/%m/%Y - Hora: %Hh%M")
+
     # Header
     header_data = HeaderData(
         logo_path=logo_path or str(PDF_LOGO.absolute()),
         main_coverage="Pera - Granizo",
         validity_period="",
-        reception_date=metadata.transmitted_at.strftime("%d/%m/%Y - Hora: %Hh%M") if metadata.transmitted_at else "",
+        reception_date=reception_date,
         crop="",
         bacen_code="4304606",  # banco central
         harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",
