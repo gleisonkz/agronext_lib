@@ -6,7 +6,7 @@ import re
 
 from ..blocks import BlockConfig, BlockType, DataTableVariant
 from ..config import Spacing
-from ..schemas import  PDFData
+from ..schemas import PDFData
 from ..utils import format_monetary_value
 
 
@@ -252,13 +252,6 @@ class ProposalBlockBuilder:
             estimated_height=140,
             rows=rows,
         )
-
-    def _is_informative_value(self, value: str | None) -> bool:
-        if not value:
-            return False
-
-        normalized = value.strip().lower()
-        return normalized not in {"", "não informado", "nao informado"}
 
     def _build_address_block(self) -> BlockConfig:
         e = self._data.residential_address
