@@ -67,12 +67,12 @@ def _format_phone_number(value: object) -> str:
 def _resolve_base_tag(phone_number: str, type_hint: str) -> str:
     hint = (type_hint or "").strip().lower()
     if "fix" in hint or "land" in hint:
-        return "fixo"
+        return "Fixo"
     if "cel" in hint or "mobi" in hint:
-        return "celular"
+        return "Celular"
 
     digits = "".join(char for char in phone_number if char.isdigit())
-    return "celular" if len(digits) == 11 else "fixo"
+    return "Celular" if len(digits) == 11 else "Fixo"
 
 
 def _resolve_whatsapp(type_hint: str, is_whatsapp: object) -> bool:
@@ -95,7 +95,7 @@ def _format_phone_with_tag(
 
     base_tag = _resolve_base_tag(phone_number, type_hint)
     if _resolve_whatsapp(type_hint, is_whatsapp):
-        return f"{phone_number} ({base_tag}/whatsapp)"
+        return f"{phone_number} ({base_tag}/WhatsApp)"
 
     return f"{phone_number} ({base_tag})"
 
