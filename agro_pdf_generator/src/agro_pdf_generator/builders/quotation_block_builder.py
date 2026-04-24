@@ -152,7 +152,7 @@ class QuotationBlockBuilder:
                     "width": "25%",
                 },
                 {
-                    "label": "Nro Documento",
+                    "label": document_label if has_additional_document else "Nro Documento",
                     "value": document_value,
                     "width": "25%",
                 },
