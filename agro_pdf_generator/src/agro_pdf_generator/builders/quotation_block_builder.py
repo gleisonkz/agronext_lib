@@ -103,22 +103,28 @@ class QuotationBlockBuilder:
         p = self._data.applicant
         document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
         is_cnpj = len(document) == 14
-        default_document_label = "CNPJ" if is_cnpj else "CPF"
-        document_label = (
-            p.document_type
+        raw_document_label = (
+            p.document_type.strip()
             if p.document_type and p.document_type != "Não informado"
-            else default_document_label
+            else "Não informado"
         )
+        normalized_document_label = raw_document_label.strip().upper()
+        has_additional_document = normalized_document_label not in {
+            "CPF",
+            "CNPJ",
+            "NÃO INFORMADO",
+        }
+
+        document_label = raw_document_label if has_additional_document else "Não informado"
         document_value = (
             p.document_number
-            if p.document_number and p.document_number != "Não informado"
-            else p.cpf
-        )
-        normalized_document_label = document_label.strip().upper()
-        document_value_display = (
-            self._format_cpf_or_cnpj(document_value)
-            if normalized_document_label in {"CPF", "CNPJ"}
-            else document_value
+            if (
+                has_additional_document
+                and
+                p.document_number
+                and p.document_number != "Não informado"
+            )
+            else "Não informado"
         )
 
         rows = [
@@ -146,8 +152,8 @@ class QuotationBlockBuilder:
                     "width": "25%",
                 },
                 {
-                    "label": document_label,
-                    "value": document_value_display,
+                    "label": "Nro Documento",
+                    "value": document_value,
                     "width": "25%",
                 },
                 {
