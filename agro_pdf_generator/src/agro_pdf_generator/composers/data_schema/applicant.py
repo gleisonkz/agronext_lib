@@ -1,4 +1,6 @@
 import agronext_procurement as procurement
+from collections.abc import Sequence
+from typing import Any
 
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
@@ -45,6 +47,53 @@ def _format_phone(value: object | None) -> str:
     return formatted_number
 
 
+def _format_document_type(value: object | None) -> str:
+    if value is None:
+        return "Documento"
+
+    raw_value = getattr(value, "value", value)
+    normalized = str(raw_value).strip()
+    if not normalized:
+        return "Documento"
+
+    try:
+        return procurement.DocumentTypes(normalized).value
+    except ValueError:
+        normalized_upper = normalized.upper()
+        for document_type in procurement.DocumentTypes:
+            if (
+                document_type.name == normalized_upper
+                or document_type.value.upper() == normalized_upper
+            ):
+                return document_type.value
+
+    return normalized
+
+
+def _document_type_from_primary_document(document_number: object | None) -> str:
+    digits = "".join(char for char in str(document_number or "") if char.isdigit())
+    if len(digits) == 14:
+        return procurement.DocumentTypes.CNPJ.value
+    if len(digits) == 11:
+        return procurement.DocumentTypes.CPF.value
+    return "Documento"
+
+
+def _select_preferred_document(documents: Sequence[Any] | None) -> Any | None:
+    if not documents:
+        return None
+
+    rg_document = next(
+        (
+            document
+            for document in documents
+            if getattr(document, "type", None) == procurement.DocumentTypes.RG
+        ),
+        None,
+    )
+    return rg_document or documents[0]
+
+
 def _fill_contact_info(
     applicant_data: ApplicantData,
     contact_information: ContactInformation,
@@ -65,6 +114,7 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         cpf="Não informado",
         birth_date="Não informado",
         social_name="Não informado",
+        document_type="Não informado",
         document_number="Não informado",
         issuing_authority="Não informado",
         issue_date="Não informado",
@@ -89,25 +139,34 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         applicant_data.cpf = identity.cpf.number
         applicant_data.birth_date = identity.birth_date.strftime("%d/%m/%Y")
         applicant_data.social_name = identity.social_name or "Não informado"
-        applicant_data.document_number = view.applicant.document_number
+        applicant_data.document_type = _document_type_from_primary_document(applicant_data.cpf)
+        applicant_data.document_number = applicant_data.cpf
         applicant_data.professional_category = (
             identity.occupation.value if identity.occupation else "Não informado"
         )
         applicant_data.income = identity.income.value if identity.income else "Não informado"
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
-        for doc in identity.additional_documents or []:
-            if doc.type == procurement.DocumentTypes.RG:
-                applicant_data.document_number = doc.number
-                applicant_data.issuing_authority = doc.issuing_authority
-                applicant_data.issue_date = doc.issue_date.strftime("%d/%m/%Y")
+        selected_document = _select_preferred_document(identity.additional_documents)
+        if selected_document is not None:
+            applicant_data.document_type = _format_document_type(selected_document.type)
+            applicant_data.document_number = selected_document.number or "Não informado"
+            applicant_data.issuing_authority = (
+                selected_document.issuing_authority or "Não informado"
+            )
+            applicant_data.issue_date = (
+                selected_document.issue_date.strftime("%d/%m/%Y")
+                if selected_document.issue_date
+                else "Não informado"
+            )
 
     elif isinstance(view.applicant, procurement.LEApplicantView):
         identity = view.applicant.identity
 
         applicant_data.name = identity.trade_name
         applicant_data.cpf = identity.cnpj.number
-        applicant_data.document_number = view.applicant.document_number
+        applicant_data.document_type = _document_type_from_primary_document(applicant_data.cpf)
+        applicant_data.document_number = applicant_data.cpf
         applicant_data.business_activity = identity.business_activity or "Não informado"
         applicant_data.annual_gross_revenue = _format_revenue_range(identity.gross_revenue)
         applicant_data.net_worth = _format_revenue_range(identity.net_worth)

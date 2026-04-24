@@ -161,6 +161,23 @@ class ProposalBlockBuilder:
         p = self._data.applicant
         document = "".join(char for char in (p.cpf or "").upper() if char.isalnum())
         is_cnpj = len(document) == 14
+        default_document_label = "CNPJ" if is_cnpj else "CPF"
+        document_label = (
+            p.document_type
+            if p.document_type and p.document_type != "Não informado"
+            else default_document_label
+        )
+        document_value = (
+            p.document_number
+            if p.document_number and p.document_number != "Não informado"
+            else p.cpf
+        )
+        normalized_document_label = document_label.strip().upper()
+        document_value_display = (
+            self._format_cpf_or_cnpj(document_value)
+            if normalized_document_label in {"CPF", "CNPJ"}
+            else document_value
+        )
 
         rows = [
                 [
@@ -183,12 +200,12 @@ class ProposalBlockBuilder:
             rows.append([
                 {
                     "label": "Documento",
-                    "value": "RG",
+                    "value": document_label,
                     "width": "25%",
                 },
                 {
-                    "label": "RG",
-                    "value": p.document_number,
+                    "label": document_label,
+                    "value": document_value_display,
                     "width": "25%",
                 },
                 {

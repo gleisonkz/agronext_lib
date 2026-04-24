@@ -15,6 +15,7 @@ class ApplicantData:
     cpf: str = ""
     birth_date: str = ""
     social_name: str = ""
+    document_type: str = ""
     document_number: str = ""
     issuing_authority: str = ""
     issue_date: str = ""

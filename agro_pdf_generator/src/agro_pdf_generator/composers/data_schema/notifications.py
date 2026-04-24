@@ -3,7 +3,7 @@ def build_proponent_notifications(is_quotation: bool = False):
 <p><strong>A) Ética e Direitos Humanos</strong></p>
 
 <p>A ESSOR analisa cada proposta para avaliar o risco antes de aceitar o seguro. Além disso, não mantém relações comerciais com pessoas ou empresas que tenham violado ou possam violar direitos humanos. O Grupo SCOR segue o Pacto Global da ONU e não tolera trabalho forçado, escravidão, tráfico de pessoas ou qualquer forma de abuso.</p>
-<p>Código de conduta: https://essor.com.br</p>
+<p>Código de conduta: <a href="https://essor.com.br/">https://essor.com.br/</a></p>
 
 <p><strong>B) Direito de Arrependimento em Contratações Digitais</strong></p>
 
@@ -11,7 +11,7 @@ def build_proponent_notifications(is_quotation: bool = False):
 
 <p><strong>C) Condições Contratuais e Informações Oficiais</strong></p>
 
-<p>Leia atentamente as Condições Gerais, Especiais, Complementares, Particulares e Cláusulas Específicas — especialmente as exclusões (atos dolosos, ilícitos, sinistros intencionais, agravamento voluntário do risco, bens não garantidos). Conteúdo completo: https://www.essor.com.br/condicoes-gerais/. Consulta por processo SUSEP: 15414.004513/2012-47. O registro na SUSEP não implica, por parte da Autarquia, em incentivo ou recomendação à sua comercialização. Situação do corretor: consulte no site da SUSEP.</p>
+<p>Leia atentamente as Condições Gerais, Especiais, Complementares, Particulares e Cláusulas Específicas — especialmente as exclusões (atos dolosos, ilícitos, sinistros intencionais, agravamento voluntário do risco, bens não garantidos). Conteúdo completo: <a href="https://www.essor.com.br/condicoes-gerais/">https://www.essor.com.br/condicoes-gerais/</a>. Consulta por processo SUSEP: 15414.004513/2012-47. O registro na SUSEP não implica, por parte da Autarquia, em incentivo ou recomendação à sua comercialização. Situação do corretor: consulte no site da SUSEP.</p>
 
 <p><strong>Canais úteis</strong></p>
 
@@ -57,7 +57,7 @@ def build_proponent_notifications(is_quotation: bool = False):
 <p><strong>A) Ética e Direitos Humanos</strong></p>
 
 <p>A ESSOR analisa cada proposta para avaliar o risco antes de aceitar o seguro. Além disso, não mantém relações comerciais com pessoas ou empresas que tenham violado ou possam violar direitos humanos. O Grupo SCOR segue o Pacto Global da ONU e não tolera trabalho forçado, escravidão, tráfico de pessoas ou qualquer forma de abuso.</p>
-<p>Código de conduta: https://essor.com.br</p>
+<p>Código de conduta: <a href="https://essor.com.br/">https://essor.com.br/</a></p>
 
 <p><strong>B) Direito de Arrependimento em Contratações Digitais</strong></p>
 
@@ -65,7 +65,7 @@ def build_proponent_notifications(is_quotation: bool = False):
 
 <p><strong>C) Condições Contratuais e Informações Oficiais</strong></p>
 
-<p>Leia atentamente as Condições Gerais, Especiais, Complementares, Particulares e Cláusulas Específicas — especialmente as exclusões (atos dolosos, ilícitos, sinistros intencionais, agravamento voluntário do risco, bens não garantidos). Conteúdo completo: https://www.essor.com.br/condicoes-gerais/. Consulta por processo SUSEP: 15414.004513/2012-47. O registro na SUSEP não implica, por parte da Autarquia, em incentivo ou recomendação à sua comercialização. Situação do corretor: consulte no site da SUSEP.</p>
+<p>Leia atentamente as Condições Gerais, Especiais, Complementares, Particulares e Cláusulas Específicas — especialmente as exclusões (atos dolosos, ilícitos, sinistros intencionais, agravamento voluntário do risco, bens não garantidos). Conteúdo completo: <u><a href="https://www.essor.com.br/condicoes-gerais/">https://www.essor.com.br/condicoes-gerais/</a></u>. Consulta por processo SUSEP: 15414.004513/2012-47. O registro na SUSEP não implica, por parte da Autarquia, em incentivo ou recomendação à sua comercialização. Situação do corretor: consulte no site da SUSEP.</p>
 
 <p><strong>Canais úteis</strong></p>
 
@@ -104,10 +104,10 @@ def build_proponent_notifications(is_quotation: bool = False):
 
 <p><strong>I) Sinistro: Como Comunicar</strong></p>
 
-<p>Em caso de sinistro, comunique imediatamente a seguradora através dos canais oficiais disponíveis em https://essor.com.br, apresentando a documentação exigida nas Condições Gerais. A comunicação poderá ser feita diretamente por você ou por seu representante legal, ou ainda, através do seu corretor de seguros. Atenção: o descumprimento de prazos e requisitos pode acarretar perda do direito à indenização.</p>
+<p>Em caso de sinistro, comunique imediatamente a seguradora através dos canais oficiais disponíveis em <a href="https://essor.com.br/">https://essor.com.br/</a>, apresentando a documentação exigida nas Condições Gerais. A comunicação poderá ser feita diretamente por você ou por seu representante legal, ou ainda, através do seu corretor de seguros. Atenção: o descumprimento de prazos e requisitos pode acarretar perda do direito à indenização.</p>
 
 <p><strong>J) Privacidade e Proteção de Dados</strong></p>
-<p>A ESSOR Seguros S.A., como controladora, trata dados pessoais de proponentes, segurados, beneficiários e terceiros conforme a LGPD (Lei 13.709/2018) e a Política de Privacidade em https://essor.com.br. Bases legais: execução do contrato, obrigações legais/regulatórias e legítimo interesse. Dados tratados: cadastrais e bancários. Finalidades: viabilizar o seguro, atendimento, cumprimento legal, análises estatísticas, decisões automatizadas e oferta compatível com o perfil do titular. Compartilhamento: com parceiros operacionais, mediante cláusulas de proteção de dados. Segurança e incidentes: medidas de proteção adotadas e compromisso de comunicação ao titular em caso de incidentes relevantes. Direitos do titular: podem ser exercidos pelo Email privacidade@essor.com.br.
+<p>A ESSOR Seguros S.A., como controladora, trata dados pessoais de proponentes, segurados, beneficiários e terceiros conforme a LGPD (Lei 13.709/2018) e a Política de Privacidade em <a href="https://essor.com.br/">https://essor.com.br/</a>. Bases legais: execução do contrato, obrigações legais/regulatórias e legítimo interesse. Dados tratados: cadastrais e bancários. Finalidades: viabilizar o seguro, atendimento, cumprimento legal, análises estatísticas, decisões automatizadas e oferta compatível com o perfil do titular. Compartilhamento: com parceiros operacionais, mediante cláusulas de proteção de dados. Segurança e incidentes: medidas de proteção adotadas e compromisso de comunicação ao titular em caso de incidentes relevantes. Direitos do titular: podem ser exercidos pelo Email privacidade@essor.com.br.
 
 <p><strong>K) Subsídio Federal</strong></p>
 <p>A concessão de subsídio federal fica condicionada à regularidade do Proponente junto ao CADIN e ao preenchimento do Termo de Responsabilidade do Produtor Rural integrante desta proposta, bem como a existência de recursos pelo Ministério da Agricultura, na forma da Resolução nº 13, de 4 de julho de 2006, do Comitê Gestor Interministerial do Seguro Rural (CGSR).
