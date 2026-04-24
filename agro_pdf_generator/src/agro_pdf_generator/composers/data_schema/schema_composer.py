@@ -52,11 +52,17 @@ def build_quotation_data_from_domain(
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
 
+    proposal_number = (
+        proposal_metadata.proposal_id
+        if proposal_metadata and proposal_metadata.proposal_id is not None
+        else metadata.proposal_id
+    )
+
     header_data = build_header(
         view,
         metadata,
         coverage,
-        proposal_number=proposal_metadata.proposal_id if proposal_metadata else None,
+        proposal_number=proposal_number,
         policy_id=proposal_metadata.policy_id if proposal_metadata else None,
         logo_path=header_logo_path,
     )
