@@ -1019,7 +1019,7 @@ class ProposalBlockBuilder:
         term = self._data.authorization_term
         current_year = date.today().year
 
-        if not term.applicant_name:
+        if not getattr(term, "has_account", None) or str(term.has_account).strip().lower() != "sim":
             return []
 
         return [
