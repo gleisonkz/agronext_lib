@@ -1,7 +1,10 @@
 from .builders.proposal_block_builder import ProposalBlockBuilder
 from .builders.quotation_block_builder import QuotationBlockBuilder
+from .builders.simulation_block_builder import SimulationBlockBuilder
 from .composers.data_schema.schema_composer import build_quotation_data_from_domain
+from .composers.data_schema.schema_composer import build_simulation_pdf_data
 from .composers.pdf_generator.pdf_composer import generate_quotation_pdf
+from .composers.pdf_generator.pdf_composer import generate_simulation_pdf
 from .generator import PdfGenerator
 from .schemas import (
     AddressData,
@@ -28,14 +31,23 @@ from .schemas import (
     StateSubsidyTermData,
     SubsidyData,
     SubsidyQuestionItem,
+    SimulationHeaderData,
+    SimulationLocationData,
+    SimulationPdfData,
+    SimulationProductivityData,
+    SimulationProponentData,
+    SimulationResultsData,
 )
 
 __all__ = [
     "build_quotation_data_from_domain",
     "generate_quotation_pdf",
+    "generate_simulation_pdf",
     "PdfGenerator",
     "ProposalBlockBuilder",
     "QuotationBlockBuilder",
+    "SimulationBlockBuilder",
+    "build_simulation_pdf_data",
     "FederalSubsidyTermData",
     "HeaderData",
     "ModalityOption",
@@ -60,4 +72,10 @@ __all__ = [
     "AddressData",
     "ApplicantData",
     "CellConfig",
+    "SimulationHeaderData",
+    "SimulationLocationData",
+    "SimulationPdfData",
+    "SimulationProductivityData",
+    "SimulationProponentData",
+    "SimulationResultsData",
 ]

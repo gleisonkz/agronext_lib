@@ -289,6 +289,69 @@ class HeaderData:
 
 
 @dataclass
+class SimulationHeaderData:
+    logo_path: str = ""
+    simulation_date: str = ""
+    simulation_status: str = ""
+    crop: str = ""
+    main_coverage: str = ""
+    harvest: str = ""
+    bacen_code: str = ""
+    insurer: str = ""
+    insurer_cnpj: str = ""
+    susep: str = ""
+    mapa_code: str = ""
+
+
+@dataclass
+class SimulationProponentData:
+    name: str = ""
+    phone: str = ""
+
+
+@dataclass
+class SimulationLocationData:
+    state: str = ""
+    city: str = ""
+    country: str = ""
+    coordinates: str = ""
+
+
+@dataclass
+class SimulationProductivityData:
+    deductible_pct: str = ""
+    area_ha: str = ""
+    productivity_ton_ha: str = ""
+    price_per_ton_brl: str = ""
+    lmga_brl: str = ""
+    tariff_premium_brl: str = ""
+    rate_pct: str = ""
+
+
+@dataclass
+class SimulationResultsData:
+    net_premium_brl: str = ""
+    federal_subsidy_pct: str = ""
+    federal_subsidy_brl: str = ""
+    value_with_only_federal_brl: str = ""
+    state_subsidy_pct: str = ""
+    state_subsidy_brl: str = ""
+    value_with_only_state_brl: str = ""
+    applicant_value_brl: str = ""
+
+
+@dataclass
+class SimulationPdfData:
+    header: SimulationHeaderData = field(default_factory=SimulationHeaderData)
+    proponent: SimulationProponentData = field(default_factory=SimulationProponentData)
+    location: SimulationLocationData = field(default_factory=SimulationLocationData)
+    productivity: SimulationProductivityData = field(default_factory=SimulationProductivityData)
+    results: SimulationResultsData = field(default_factory=SimulationResultsData)
+    broker: BrokerData = field(default_factory=BrokerData)
+    general_info_html: str = ""
+
+
+@dataclass
 class PDFData:
     header: HeaderData = field(default_factory=HeaderData)
     applicant: ApplicantData = field(default_factory=ApplicantData)
