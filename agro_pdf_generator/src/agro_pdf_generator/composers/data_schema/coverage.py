@@ -43,6 +43,13 @@ def _extract_coverage_name_from_documents(docs: list | None) -> str:
 
     return ""
 
+def format_decimal(value: float, precision: int = 2) -> str:
+    return f"{value:.{precision}f}".replace(".", ",")
+
+
+def format_percentage(value: float) -> str:
+    return f"{value:.2f}%".replace(".", ",")
+
 
 def build_coverage(
     view: procurement.ProposalView | procurement.QuotationView,
@@ -109,3 +116,38 @@ def build_coverage(
         coverage_data.plot_count = str(total_plots)
 
     return coverage_data
+
+def build_simulation_productivity(
+    *,
+    deductible_percentage: float,
+    area_ha: float,
+    productivity_ton_ha: float,
+    price_per_ton: float,
+    policy_limit: float,
+    premium: float,
+    rate: float,
+    federal_subsidy_percentage: float,
+    federal_subsidy_discount: float,
+    state_subsidy_percentage: float,
+    state_subsidy_discount: float,
+    value_with_only_federal_subsidy: float,
+    value_with_only_state_subsidy: float,
+    discounted_premium: float,
+) -> CoverageData:
+    return CoverageData(
+        deductible_pct=format_percentage(deductible_percentage),
+        insured_area_ha=format_decimal(area_ha),
+        productivity_ton_ha=format_decimal(productivity_ton_ha, 3),
+        price_per_ton_brl=format_monetary_value(price_per_ton),
+        policy_limit_brl=format_monetary_value(policy_limit),
+        tariff_premium=format_monetary_value(premium),
+        coverage_rate_pct=format_percentage(rate),
+        net_premium=format_monetary_value(premium),
+        federal_subsidy_pct=format_percentage(federal_subsidy_percentage),
+        federal_subsidy_brl=format_monetary_value(federal_subsidy_discount),
+        state_subsidy_pct=format_percentage(state_subsidy_percentage),
+        state_subsidy_brl=format_monetary_value(state_subsidy_discount),
+        value_with_only_federal_brl=format_monetary_value(value_with_only_federal_subsidy),
+        value_with_only_state_brl=format_monetary_value(value_with_only_state_subsidy),
+        applicant_value=format_monetary_value(discounted_premium),
+    )

@@ -3,21 +3,10 @@ from datetime import datetime
 import agronext_procurement as procurement
 import agronext_procurement_repositories as repositories
 
-
-from ...constants import PDF_LOGO
-from ...schemas import (
-    PDFData,
-    SimulationHeaderData,
-    SimulationLocationData,
-    SimulationPdfData,
-    SimulationProductivityData,
-    SimulationProponentData,
-    SimulationResultsData,
-)
-from ...utils import format_monetary_value
+from ...schemas import PDFData
 from .acceptance import build_acceptance
 from .address import build_proposal_address
-from .applicant import build_applicant
+from .applicant import build_applicant, build_simulation_proponent
 from .authorization import (
     build_proposal_authorization_term,
     build_proposal_beneficiary_authorization,
@@ -27,31 +16,21 @@ from .available_documents import build_available_documents
 from .beneficiaries import build_proposal_beneficiaries
 from .broker import build_broker
 from .coordinates import build_coordinates
-from .coverage import build_coverage
+from .coverage import build_coverage, build_simulation_productivity
 from .coverage_restrictions import build_coverage_restrictions
 from .declarations import build_declarations
 from .excluded_risks import build_excluded_risks
 from .grace_period import build_grace_period
-from .header import build_header
-from .land_property import build_property
+from .header import build_header, build_simulation_header
+from .land_property import build_property, build_simulation_location
 from .lgpd import build_lgpd_consent
 from .notifications import build_proponent_notifications
 from .payment import build_payment
 from .political_exposure import build_proposal_political_exposure
-from .prop_declaration import (
-    build_proposal_proponent_declaration,
-)
+from .prop_declaration import build_proposal_proponent_declaration
 from .risk_data import build_risk_data
 from .risk_questionnaire import build_risk_questionnaire
-from .simulation import (
-    build_general_info_html,
-    format_coordinates,
-    format_decimal,
-    format_percentage,
-    format_phone,
-    format_state,
-    resolve_display_label,
-)
+from .simulation import build_simulation_general_info_html
 from .subsidy import (
     build_proposal_federal_subsidy_term,
     build_proposal_state_authorization_term,
@@ -261,8 +240,8 @@ def build_simulation_pdf_data(
     simulation_date: datetime,
     harvest: int,
     coverage_id: int,
-    crop: object,
-    peril: object,
+    crop: str,
+    peril: str,
     bacen_code: str | None,
     proponent_name: str,
     proponent_phone: str,
@@ -289,68 +268,58 @@ def build_simulation_pdf_data(
     header_logo_path: str | None = None,
     general_info_text: str | None = None,
     simulation_status: str | None = None,
-) -> SimulationPdfData:
-    crop_label = resolve_display_label(crop, repositories.CROP_TAXONOMY_DICT)
-    peril_label = resolve_display_label(peril, repositories.PERIL_TAXONOMY_DICT)
-    coverage_label = f"{coverage_id} - {peril_label} ({crop_label})"
-
-    header_data = SimulationHeaderData(
-        logo_path=header_logo_path or str(PDF_LOGO.absolute()),
-        simulation_date=simulation_date.strftime("%d/%m/%Y"),
-        simulation_status=simulation_status or "ESTA SIMULAÇÃO NÃO POSSUI COBERTURA",
-        crop=crop_label,
-        main_coverage=coverage_label,
-        harvest=f"{harvest}/{harvest + 1}",
-        bacen_code=bacen_code or "",
-        insurer="ESSOR SEGUROS S.A.",
-        insurer_cnpj="14.525.684/0001-50",
-        susep="15414.004513/2012-47",
-        mapa_code="12",
+) -> PDFData:
+    header_data = build_simulation_header(
+        simulation_date=simulation_date,
+        harvest=harvest,
+        coverage_id=coverage_id,
+        crop=crop,
+        peril=peril,
+        bacen_code=bacen_code,
+        header_logo_path=header_logo_path,
     )
 
-    proponent_data = SimulationProponentData(
+    proponent_data = build_simulation_proponent(
         name=proponent_name,
-        phone=format_phone(proponent_phone),
+        phone=proponent_phone,
     )
 
-    location_data = SimulationLocationData(
-        state=format_state(state),
+    location_data = build_simulation_location(
+        state=state,
         city=city,
-        country=country or "Brasil",
-        coordinates=format_coordinates(latitude, longitude),
+        country=country,
+        latitude=latitude,
+        longitude=longitude,
     )
 
-    productivity_data = SimulationProductivityData(
-        deductible_pct=format_percentage(deductible_percentage),
-        area_ha=format_decimal(area_ha),
-        productivity_ton_ha=format_decimal(productivity_ton_ha),
-        price_per_ton_brl=format_monetary_value(price_per_ton),
-        lmga_brl=format_monetary_value(policy_limit),
-        tariff_premium_brl=format_monetary_value(premium),
-        rate_pct=format_percentage(rate),
-    )
-
-    results_data = SimulationResultsData(
-        net_premium_brl=format_monetary_value(premium),
-        federal_subsidy_pct=format_percentage(federal_subsidy_percentage),
-        federal_subsidy_brl=format_monetary_value(federal_subsidy_discount),
-        value_with_only_federal_brl=format_monetary_value(
-            value_with_only_federal_subsidy
-        ),
-        state_subsidy_pct=format_percentage(state_subsidy_percentage),
-        state_subsidy_brl=format_monetary_value(state_subsidy_discount),
-        value_with_only_state_brl=format_monetary_value(value_with_only_state_subsidy),
-        applicant_value_brl=format_monetary_value(discounted_premium),
+    productivity_data = build_simulation_productivity(
+        deductible_percentage=deductible_percentage,
+        area_ha=area_ha,
+        productivity_ton_ha=productivity_ton_ha,
+        price_per_ton=price_per_ton,
+        policy_limit=policy_limit,
+        premium=premium,
+        rate=rate,
+        federal_subsidy_percentage=federal_subsidy_percentage,
+        federal_subsidy_discount=federal_subsidy_discount,
+        state_subsidy_percentage=state_subsidy_percentage,
+        state_subsidy_discount=state_subsidy_discount,
+        value_with_only_federal_subsidy=value_with_only_federal_subsidy,
+        value_with_only_state_subsidy=value_with_only_state_subsidy,
+        discounted_premium=discounted_premium,
     )
 
     broker_data = build_broker(broker_details)
 
-    return SimulationPdfData(
+    information_blocks = [
+        build_simulation_general_info_html(general_info_text),
+    ]
+
+    return PDFData(
         header=header_data,
-        proponent=proponent_data,
-        location=location_data,
-        productivity=productivity_data,
-        results=results_data,
+        applicant=proponent_data,
+        property=location_data,
+        coverage=productivity_data,
         broker=broker_data,
-        general_info_html=build_general_info_html(general_info_text),
+        information_html_blocks=information_blocks,
     )

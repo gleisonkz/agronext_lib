@@ -1,10 +1,10 @@
 from ..blocks import BlockConfig, BlockType
 from ..config import Spacing
-from ..schemas import SimulationPdfData
+from ..schemas import PDFData
 
 
 class SimulationBlockBuilder:
-    def __init__(self, data: SimulationPdfData):
+    def __init__(self, data: PDFData):
         self._data = data
 
     def build_all(self) -> list[BlockConfig]:
@@ -17,8 +17,8 @@ class SimulationBlockBuilder:
             self._build_productivity_block(),
             self._build_results_block(),
             self._build_broker_block(),
-            self._build_general_info_block(),
         ]
+        blocks.extend(self._build_information_blocks())
         return [block for block in blocks if block is not None]
 
     def _build_logo_block(self) -> BlockConfig:
@@ -51,11 +51,12 @@ class SimulationBlockBuilder:
                 [
                     {
                         "label": "Data da simulação de seguro",
-                        "value": h.simulation_date,
+                        "value": h.reception_date,
                         "width": "50%",
                     },
                     {
-                        "value": h.simulation_status,
+                        "label": "",
+                        "value": "ESTA SIMULAÇÃO NÃO POSSUI COBERTURA",
                         "width": "50%",
                         "background_color": "#FEF2F2",
                         "text_color": "#B91C1C",
@@ -81,7 +82,7 @@ class SimulationBlockBuilder:
         )
 
     def _build_proponent_block(self) -> BlockConfig:
-        p = self._data.proponent
+        p = self._data.applicant
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Dados do Proponente",
@@ -89,13 +90,17 @@ class SimulationBlockBuilder:
             rows=[
                 [
                     {"label": "Nome", "value": p.name, "width": "50%"},
-                    {"label": "Telefone", "value": p.phone, "width": "50%"},
+                    {
+                        "label": "Telefone",
+                        "value": p.phone_number,
+                        "width": "50%",
+                    },
                 ]
             ],
         )
 
     def _build_location_block(self) -> BlockConfig:
-        loc = self._data.location
+        loc = self._data.property
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Localidade",
@@ -115,7 +120,7 @@ class SimulationBlockBuilder:
         )
 
     def _build_productivity_block(self) -> BlockConfig:
-        prod = self._data.productivity
+        prod = self._data.coverage
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Produtividade",
@@ -123,8 +128,16 @@ class SimulationBlockBuilder:
             row_gap_after=[0],
             rows=[
                 [
-                    {"label": "Franquia (%)", "value": prod.deductible_pct, "width": "25%"},
-                    {"label": "Área (ha)", "value": prod.area_ha, "width": "25%"},
+                    {
+                        "label": "Franquia (%)",
+                        "value": prod.deductible_pct,
+                        "width": "25%",
+                    },
+                    {
+                        "label": "Área (ha)",
+                        "value": prod.insured_area_ha,
+                        "width": "25%",
+                    },
                     {
                         "label": "Produtividade (ton/ha)",
                         "value": prod.productivity_ton_ha,
@@ -139,21 +152,25 @@ class SimulationBlockBuilder:
                 [
                     {
                         "label": "LMGA (Importância segurada - R$)",
-                        "value": prod.lmga_brl,
+                        "value": prod.policy_limit_brl,
                         "width": "40%",
                     },
                     {
                         "label": "Prêmio tarifário (R$)",
-                        "value": prod.tariff_premium_brl,
+                        "value": prod.tariff_premium,
                         "width": "30%",
                     },
-                    {"label": "Taxa (%)", "value": prod.rate_pct, "width": "30%"},
+                    {
+                        "label": "Taxa (%)",
+                        "value": prod.coverage_rate_pct,
+                        "width": "30%",
+                    },
                 ],
             ],
         )
 
     def _build_results_block(self) -> BlockConfig:
-        r = self._data.results
+        r = self._data.coverage
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             section_header="Resultado da Simulação",
@@ -162,7 +179,7 @@ class SimulationBlockBuilder:
                 [
                     {
                         "label": "Prêmio Líquido aproximado (R$)",
-                        "value": r.net_premium_brl,
+                        "value": r.net_premium,
                         "width": "100%",
                     }
                 ],
@@ -207,7 +224,7 @@ class SimulationBlockBuilder:
                 [
                     {
                         "label": "Valor proponente aproximado (R$)",
-                        "value": r.applicant_value_brl,
+                        "value": r.applicant_value,
                         "width": "100%",
                     }
                 ],
@@ -242,15 +259,28 @@ class SimulationBlockBuilder:
             ],
         )
 
-    def _build_general_info_block(self) -> BlockConfig | None:
-        if not self._data.general_info_html:
-            return None
-        return BlockConfig(
-            type=BlockType.HTML_BLOCK,
-            section_header="INFORMAÇÕES GERAIS",
-            estimated_height=180,
-            content=self._data.general_info_html,
-        )
+    def _build_information_blocks(self) -> list[BlockConfig]:
+        if not self._data.information_html_blocks:
+            return []
+
+        blocks = []
+        for html_content in self._data.information_html_blocks:
+            estimated_lines = len(html_content) / 100
+            estimated_height = int(
+                estimated_lines * 24 + html_content.count("</p>") * 16
+            )
+            estimated_height = max(150, estimated_height)
+
+            blocks.append(
+                BlockConfig(
+                    type=BlockType.HTML_BLOCK,
+                    section_header="INFORMAÇÕES GERAIS",
+                    estimated_height=estimated_height,
+                    content=html_content,
+                )
+            )
+
+        return blocks
 
     def _format_list_items(self, items: list[str]) -> str:
         return "".join(

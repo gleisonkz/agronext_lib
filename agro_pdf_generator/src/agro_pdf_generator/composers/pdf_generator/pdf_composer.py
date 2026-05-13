@@ -1,7 +1,7 @@
 from ...builders.quotation_block_builder import QuotationBlockBuilder
 from ...builders.simulation_block_builder import SimulationBlockBuilder
 from ...generator import PdfGenerator
-from ...schemas import PDFData, SimulationPdfData
+from ...schemas import PDFData
 
 
 def generate_quotation_pdf(data: PDFData) -> bytes:
@@ -13,7 +13,7 @@ def generate_quotation_pdf(data: PDFData) -> bytes:
     return pdf_bytes
 
 
-def generate_simulation_pdf(data: SimulationPdfData) -> bytes:
+def generate_simulation_pdf(data: PDFData) -> bytes:
     block_builder = SimulationBlockBuilder(data)
     blocks = block_builder.build_all()
 

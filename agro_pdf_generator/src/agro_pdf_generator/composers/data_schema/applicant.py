@@ -32,19 +32,26 @@ def _format_phone(value: object | None) -> str:
 
     area_code = getattr(value, "area_code", None)
     number = getattr(value, "number", None)
-    if number is None:
-        return str(value)
+    raw = str(number if number is not None else value)
 
-    digits = "".join(char for char in str(number) if char.isdigit())
-    local_number = digits[-9:] if len(digits) >= 9 else digits
-    if len(local_number) > 4:
-        formatted_number = f"{local_number[:5]}-{local_number[5:]}"
-    else:
-        formatted_number = local_number
+    digits = "".join(char for char in raw if char.isdigit())
 
-    if area_code is not None:
-        return f"({area_code}) {formatted_number}"
-    return formatted_number
+    # Drop country code if present (Brazil).
+    if digits.startswith("55") and len(digits) in {12, 13}:
+        digits = digits[2:]
+
+    if area_code:
+        local = digits[-9:] if len(digits) >= 9 else digits
+        if len(local) > 4:
+            local = f"{local[:5]}-{local[5:]}"
+        return f"({area_code}) {local}"
+
+    if len(digits) == 11:
+        return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
+    if len(digits) == 10:
+        return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
+
+    return raw
 
 
 def _format_document_type(value: object | None) -> str:
@@ -173,3 +180,13 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
     return applicant_data
+
+def build_simulation_proponent(
+    *,
+    name: str,
+    phone: str,
+) -> ApplicantData:
+    return ApplicantData(
+        name=name,
+        phone_number=_format_phone(phone),
+    )

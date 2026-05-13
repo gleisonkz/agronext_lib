@@ -35,3 +35,31 @@ def build_property(
         property_data.number = prop.address.number
 
     return property_data
+
+def build_simulation_location(
+    *,
+    state: str,
+    city: str,
+    country: str | None,
+    latitude: float,
+    longitude: float,
+) -> PropertyData:
+    return PropertyData(
+        state=_format_state(state),
+        city=city,
+        country=country or "Brasil",
+        coordinates=_format_coordinates(latitude, longitude),
+    )
+
+def _format_coordinates(latitude: float, longitude: float) -> str:
+    return f"{latitude:.6f}, {longitude:.6f}"
+
+def _format_state(value: str | None) -> str:
+    if not value:
+        return ""
+
+    state_code = value.strip().upper()
+    if state_code in procurement.BrazilianStateDisplayNames.__members__:
+        return procurement.BrazilianStateDisplayNames[state_code].value
+
+    return value

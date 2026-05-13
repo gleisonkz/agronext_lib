@@ -1,3 +1,4 @@
+import datetime
 from zoneinfo import ZoneInfo
 
 import agronext_procurement as procurement
@@ -44,5 +45,32 @@ def build_header(
         header_data.validity_period = "Das 24 horas do dia " + coverage.term.start_date.strftime("%d/%m/%Y") + " até às 24 horas do dia " + "31/05/2027"
 
     return header_data
+
+def build_simulation_header(
+    *,
+    simulation_date: datetime,
+    harvest: int,
+    coverage_id: int,
+    crop: str,
+    peril: str,
+    bacen_code: str | None,
+    header_logo_path: str | None = None,
+) -> HeaderData:
+    crop_label = repositories.CROP_TAXONOMY_DICT.get(crop, crop)
+    peril_label = repositories.PERIL_TAXONOMY_DICT.get(peril, peril)
+    coverage_label = f"{coverage_id} - {peril_label} ({crop_label})"
+
+    return HeaderData(
+        logo_path=header_logo_path or str(PDF_LOGO.absolute()),
+        reception_date=simulation_date.strftime("%d/%m/%Y"),
+        crop=crop_label,
+        main_coverage=coverage_label,
+        harvest=f"{harvest}/{harvest + 1}",
+        bacen_code=bacen_code or "",
+        insurer="ESSOR SEGUROS S.A.",
+        insurer_cnpj="14.525.684/0001-50",
+        susep="15414.004513/2012-47",
+        mapa_code="12",
+    )
 
 
