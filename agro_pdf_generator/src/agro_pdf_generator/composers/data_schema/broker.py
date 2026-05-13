@@ -45,6 +45,7 @@ def _extract_phone_parts(phone_item: object) -> dict:
 
 
 def _format_phone_number(value: object) -> str:
+    #TODO: replace with the format phone from utils, test before opening PR, review and add the logic to identify the phone type and if it's whatsapp based on the type hint and tags in the phone number
     text = str(value).strip() if value is not None else ""
     if not text or text.lower() == "não informado":
         return "Não informado"

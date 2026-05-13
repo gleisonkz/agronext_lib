@@ -4,7 +4,7 @@ from agronext_procurement.views.common import CoverageDetailsView
 import unicodedata
 
 from ...schemas import CoverageData
-from ...utils import format_monetary_value
+from ...utils import format_monetary_value, format_percentage, format_decimal
 
 
 def _normalize_text(value: str) -> str:
@@ -42,14 +42,6 @@ def _extract_coverage_name_from_documents(docs: list | None) -> str:
             return f"{matched_crop} - {matched_peril}"
 
     return ""
-
-def format_decimal(value: float, precision: int = 2) -> str:
-    return f"{value:.{precision}f}".replace(".", ",")
-
-
-def format_percentage(value: float) -> str:
-    return f"{value:.2f}%".replace(".", ",")
-
 
 def build_coverage(
     view: procurement.ProposalView | procurement.QuotationView,
@@ -89,10 +81,10 @@ def build_coverage(
     )
     if coverage and coverage.financials:
         coverage_data.policy_limit_brl = format_monetary_value(coverage.financials.policy_limit)
-        coverage_data.deductible_pct = f"{coverage.financials.deductible_details.percentage:.2f}%"
+        coverage_data.deductible_pct = format_percentage(value=coverage.financials.deductible_details.percentage)
 
         coverate_rate_pct = coverage.financials.coverage_rate
-        coverage_data.coverage_rate_pct = f"{coverate_rate_pct:.2f}%"
+        coverage_data.coverage_rate_pct = format_percentage(value=coverate_rate_pct)
 
         net_premium = coverage.financials.net_estimated_premium
         federal_subsidy = coverage.financials.federal_subsidy_discount
@@ -135,19 +127,19 @@ def build_simulation_coverage(
     discounted_premium: float,
 ) -> CoverageData:
     return CoverageData(
-        deductible_pct=format_percentage(deductible_percentage),
-        insured_area_ha=format_decimal(area_ha),
-        productivity_ton_ha=format_decimal(productivity_ton_ha, 3),
-        price_per_ton_brl=format_monetary_value(price_per_ton),
-        policy_limit_brl=format_monetary_value(policy_limit),
-        tariff_premium=format_monetary_value(premium),
-        coverage_rate_pct=format_percentage(rate),
-        net_premium=format_monetary_value(premium),
-        federal_subsidy_pct=format_percentage(federal_subsidy_percentage),
-        federal_subsidy_brl=format_monetary_value(federal_subsidy_discount),
-        state_subsidy_pct=format_percentage(state_subsidy_percentage),
-        state_subsidy_brl=format_monetary_value(state_subsidy_discount),
+        deductible_pct=format_percentage(value=deductible_percentage),
+        insured_area_ha=format_decimal(value=area_ha),
+        productivity_ton_ha=format_decimal(value=productivity_ton_ha, precision=3),
+        price_per_ton_brl=format_monetary_value(value=price_per_ton),
+        policy_limit_brl=format_monetary_value(value=policy_limit),
+        tariff_premium=format_monetary_value(value=premium),
+        coverage_rate_pct=format_percentage(value=rate),
+        net_premium=format_monetary_value(value=premium),
+        federal_subsidy_pct=format_percentage(value=federal_subsidy_percentage),
+        federal_subsidy_brl=format_monetary_value(value=federal_subsidy_discount),
+        state_subsidy_pct=format_percentage(value=state_subsidy_percentage),
+        state_subsidy_brl=format_monetary_value(value=state_subsidy_discount),
         value_with_only_federal_brl=format_monetary_value(value_with_only_federal_subsidy),
         value_with_only_state_brl=format_monetary_value(value_with_only_state_subsidy),
-        applicant_value=format_monetary_value(discounted_premium),
+        applicant_value=format_monetary_value(value=discounted_premium),
     )

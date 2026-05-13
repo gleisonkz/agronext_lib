@@ -4,7 +4,7 @@ import agronext_procurement as procurement
 import agronext_procurement_repositories as repositories
 
 from ...schemas import PDFData
-from .acceptance import build_acceptance
+from .acceptance import build_acceptance, build_simulation_general_info_html
 from .address import build_proposal_address
 from .applicant import build_applicant, build_simulation_proponent
 from .authorization import (
@@ -30,7 +30,6 @@ from .political_exposure import build_proposal_political_exposure
 from .prop_declaration import build_proposal_proponent_declaration
 from .risk_data import build_risk_data
 from .risk_questionnaire import build_risk_questionnaire
-from .simulation import build_simulation_general_info_html
 from .subsidy import (
     build_proposal_federal_subsidy_term,
     build_proposal_state_authorization_term,

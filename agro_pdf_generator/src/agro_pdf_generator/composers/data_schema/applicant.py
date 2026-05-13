@@ -2,6 +2,7 @@ import agronext_procurement as procurement
 from collections.abc import Sequence
 from typing import Any
 
+from ...utils import format_phone
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
 
@@ -25,33 +26,6 @@ def _format_revenue_range(value: object | None) -> str:
         return "Não informado"
 
     return _REVENUE_RANGE_LABELS.get(normalized, normalized)
-
-def _format_phone(value: object | None) -> str:
-    if value is None:
-        return ""
-
-    area_code = getattr(value, "area_code", None)
-    number = getattr(value, "number", None)
-    raw = str(number if number is not None else value)
-
-    digits = "".join(char for char in raw if char.isdigit())
-
-    # Drop country code if present (Brazil).
-    if digits.startswith("55") and len(digits) in {12, 13}:
-        digits = digits[2:]
-
-    if area_code:
-        local = digits[-9:] if len(digits) >= 9 else digits
-        if len(local) > 4:
-            local = f"{local[:5]}-{local[5:]}"
-        return f"({area_code}) {local}"
-
-    if len(digits) == 11:
-        return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
-    if len(digits) == 10:
-        return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
-
-    return raw
 
 
 def _format_document_type(value: object | None) -> str:
@@ -108,7 +82,7 @@ def _fill_contact_info(
     applicant_data.main_email = contact_information.email or "Não informado"
 
     phone = contact_information.phones[0] if contact_information.phones else None
-    applicant_data.phone_number = _format_phone(phone)
+    applicant_data.phone_number = format_phone(phone=phone)
     applicant_data.phone_type = phone.type if phone is not None else ""
     applicant_data.is_whatsapp = "Sim" if phone and phone.is_whatsapp else "Não"
 
@@ -188,5 +162,5 @@ def build_simulation_proponent(
 ) -> ApplicantData:
     return ApplicantData(
         name=name,
-        phone_number=_format_phone(phone),
+        phone_number=format_phone(phone=phone),
     )

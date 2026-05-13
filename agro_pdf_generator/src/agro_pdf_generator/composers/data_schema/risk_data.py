@@ -7,6 +7,7 @@ _SEPARATOR_TRANSLATION = str.maketrans({",": ".", ".": ","})
 
 
 def _format_number(value: float, precision: int) -> str:
+    #TODO: review if it can be replaced by format_decimal util function, or, increment the format decimal to have the separator translation
     formatted = f"{value:.{precision}f}"
     return formatted.translate(_SEPARATOR_TRANSLATION)
 
