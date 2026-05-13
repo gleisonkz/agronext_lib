@@ -9,7 +9,6 @@ _GENERAL_INFO_BODY = (
     "risco e a fixação do prêmio definitivo. Com base nessas informações, "
     "a proposta de seguro poderá ser aceita ou não. O valor definitivo do prêmio será validado no momento da contratação do seguro.</li>"
     "<li>PARA EFETIVAR O SEGURO AGRÍCOLA, ENTRE EM CONTATO COM SEU CORRETOR DE SEGURO E SOLICITE O ENCAMINHAMENTO DA PROPOSTA À SEGURADORA.</li>"
-    "<li>A nossa cartilha resumida pode ser encontrada em: <a href=\"https://www.agrobrasilseguros.com.br/#seguros\">https://www.agrobrasilseguros.com.br/#seguros</a></li>"
     "<li>As condições gerais para o seguro agrícola podem ser encontradas em: <a href=\"https://essor.com.br/condicoes-gerais/\">https://essor.com.br/condicoes-gerais/</a></li></ul>"
 )
 

@@ -36,7 +36,7 @@ def build_property(
 
     return property_data
 
-def build_simulation_location(
+def build_simulation_property(
     *,
     state: str,
     city: str,

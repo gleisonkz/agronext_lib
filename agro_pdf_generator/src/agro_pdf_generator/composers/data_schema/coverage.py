@@ -117,7 +117,7 @@ def build_coverage(
 
     return coverage_data
 
-def build_simulation_productivity(
+def build_simulation_coverage(
     *,
     deductible_percentage: float,
     area_ha: float,

@@ -16,13 +16,13 @@ from .available_documents import build_available_documents
 from .beneficiaries import build_proposal_beneficiaries
 from .broker import build_broker
 from .coordinates import build_coordinates
-from .coverage import build_coverage, build_simulation_productivity
+from .coverage import build_coverage, build_simulation_coverage
 from .coverage_restrictions import build_coverage_restrictions
 from .declarations import build_declarations
 from .excluded_risks import build_excluded_risks
 from .grace_period import build_grace_period
 from .header import build_header, build_simulation_header
-from .land_property import build_property, build_simulation_location
+from .land_property import build_property, build_simulation_property
 from .lgpd import build_lgpd_consent
 from .notifications import build_proponent_notifications
 from .payment import build_payment
@@ -284,7 +284,7 @@ def build_simulation_pdf_data(
         phone=proponent_phone,
     )
 
-    location_data = build_simulation_location(
+    location_data = build_simulation_property(
         state=state,
         city=city,
         country=country,
@@ -292,7 +292,7 @@ def build_simulation_pdf_data(
         longitude=longitude,
     )
 
-    productivity_data = build_simulation_productivity(
+    productivity_data = build_simulation_coverage(
         deductible_percentage=deductible_percentage,
         area_ha=area_ha,
         productivity_ton_ha=productivity_ton_ha,
