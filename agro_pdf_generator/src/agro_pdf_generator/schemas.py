@@ -57,11 +57,17 @@ class CoverageData:
     coverage_rate_pct: str = ""
     tariff_premium: str = ""
     insured_area_ha: str = ""
+    productivity_ton_ha: str = ""
+    price_per_ton_brl: str = ""
     plot_count: str = ""
     net_premium: str = ""
     federal_subsidy_brl: str = ""
     state_subsidy_brl: str = ""
     applicant_value: str = ""
+    federal_subsidy_pct: str = ""
+    value_with_only_federal_brl: str = ""
+    state_subsidy_pct: str = ""
+    value_with_only_state_brl: str = ""
 
 
 @dataclass
@@ -286,6 +292,7 @@ class HeaderData:
     mapa_code: str = ""
     proposal_number: str = ""
     policy: str = ""
+
 
 
 @dataclass

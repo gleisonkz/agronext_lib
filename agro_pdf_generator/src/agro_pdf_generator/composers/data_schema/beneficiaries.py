@@ -10,6 +10,7 @@ def _format_birth_date(value: object) -> str:
 
 
 def _format_phone(value: object) -> str:
+    #TODO: replace with the format phone from utils, test before opening PR
     if value is None:
         return ""
 

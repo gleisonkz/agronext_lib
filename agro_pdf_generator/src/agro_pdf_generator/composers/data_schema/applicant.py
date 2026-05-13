@@ -2,6 +2,7 @@ import agronext_procurement as procurement
 from collections.abc import Sequence
 from typing import Any
 
+from ...utils import format_phone
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
 
@@ -25,26 +26,6 @@ def _format_revenue_range(value: object | None) -> str:
         return "Não informado"
 
     return _REVENUE_RANGE_LABELS.get(normalized, normalized)
-
-def _format_phone(value: object | None) -> str:
-    if value is None:
-        return ""
-
-    area_code = getattr(value, "area_code", None)
-    number = getattr(value, "number", None)
-    if number is None:
-        return str(value)
-
-    digits = "".join(char for char in str(number) if char.isdigit())
-    local_number = digits[-9:] if len(digits) >= 9 else digits
-    if len(local_number) > 4:
-        formatted_number = f"{local_number[:5]}-{local_number[5:]}"
-    else:
-        formatted_number = local_number
-
-    if area_code is not None:
-        return f"({area_code}) {formatted_number}"
-    return formatted_number
 
 
 def _format_document_type(value: object | None) -> str:
@@ -101,7 +82,7 @@ def _fill_contact_info(
     applicant_data.main_email = contact_information.email or "Não informado"
 
     phone = contact_information.phones[0] if contact_information.phones else None
-    applicant_data.phone_number = _format_phone(phone)
+    applicant_data.phone_number = format_phone(phone=phone)
     applicant_data.phone_type = phone.type if phone is not None else ""
     applicant_data.is_whatsapp = "Sim" if phone and phone.is_whatsapp else "Não"
 
@@ -173,3 +154,13 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
         _fill_contact_info(applicant_data, view.applicant.contact_information)
 
     return applicant_data
+
+def build_simulation_proponent(
+    *,
+    name: str,
+    phone: str,
+) -> ApplicantData:
+    return ApplicantData(
+        name=name,
+        phone_number=format_phone(phone=phone),
+    )
