@@ -15,7 +15,7 @@ pr:
       - "agronext_api/**"
 
 pool:
-  name: "DAS-SGLA"
+  name: "AgroNext-Linux-Python"
 
 variables:
   - name: "package_path"

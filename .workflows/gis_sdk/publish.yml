@@ -10,7 +10,7 @@ trigger: none
 pr: none
 
 pool:
-  name: "DAS-SGLA"
+  name: "AgroNext-Linux-Python"
 
 variables:
   - group: Credentials

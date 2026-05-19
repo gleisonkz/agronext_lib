@@ -15,7 +15,7 @@ pr:
       - "agro_gis_sdk/**"
 
 pool:
-  name: "DAS-SGLA"
+  name: "AgroNext-Linux-Python"
 
 variables:
   - name: "package_path"
