@@ -155,12 +155,12 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
 
     return applicant_data
 
-def build_simulation_proponent(
+def build_simulation_applicant(
     *,
     name: str,
     phone: str,
 ) -> ApplicantData:
     return ApplicantData(
-        name=name,
-        phone_number=format_phone(phone=phone),
+        name=name or "Não informado",
+        phone_number=format_phone(phone=phone) or "Não informado",
     )

@@ -6,7 +6,7 @@ import agronext_procurement_repositories as repositories
 from ...schemas import PDFData
 from .acceptance import build_acceptance, build_simulation_general_info_html
 from .address import build_proposal_address
-from .applicant import build_applicant, build_simulation_proponent
+from .applicant import build_applicant, build_simulation_applicant
 from .authorization import (
     build_proposal_authorization_term,
     build_proposal_beneficiary_authorization,
@@ -275,7 +275,7 @@ def build_simulation_pdf_data(
         header_logo_path=header_logo_path,
     )
 
-    proponent_data = build_simulation_proponent(
+    applicant_data = build_simulation_applicant(
         name=proponent_name,
         phone=proponent_phone,
     )
@@ -313,7 +313,7 @@ def build_simulation_pdf_data(
 
     return PDFData(
         header=header_data,
-        applicant=proponent_data,
+        applicant=applicant_data,
         property=location_data,
         coverage=productivity_data,
         broker=broker_data,
