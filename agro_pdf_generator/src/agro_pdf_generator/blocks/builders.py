@@ -1010,6 +1010,17 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
                 </div>
             """
 
+    footer_text = data.get("footer_text", "")
+    footer_html = (
+        f"""
+        <div style="font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_SMALL}; color: {Colors.PRIMARY}; text-align: center; margin-top: {Spacing.XL};">
+            {footer_text}
+        </div>
+    """
+        if footer_text
+        else ""
+    )
+
     return f"""
         <div style="font-family: {Fonts.FAMILY}; font-size: 16px; color: {Colors.PRIMARY}; margin-top: 16px; margin-bottom: {Spacing.LG};">
             {header_html}
@@ -1020,6 +1031,7 @@ def build_federal_subsidy_term(data: FederalSubsidyTermConfig) -> str:
             {declarations_html}
             {signature_html}
             {section2_html}
+            {footer_html}
         </div>
     """
 

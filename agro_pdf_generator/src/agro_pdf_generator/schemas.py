@@ -241,6 +241,7 @@ class FederalSubsidyTermData:
     declarations: list[str] = field(default_factory=list)
     signature_date_text: str = ""
     signature_text: str = ""
+    footer_text: str = ""
     # Seção II
     section2_title: str = ""
     section2_question: str = ""

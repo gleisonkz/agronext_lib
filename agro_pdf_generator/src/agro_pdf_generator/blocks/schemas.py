@@ -98,6 +98,7 @@ class FederalSubsidyTermConfig(TypedDict, total=False):
     declarations: list[str]  # Lista de declarações (a, b, c, etc.)
     signature_date_text: str  # Texto de data
     signature_text: str  # Texto de assinatura
+    footer_text: str  # Texto do rodapé
     # Seção II
     section2_title: str  # Título da SEÇÃO II
     section2_question: str  # Pergunta da SEÇÃO II

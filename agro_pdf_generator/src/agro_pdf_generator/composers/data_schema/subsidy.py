@@ -168,6 +168,10 @@ def build_proposal_federal_subsidy_term(
         declarations=declarations,
         signature_date_text="Data: ____/____/__________",
         signature_text="<strong>Assinatura do Proponente:</strong> ____________________________________________",
+        footer_text=(
+            "Esplanada dos Ministérios, Bloco D - 5º Andar 70.043-900 - Brasília / DF "
+            "Tel: (61) 3218 - 2266 - Fax: (61) 3224-8414"
+        ),
         section2_title="SEÇÃO II (para preenchimento pelo responsável da instituição financeira onde foi realizado o contrato de financiamento agrícola, se for o caso)",
         section2_question="  a) Foi oferecido ao financiado a escolha entre, no mínimo, duas apólices de diferentes seguradoras, sendo que pelo menos uma delas não poderá ser de empresa controlada, coligada ou pertencente ao mesmo conglomerado econômico-financeiro da credora (Lei nº 13.195, de 25 de novembro de 2015)?",
         section2_options=[
