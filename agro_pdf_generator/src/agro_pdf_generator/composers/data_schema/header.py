@@ -29,7 +29,7 @@ def build_header(
         validity_period="",
         reception_date=reception_date,
         crop="",
-        bacen_code="4304606",  # banco central
+        bacen_code="11283005",  # Código do Banco central da Pera
         harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",
         # Sempre essor
         insurer="ESSOR SEGUROS S.A.",
@@ -53,7 +53,6 @@ def build_simulation_header(
     coverage_id: int,
     crop: str,
     peril: str,
-    bacen_code: str | None,
     header_logo_path: str | None = None,
 ) -> HeaderData:
     crop_label = repositories.CROP_TAXONOMY_DICT.get(crop, crop)
@@ -66,7 +65,7 @@ def build_simulation_header(
         crop=crop_label,
         main_coverage=coverage_label,
         harvest=f"{harvest}/{harvest + 1}",
-        bacen_code=bacen_code or "",
+        bacen_code="11283005",  # Código do Banco central da Pera
         insurer="ESSOR SEGUROS S.A.",
         insurer_cnpj="14.525.684/0001-50",
         susep="15414.004513/2012-47",

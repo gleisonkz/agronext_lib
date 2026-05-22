@@ -241,7 +241,6 @@ def build_simulation_pdf_data(
     coverage_id: int,
     crop: str,
     peril: str,
-    bacen_code: str | None,
     proponent_name: str,
     proponent_phone: str,
     state: str,
@@ -266,7 +265,6 @@ def build_simulation_pdf_data(
     broker_details: dict,
     header_logo_path: str | None = None,
     general_info_text: str | None = None,
-    simulation_status: str | None = None,
 ) -> PDFData:
     header_data = build_simulation_header(
         simulation_date=simulation_date,
@@ -274,7 +272,6 @@ def build_simulation_pdf_data(
         coverage_id=coverage_id,
         crop=crop,
         peril=peril,
-        bacen_code=bacen_code,
         header_logo_path=header_logo_path,
     )
 
