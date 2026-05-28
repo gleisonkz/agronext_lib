@@ -20,6 +20,8 @@ def build_header(
 ) -> HeaderData:
     tz = ZoneInfo("America/Sao_Paulo")
     reception_date = ""
+    version_date = ""
+    events_version = None
     if metadata.transmitted_at and is_proposal:
         reception_date = metadata.transmitted_at.astimezone(tz)
         reception_date = reception_date.strftime("%d/%m/%Y - Hora: %Hh%M")
