@@ -45,6 +45,9 @@ class QuotationBlockBuilder:
 
     def _build_header_block(self) -> BlockConfig:
         h = self._data.header
+        version_label = h.version or "Não informado"
+        version_date = h.version_date or "Não informado"
+        version_value = f"{version_label} - Data: {version_date}"
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             estimated_height=150,
@@ -64,7 +67,7 @@ class QuotationBlockBuilder:
                     },
                     {
                         "label": "Versão",
-                        "value": f"1.0.0 - Data: {h.reception_date}",
+                        "value": version_value,
                         "width": "28%",
                     },
                     {

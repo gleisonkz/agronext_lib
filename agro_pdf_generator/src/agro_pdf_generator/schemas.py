@@ -283,6 +283,8 @@ class HeaderData:
     main_coverage: str = ""
     validity_period: str = ""
     reception_date: str = ""
+    version: str = ""
+    version_date: str = ""
     page: str = "1 de 13"
     crop: str = ""
     bacen_code: str = ""

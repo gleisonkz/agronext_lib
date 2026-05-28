@@ -17,10 +17,18 @@ def build_header(
     proposal_number: str | None,
     logo_path: str | None = None,
 ) -> HeaderData:
+    tz = ZoneInfo("America/Sao_Paulo")
     reception_date = ""
     if metadata.created_at:
-        reception_date = metadata.created_at.astimezone(ZoneInfo("America/Sao_Paulo"))
+        reception_date = metadata.created_at.astimezone(tz)
         reception_date = reception_date.strftime("%d/%m/%Y - Hora: %Hh%M")
+
+    if metadata.version:
+        events_version = metadata.version
+
+    if metadata.updated_at:
+        version_date = metadata.updated_at.astimezone(tz)
+        version_date = version_date.strftime("%d/%m/%Y - Hora: %Hh%M")
 
     # Header
     header_data = HeaderData(
@@ -28,6 +36,8 @@ def build_header(
         main_coverage="Pera - Granizo",
         validity_period="",
         reception_date=reception_date,
+        version=str(events_version) or "Não informado",
+        version_date=version_date or "Não informado",
         crop="",
         bacen_code="11283005",  # Código do Banco central da Pera
         harvest= f"{metadata.harvest}/{int(metadata.harvest) + 1}",
