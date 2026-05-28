@@ -40,7 +40,7 @@ def build_header(
         main_coverage="Pera - Granizo",
         validity_period="",
         reception_date=reception_date,
-        version=str(events_version) or "Não informado",
+        version=str(events_version) if events_version else "Não informado",
         version_date=version_date or "Não informado",
         crop="",
         bacen_code="11283005",  # Código do Banco central da Pera
