@@ -64,6 +64,7 @@ def build_quotation_data_from_domain(
         proposal_number=proposal_number,
         policy_id=proposal_metadata.policy_id if proposal_metadata else None,
         logo_path=header_logo_path,
+        is_proposal=False,
     )
     applicant_data = build_applicant(view)
 
@@ -133,6 +134,7 @@ def build_proposal_data_from_domain(
         proposal_number=metadata.proposal_id,
         policy_id=metadata.policy_id,
         logo_path=header_logo_path,
+        is_proposal=True,
     )
     applicant_data = build_applicant(view)
 

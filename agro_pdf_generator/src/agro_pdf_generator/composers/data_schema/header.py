@@ -16,10 +16,14 @@ def build_header(
     policy_id: str | None,
     proposal_number: str | None,
     logo_path: str | None = None,
+    is_proposal: bool = False,
 ) -> HeaderData:
     tz = ZoneInfo("America/Sao_Paulo")
     reception_date = ""
-    if metadata.created_at:
+    if metadata.transmitted_at and is_proposal:
+        reception_date = metadata.transmitted_at.astimezone(tz)
+        reception_date = reception_date.strftime("%d/%m/%Y - Hora: %Hh%M")
+    elif metadata.created_at:
         reception_date = metadata.created_at.astimezone(tz)
         reception_date = reception_date.strftime("%d/%m/%Y - Hora: %Hh%M")
 
