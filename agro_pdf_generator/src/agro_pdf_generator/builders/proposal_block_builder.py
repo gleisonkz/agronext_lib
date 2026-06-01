@@ -118,17 +118,17 @@ class ProposalBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Proposta de seguro Nº",
+                        "label": "Proposta de Seguro Nº",
                         "value": self._format_proposal_number(h.proposal_number),
                         "width": "18%",
                     },
                     {
-                        "label": "Data da recepção da proposta",
+                        "label": "Data da Recepção da Proposta",
                         "value": h.reception_date,
                         "width": "23%",
                     },
                     {
-                        "label": "Vigência do contrato de seguro",
+                        "label": "Vigência do Contrato de Seguro",
                         "value": h.validity_period,
                         "width": "49%",
                     },
@@ -136,7 +136,7 @@ class ProposalBlockBuilder:
                 ],
                 [
                     {
-                        "label": "Cobertura principal",
+                        "label": "Cobertura Principal",
                         "value": h.main_coverage,
                         "width": "20%",
                     },
@@ -187,18 +187,18 @@ class ProposalBlockBuilder:
 
         rows = [
                 [
-                    {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
+                    {"label": "Nome/ Razão Social", "value": p.name, "width": "25%"},
                     {
                         "label": "CPF/CNPJ",
                         "value": self._format_cpf_or_cnpj(p.cpf),
                         "width": "25%",
                     },
                     {
-                        "label": "Data de nascimento",
+                        "label": "Data de Nascimento",
                         "value": p.birth_date,
                         "width": "25%",
                     },
-                    {"label": "Nome social", "value": p.social_name, "width": "25%"},
+                    {"label": "Nome Social", "value": p.social_name, "width": "25%"},
                 ],
         ]
 
@@ -215,12 +215,12 @@ class ProposalBlockBuilder:
                     "width": "25%",
                 },
                 {
-                    "label": "Órgão expedidor",
+                    "label": "Órgão Expedidor",
                     "value": p.issuing_authority,
                     "width": "25%",
                 },
                 {
-                    "label": "Data de expedição",
+                    "label": "Data de Expedição",
                     "value": p.issue_date,
                     "width": "25%",
                 },
@@ -244,17 +244,17 @@ class ProposalBlockBuilder:
         if is_cnpj:
             rows.append([
                 {
-                    "label": "Atividade economica",
+                    "label": "Atividade Econômica",
                     "value": p.business_activity,
                     "width": "33.33%",
                 },
                 {
-                    "label": "Receita operacional brutal anual",
+                    "label": "Receita Operacional Brutal Anual",
                     "value": p.annual_gross_revenue,
                     "width": "33.33%",
                 },
                 {
-                    "label": "Patrimonio liquido",
+                    "label": "Patrimônio Líquido",
                     "value": p.net_worth,
                     "width": "33.34%",
                 },
@@ -266,7 +266,7 @@ class ProposalBlockBuilder:
                     "value": p.professional_category,
                     "width": "50%",
                 },
-                {"label": "Renda mensal", "value": p.income, "width": "50%"},
+                {"label": "Renda Mensal", "value": p.income, "width": "50%"},
             ])
 
         return BlockConfig(
@@ -324,14 +324,14 @@ class ProposalBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "O proponente é pessoa politicamente exposta?",
+                        "label": "O Proponente é Pessoa Politicamente Exposta?",
                         "value": exp.is_pep,
                         "width": "100%",
                     }
                 ],
                 [
                     {
-                        "label": "Pessoa física - Politicamente exposta",
+                        "label": "Pessoa física - Politicamente Exposta",
                         "value": pep_text,
                         "width": "100%",
                     }
@@ -361,39 +361,39 @@ class ProposalBlockBuilder:
                     },
                     {"label": "Taxa (%)", "value": c.coverage_rate_pct, "width": "8%"},
                     {
-                        "label": "Prêmio tarifário (R$)",
+                        "label": "Prêmio Tarifário (R$)",
                         "value": c.tariff_premium,
                         "width": "17%",
                     },
                     {
-                        "label": "Área segurada (ha)",
+                        "label": "Área Segurada (ha)",
                         "value": self._format_decimal_separator(c.insured_area_ha),
                         "width": "16%",
                     },
                     {
-                        "label": "Quadra/Talhão segurados (qtd)",
+                        "label": "Quadra/Talhão Segurados (Qtd)",
                         "value": c.plot_count.rjust(2, "0"),
                         "width": "24%",
                     },
                 ],
                 [
                     {
-                        "label": "Prêmio líquido aproximado (R$)",
+                        "label": "Prêmio Líquido Aproximado (R$)",
                         "value": c.net_premium,
                         "width": "25%",
                     },
                     {
-                        "label": "Subvenção federal (R$)",
+                        "label": "Subvenção Federal (R$)",
                         "value": c.federal_subsidy_brl,
                         "width": "23%",
                     },
                     {
-                        "label": "Subvenção estadual (R$)",
+                        "label": "Subvenção Estadual (R$)",
                         "value": c.state_subsidy_brl,
                         "width": "25%",
                     },
                     {
-                        "label": "Valor proponente aproximado (R$)",
+                        "label": "Valor Proponente Aproximado (R$)",
                         "value": c.applicant_value,
                         "width": "27%",
                     },
@@ -410,12 +410,12 @@ class ProposalBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Forma de pagamento",
+                        "label": "Forma de Pagamento",
                         "value": pg.payment_method,
                         "width": "16.66%",
                     },
                     {
-                        "label": "Número de parcelas",
+                        "label": "Número de Parcelas",
                         "value": pg.number_of_installments,
                         "width": "16.66%",
                     },
@@ -445,8 +445,8 @@ class ProposalBlockBuilder:
             section_header="Parcelamento",
             estimated_height=50 + len(self._data.payment.installments) * 30,
             headers=[
-                "Número da parcela",
-                "Prêmio proponente (R$)",
+                "Número da Parcela",
+                "Prêmio Proponente (R$)",
                 "Data do vencimento",
             ],
             data_rows=self._data.payment.installments,
@@ -496,7 +496,7 @@ class ProposalBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Nome da propriedade",
+                        "label": "Nome da Propriedade",
                         "value": prop.name,
                         "width": "50%",
                     },
@@ -509,7 +509,7 @@ class ProposalBlockBuilder:
                 ],
                 [
                     {
-                        "label": "Cep",
+                        "label": "CEP",
                         "value": self._format_zip_code(prop.zip_code),
                         "width": "20%",
                     },
@@ -525,7 +525,7 @@ class ProposalBlockBuilder:
                     },
                     {"label": "Município", "value": prop.city, "width": "20%"},
                     {
-                        "label": "BACEN do município",
+                        "label": "BACEN do Município",
                         "value": prop.bacen_code,
                         "width": "20%",
                     },
@@ -580,7 +580,7 @@ class ProposalBlockBuilder:
         return BlockConfig(
             type=BlockType.DATA_TABLE,
             estimated_height=50 + len(self._data.plot_coordinates) * 30,
-            headers=["Quadra/ Talhão", "Ponto central do polígono"],
+            headers=["Quadra/ Talhão", "Ponto Central do Polígono"],
             data_rows=formatted_coordinates,
             widths=["50%", "50%"],
             variant=DataTableVariant.CENTERED_NORMAL,
@@ -685,11 +685,11 @@ class ProposalBlockBuilder:
                         "width": "25%",
                     },
                     {
-                        "label": "Data de nascimento",
+                        "label": "Data de Nascimento",
                         "value": b.birth_date,
                         "width": "25%",
                     },
-                    {"label": "Nome social", "value": b.social_name, "width": "25%"},
+                    {"label": "Nome Social", "value": b.social_name, "width": "25%"},
                 ]
             )
 
@@ -733,7 +733,7 @@ class ProposalBlockBuilder:
         rows = []
 
         # First row: question about authorized persons (separate block)
-        question = "Há representante(s) do proponente a acompanhar a(s) vistoria(s)?"
+        question = "Há Representante(s) do Proponente a Acompanhar a(s) Vistoria(s)?"
         value_parts = [f'<div style="font-weight: 600;">{question}</div>']
         value_parts.append(f"<div>Resposta: {self._data.has_authorized_persons}</div>")
         rows.append([{"label": "", "value": "".join(value_parts), "width": "100%"}])
@@ -994,9 +994,9 @@ class ProposalBlockBuilder:
                     "checkbox_bold": True,
                     "checkbox_text": "Eu me responsabilizo e declaro estar formalmente autorizado e/ou ser o responsável legal, pelo titular destes dados pessoais a fornecê-los a Essor.",
                     "triple_signature": {
-                        "left_label": "Local e data:",
-                        "center_label": "Assinatura do proponente:",
-                        "right_label": "Assinatura do corretor:",
+                        "left_label": "Local e Data:",
+                        "center_label": "Assinatura do Proponente:",
+                        "right_label": "Assinatura do Corretor:",
                     },
                 }
 
@@ -1031,23 +1031,23 @@ class ProposalBlockBuilder:
                 force_page_break=True,
                 authorization_term={
                     "fields": [
-                        {"label": "Nome do proponente", "value": term.applicant_name},
+                        {"label": "Nome do Proponente", "value": term.applicant_name},
                         {
-                            "label": "Número da proposta",
+                            "label": "Número da Proposta",
                             "value": self._format_proposal_number(term.proposal_number),
                         },
-                        {"label": "Possui conta", "value": term.has_account},
+                        {"label": "Possui Conta", "value": term.has_account},
                         {"label": "", "value": term.authorization_text},
                         {"label": "Banco", "value": term.bank_name},
                         {"label": "Nº Agência", "value": term.agency_number},
-                        {"label": "Nº da conta", "value": term.account_number or ""},
-                        {"label": "Tipo de conta", "value": term.account_type or ""},
-                        {"label": "Conta conjunta", "value": term.joint_account or ""},
+                        {"label": "Nº da Conta", "value": term.account_number or ""},
+                        {"label": "Tipo de Conta", "value": term.account_type or ""},
+                        {"label": "Conta Conjunta", "value": term.joint_account or ""},
                     ],
                     "sections": [
                         {"title": "Quitação", "text": term.discharge_text},
                         {
-                            "title": "Isenção de responsabilidade",
+                            "title": "Isenção de Responsabilidade",
                             "text": term.liability_text,
                         },
                     ],
@@ -1068,17 +1068,17 @@ class ProposalBlockBuilder:
         return [
             BlockConfig(
                 type=BlockType.AUTHORIZATION_BENEFICIARY,
-                section_header="Autorização para pagamento ou devolução de crédito por depósito em conta bancária do beneficiário",
+                section_header="Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária do Beneficiário",
                 estimated_height=800,
                 force_page_break=True,
                 authorization_beneficiary={
                     "initial_fields": [
                         {
-                            "label": "Nome do beneficiário",
+                            "label": "Nome do Beneficiário",
                             "value": ben.beneficiary_name,
                         },
                         {
-                            "label": "Número da proposta",
+                            "label": "Número da Proposta",
                             "value": self._format_proposal_number(ben.proposal_number),
                         },
                     ],
@@ -1087,7 +1087,7 @@ class ProposalBlockBuilder:
                     "authorization_text": ben.authorization_text,
                     "beneficiary_fields": [
                         {
-                            "label": "Nome do beneficiário",
+                            "label": "Nome do Beneficiário",
                             "value": ben.beneficiary_full_name,
                         },
                         {
@@ -1095,7 +1095,7 @@ class ProposalBlockBuilder:
                             "value": self._format_cpf_or_cnpj(ben.beneficiary_cpf),
                         },
                         {
-                            "label": "Relação do favorecido",
+                            "label": "Relação do Favorecido",
                             "value": ben.beneficiary_relationship,
                         },
                         {"label": "Banco", "value": ben.bank_name, "gap_before": True},
@@ -1105,22 +1105,22 @@ class ProposalBlockBuilder:
                             "gap_before": True,
                         },
                         {
-                            "label": "Nº da conta",
+                            "label": "Nº da Conta",
                             "value": ben.account_number,
                             "gap_before": True,
                         },                        
                         {
-                            "label": "Tipo de conta",
+                            "label": "Tipo de Conta",
                             "value": ben.account_type,
                             "gap_before": True,
                         },
                         {
-                            "label": "Conta conjunta",
+                            "label": "Conta Conjunta",
                             "value": ben.joint_account,
                             "gap_before": True,
                         },
                         {
-                            "label": "Tipo de chave Pix",
+                            "label": "Tipo de Chave Pix",
                             "value": ben.pix_type,
                             "gap_before": True,
                         },
@@ -1134,7 +1134,7 @@ class ProposalBlockBuilder:
                     "sections": [
                         {"title": "Quitação", "text": ben.discharge_text},
                         {
-                            "title": "Isenção de responsabilidade",
+                            "title": "Isenção de Responsabilidade",
                             "text": ben.liability_text,
                         },
                     ],

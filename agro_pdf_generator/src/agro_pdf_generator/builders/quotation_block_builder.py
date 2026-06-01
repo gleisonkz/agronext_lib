@@ -129,18 +129,18 @@ class QuotationBlockBuilder:
 
         rows = [
                 [
-                    {"label": "Nome/ Razão social", "value": p.name, "width": "25%"},
+                    {"label": "Nome/ Razão Social", "value": p.name, "width": "25%"},
                     {
                         "label": "CPF/CNPJ",
                         "value": self._format_cpf_or_cnpj(p.cpf),
                         "width": "25%",
                     },
                     {
-                        "label": "Data de nascimento",
+                        "label": "Data de Nascimento",
                         "value": p.birth_date,
                         "width": "25%",
                     },
-                    {"label": "Nome social", "value": p.social_name, "width": "25%"},
+                    {"label": "Nome Social", "value": p.social_name, "width": "25%"},
                 ],
         ]
 
@@ -157,12 +157,12 @@ class QuotationBlockBuilder:
                     "width": "25%",
                 },
                 {
-                    "label": "Órgão expedidor",
+                    "label": "Órgão Expedidor",
                     "value": p.issuing_authority,
                     "width": "25%",
                 },
                 {
-                    "label": "Data de expedição",
+                    "label": "Data de Expedição",
                     "value": p.issue_date,
                     "width": "25%",
                 },
@@ -186,17 +186,17 @@ class QuotationBlockBuilder:
         if is_cnpj:
             rows.append([
                 {
-                    "label": "Atividade economica",
+                    "label": "Atividade Econômica",
                     "value": p.business_activity,
                     "width": "33.33%",
                 },
                 {
-                    "label": "Receita operacional brutal anual",
+                    "label": "Receita Operacional Brutal Anual",
                     "value": p.annual_gross_revenue,
                     "width": "33.33%",
                 },
                 {
-                    "label": "Patrimonio liquido",
+                    "label": "Patrimônio Líquido",
                     "value": p.net_worth,
                     "width": "33.34%",
                 },
@@ -208,7 +208,7 @@ class QuotationBlockBuilder:
                     "value": p.professional_category,
                     "width": "50%",
                 },
-                {"label": "Renda mensal", "value": p.income, "width": "50%"},
+                {"label": "Renda Mensal", "value": p.income, "width": "50%"},
             ])
 
         return BlockConfig(
@@ -227,7 +227,7 @@ class QuotationBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Cep",
+                        "label": "CEP",
                         "value": self._format_zip_code(e.zip_code),
                         "width": "20%",
                     },
@@ -274,39 +274,39 @@ class QuotationBlockBuilder:
                     },
                     {"label": "Taxa (%)", "value": c.coverage_rate_pct, "width": "8%"},
                     {
-                        "label": "Prêmio tarifário (R$)",
+                        "label": "Prêmio Tarifário (R$)",
                         "value": c.tariff_premium,
                         "width": "17%",
                     },
                     {
-                        "label": "Área segurada (ha)",
+                        "label": "Área Segurada (ha)",
                         "value": self._format_decimal_separator(c.insured_area_ha),
                         "width": "16%",
                     },
                     {
-                        "label": "Quadra/Talhão segurados (qtd)",
+                        "label": "Quadra/Talhão Segurados (Qtd)",
                         "value": c.plot_count.rjust(2, "0"),
                         "width": "24%",
                     },
                 ],
                 [
                     {
-                        "label": "Prêmio líquido aproximado (R$)",
+                        "label": "Prêmio Líquido Aproximado (R$)",
                         "value": c.net_premium,
                         "width": "25%",
                     },
                     {
-                        "label": "Subvenção federal (R$)",
+                        "label": "Subvenção Federal (R$)",
                         "value": c.federal_subsidy_brl,
                         "width": "23%",
                     },
                     {
-                        "label": "Subvenção estadual (R$)",
+                        "label": "Subvenção Estadual (R$)",
                         "value": c.state_subsidy_brl,
                         "width": "25%",
                     },
                     {
-                        "label": "Valor proponente aproximado (R$)",
+                        "label": "Valor Proponente Aproximado (R$)",
                         "value": c.applicant_value,
                         "width": "27%",
                     },
@@ -323,12 +323,12 @@ class QuotationBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Forma de pagamento",
+                        "label": "Forma de Pagamento",
                         "value": pg.payment_method,
                         "width": "16.66%",
                     },
                     {
-                        "label": "Número de parcelas",
+                        "label": "Número de Parcelas",
                         "value": pg.number_of_installments,
                         "width": "16.66%",
                     },
@@ -358,9 +358,9 @@ class QuotationBlockBuilder:
             section_header="Parcelamento",
             estimated_height=50 + len(self._data.payment.installments) * 30,
             headers=[
-                "Número da parcela",
-                "Prêmio proponente (R$)",
-                "Data do vencimento",
+                "Número da Parcela",
+                "Prêmio Proponente (R$)",
+                "Data do Vencimento",
             ],
             data_rows=self._data.payment.installments,
             widths=["33.33%", "33.33%", "33.34%"],
@@ -409,12 +409,12 @@ class QuotationBlockBuilder:
             rows=[
                 [
                     {
-                        "label": "Nome da propriedade",
+                        "label": "Nome da Propriedade",
                         "value": prop.name,
                         "width": "50%",
                     },
                     {
-                        "label": "Tipo de proponente",
+                        "label": "Tipo de Proponente",
                         "value": prop.ownership_type,
                         "width": "25%",
                     },
@@ -422,7 +422,7 @@ class QuotationBlockBuilder:
                 ],
                 [
                     {
-                        "label": "Cep",
+                        "label": "CEP",
                         "value": self._format_zip_code(prop.zip_code),
                         "width": "20%",
                     },
@@ -438,7 +438,7 @@ class QuotationBlockBuilder:
                     },
                     {"label": "Município", "value": prop.city, "width": "20%"},
                     {
-                        "label": "BACEN do município",
+                        "label": "BACEN do Município",
                         "value": prop.bacen_code,
                         "width": "20%",
                     },
@@ -488,7 +488,7 @@ class QuotationBlockBuilder:
         return BlockConfig(
             type=BlockType.DATA_TABLE,
             estimated_height=50 + len(self._data.plot_coordinates) * 30,
-            headers=["Quadra/ Talhão", "Ponto central do polígono"],
+            headers=["Quadra/ Talhão", "Ponto Central do Polígono"],
             data_rows=self._data.plot_coordinates,
             widths=["50%", "50%"],
             variant=DataTableVariant.CENTERED_NORMAL,

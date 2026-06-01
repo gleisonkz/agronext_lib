@@ -31,12 +31,12 @@ def build_proposal_subsidy_questions(
 
     questions = [
         SubsidyQuestionItem(
-            question="Solicitou subvenção federal para esta proposta?",
+            question="Solicitou Subvenção Federal para esta Proposta?",
             answer=_to_sim_nao(quotation_metadata.applied_for_federal_subsidy),
             extra_fields=federal_extra_fields,
         ),
         SubsidyQuestionItem(
-            question="Solicitou subvenção estadual para esta proposta?",
+            question="Solicitou Subvenção Estadual para esta Proposta?",
             answer=_to_sim_nao(quotation_metadata.applied_for_state_subsidy),
             extra_fields=[
                 ("Número do CAD/PRO", quotation_metadata.cadpro or "Não informado")
