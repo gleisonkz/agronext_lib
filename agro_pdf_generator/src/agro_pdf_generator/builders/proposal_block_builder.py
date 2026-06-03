@@ -97,6 +97,8 @@ class ProposalBlockBuilder:
         if federal_subsidy_term:
             blocks.extend(federal_subsidy_term)
 
+        self._ensure_header_repeat_stops_before_subsidies(blocks)
+
         return blocks
 
     def _build_logo_block(self) -> BlockConfig:
@@ -1321,6 +1323,38 @@ class ProposalBlockBuilder:
                 },
             )
         ]
+
+    def _ensure_header_repeat_stops_before_subsidies(
+        self,
+        blocks: list[BlockConfig],
+    ) -> None:
+        subsidy_types = {
+            BlockType.STATE_SUBSIDY_TERM,
+            BlockType.STATE_AUTHORIZATION_TERM,
+            BlockType.FEDERAL_SUBSIDY_TERM,
+        }
+        first_subsidy_index = next(
+            (index for index, block in enumerate(blocks) if block.type in subsidy_types),
+            None,
+        )
+        if first_subsidy_index is None:
+            return
+
+        pre_subsidy_blocks = blocks[:first_subsidy_index]
+        non_repeat_blocks = [
+            block
+            for block in pre_subsidy_blocks
+            if not (block.repeat_on_pages or bool(block.repeat_on_page_range))
+        ]
+
+        if any(block.stops_header_repeat for block in non_repeat_blocks):
+            return
+
+        for candidate in reversed(non_repeat_blocks):
+            candidate.stops_header_repeat = True
+            return
+
+        blocks[first_subsidy_index].stops_header_repeat = True
 
     def _format_list_items(self, items: list[str]) -> str:
         return "".join(
