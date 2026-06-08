@@ -1201,12 +1201,17 @@ class ProposalBlockBuilder:
         if not term.ministry_header:
             return []
 
-        blocks = [
+        split_index = 7 # Declarations section H
+        declarations_page1 = term.declarations[:split_index]
+        declarations_page2 = term.declarations[split_index:]
+
+        blocks = []
+        blocks.append(
             BlockConfig(
                 type=BlockType.FEDERAL_SUBSIDY_TERM,
                 section_header="Subvenção Federal",
                 section_header_pagination=True,
-                estimated_height=1500,
+                estimated_height=1100,
                 federal_subsidy_term={
                     "logo_path": term.logo_path,
                     "ministry_header": term.ministry_header,
@@ -1220,9 +1225,9 @@ class ProposalBlockBuilder:
                         for m in term.modality_options
                     ],
                     "declaration_intro": term.declaration_intro,
-                    "declarations": term.declarations,
-                    "signature_date_text": term.signature_date_text,
-                    "signature_text": term.signature_text,
+                    "declarations": declarations_page1,
+                    "signature_date_text": "",
+                    "signature_text": "",
                     "footer_text": term.footer_text,
                     "section2_title": "",
                     "section2_question": "",
@@ -1233,7 +1238,40 @@ class ProposalBlockBuilder:
                     "section2_signature_text": "",
                 },
             )
-        ]
+        )
+
+        if declarations_page2:
+            blocks.append(
+                BlockConfig(
+                    type=BlockType.FEDERAL_SUBSIDY_TERM,
+                    section_header="Subvenção Federal",
+                    section_header_pagination=True,
+                    force_page_break=True,
+                    estimated_height=900,
+                    federal_subsidy_term={
+                        "logo_path": term.logo_path,
+                        "ministry_header": "",
+                        "committee_text": "",
+                        "secretariat_text": "",
+                        "main_title": "",
+                        "section_title": "",
+                        "intro_text": "",
+                        "modality_options": [],
+                        "declaration_intro": "",
+                        "declarations": declarations_page2,
+                        "signature_date_text": term.signature_date_text,
+                        "signature_text": term.signature_text,
+                        "footer_text": term.footer_text,
+                        "section2_title": "",
+                        "section2_question": "",
+                        "section2_options": [],
+                        "section2_date_text": "",
+                        "section2_responsible_text": "",
+                        "section2_cpf_text": "",
+                        "section2_signature_text": "",
+                    },
+                )
+            )
 
         # Bloco da Seção II em página separada
         if term.section2_title:
