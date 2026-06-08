@@ -8,20 +8,20 @@ def build_risk_questionnaire(
 ) -> RiskQuestionnaireData:
     # Risk questionnaire
     another_insurance_question = RiskQuestionItem(
-        question="Existe outro seguro contratado para a mesma área?",
+        question="Existe Outro Seguro Contratado Para a Mesma Área?",
         answer="Não",
     )
     if metadata.another_insurance:
         another_insurance_question.answer = "Sim"
         another_insurance_question.extra_fields = [
             ("Seguradora", metadata.another_insurance_company),
-            ("Número da apólice", metadata.another_insurance_policy_number),
+            ("Número da Apólice", metadata.another_insurance_policy_number),
         ]
     else:
         another_insurance_question.answer = "Não"
 
     pre_existing_damages_question = RiskQuestionItem(
-        question="Existem danos de pelo menos um dos eventos cobertos na safra atual?",
+        question="Existem Danos de Pelo Menos Um dos Eventos Cobertos na Safra Atual?",
     )
     if metadata.pre_existing_damage:
         pre_existing_damages_question.answer = "Sim"
@@ -29,7 +29,7 @@ def build_risk_questionnaire(
         pre_existing_damages_question.answer = "Não"
 
     all_land_declared_question = RiskQuestionItem(
-        question="As áreas declaradas nas unidades seguradas da proposta representam toda a área cultivada desta cultura na propriedade?",
+        question="As Áreas Declaradas Nas Unidades Seguradas da Proposta Representam Toda a Área Cultivada Desta Cultura na Propriedade?",
     )
     if metadata.all_land_declared:
         all_land_declared_question.answer = "Sim"
@@ -60,7 +60,7 @@ def build_risk_questionnaire(
         all_land_declared_question.extra_fields = extra_fields
 
     other_culture_lands_question = RiskQuestionItem(
-        question="O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
+        question="O Proponente Possui Outra Lavoura/Pomar Desta Cultura no Mesmo Município?",
     )
     if metadata.another_plot_same_crop:
         other_culture_lands_question.answer = "Sim"
