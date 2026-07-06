@@ -39,6 +39,14 @@ _HUMAN_DATEFMT = "%Y-%m-%d %H:%M:%S"
 _log_queue = queue.Queue(-1)
 _listener: Optional[QueueListener] = None
 
+_LOG_NOTIFICATION_HANDLERS: dict[str, type[logging.Handler]] = {}
+
+
+def register_log_notification_handler(
+    name: str, handler: type[logging.Handler]
+) -> None:
+    _LOG_NOTIFICATION_HANDLERS[name] = handler
+
 
 # ── 4) Initialization ─────────────────────────────────────────────────────────
 
@@ -46,6 +54,7 @@ _listener: Optional[QueueListener] = None
 def init_logger(
     level: int = INFO,
     override: Optional[Union[str, Dict]] = None,
+    notification_handlers: Optional[list[str]] = None,
 ) -> None:
     """
     - level: root logging level (e.g. "DEBUG", "INFO")
@@ -127,7 +136,16 @@ def init_logger(
         root.addHandler(queue_h)
 
     # 4) Start the listener
-    handlers = (stdout_h, stderr_h, cloud_h)
+    handlers: list[logging.Handler] = [stdout_h, stderr_h, cloud_h]
+    for handler_name in notification_handlers or []:
+        try:
+            handler_cls = _LOG_NOTIFICATION_HANDLERS[handler_name]
+        except KeyError as exc:
+            raise NotImplementedError(
+                f"Log notification handler {handler_name} is not implemented."
+            ) from exc
+        handlers.append(handler_cls())
+
     _listener = QueueListener(_log_queue, *handlers, respect_handler_level=True)
     _listener.start()
 

@@ -18,6 +18,7 @@ from .exceptions import init_error_handling
 from .extensions import init_extensions
 
 # from .integrations import close_integrations, init_integrations
+from . import integrations  # noqa: F401 — registra handlers de notificação
 from .logger import close_logger, get_logger, init_logger, DEBUG
 from .middlewares import init_middlewares
 from .security import init_security
@@ -133,11 +134,12 @@ def create_api(
     description: str = "Backend for Agronext Platform",
     log_level: str | int = DEBUG,
     extensions: Optional[dict[str, tuple[int, str]]] = None,
-    exception_handlers: Optional[dict[str, tuple[int, str]]] = None,
+    exception_handlers: Optional[list[str]] = None,
+    notification_handlers: Optional[list[str]] = None,
     middlewares: Optional[list[tuple[str, str]]] = None,
 ) -> FastAPI:
 
-    init_logger(log_level)
+    init_logger(log_level, notification_handlers=notification_handlers or [])
 
     app = FastAPI(
         title=title,
@@ -167,7 +169,7 @@ def create_api(
 
 
 def run(
-    api: FastAPI,
+    api: FastAPI | str | Callable[..., FastAPI],
     host: str,
     port: int,
     factory: bool,

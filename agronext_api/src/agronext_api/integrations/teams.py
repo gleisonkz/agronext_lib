@@ -1,9 +1,13 @@
+import asyncio
+import logging
+
 import httpx
 
 from ..config.base_settings import BaseSettings, SettingsConfigDict
 from ..logger import get_logger
 
 teams_logger = get_logger("teams")
+ERRORS_LOGGER_NAME = "errors"
 
 
 class TeamsSettings(BaseSettings):
@@ -24,13 +28,29 @@ def build_payload(text: str) -> dict:
     }
 
 
-async def send_teams(text: str) -> bool:
+def format_teams_message(record: logging.LogRecord) -> str:
+    if isinstance(record.msg, dict):
+        details = record.msg
+        status_code = details.get("status_code", 500)
+        method = details.get("method", "?")
+        url = details.get("url", "?")
+        detail = (
+            details.get("detail")
+            or details.get("exception_message")
+            or details.get("error")
+            or str(details)
+        )
+        return f"Erro {status_code} — {method} {url}\n{detail}"
+    return record.getMessage()
+
+
+def _post_teams(text: str) -> bool:
     url = teams_settings.teams_webhook_url
     if not url:
         return False
     try:
-        async with httpx.AsyncClient(timeout=15) as client:
-            response = await client.post(
+        with httpx.Client(timeout=15) as client:
+            response = client.post(
                 url,
                 json=build_payload(text),
                 headers={"Content-Type": "application/json"},
@@ -40,3 +60,26 @@ async def send_teams(text: str) -> bool:
     except Exception:
         teams_logger.exception("[teams] failed to send notification")
         return False
+
+
+async def send_teams(text: str) -> bool:
+    return await asyncio.to_thread(_post_teams, text)
+
+
+class ErrorsLoggerFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.name == ERRORS_LOGGER_NAME
+
+
+class TeamsLogHandler(logging.Handler):
+    """Envia alertas ao Teams a partir do QueueListener de logs de erro."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.ERROR)
+        self.addFilter(ErrorsLoggerFilter())
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            _post_teams(format_teams_message(record))
+        except Exception:
+            self.handleError(record)
