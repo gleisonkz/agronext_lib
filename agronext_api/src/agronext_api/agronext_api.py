@@ -169,7 +169,7 @@ def create_api(
 
 
 def run(
-    api: FastAPI | str | Callable[..., FastAPI],
+    api: FastAPI,
     host: str,
     port: int,
     factory: bool,
