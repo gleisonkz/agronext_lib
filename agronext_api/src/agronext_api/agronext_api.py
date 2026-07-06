@@ -17,8 +17,6 @@ from .exceptions.base import StartupError, ShutdownError
 from .exceptions import init_error_handling
 from .extensions import init_extensions
 
-# from .integrations import close_integrations, init_integrations
-from . import integrations  # noqa: F401 — registra handlers de notificação
 from .logger import close_logger, get_logger, init_logger, DEBUG
 from .middlewares import init_middlewares
 from .security import init_security
