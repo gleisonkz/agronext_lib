@@ -18,9 +18,7 @@ def dummy_api():
         """
         Hello world endpoint.
         """
-        raise http.InternalServerError(
-            detail="This is a test error for Teams notification."
-        )
+        raise http.InternalServerError("This is a test error for Teams notification.")
         return {"message": "Hello, world!"}
 
     app = create_api(
