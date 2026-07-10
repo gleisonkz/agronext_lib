@@ -14,6 +14,8 @@ class TeamsSettings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", case_sensitive=False)
 
     teams_webhook_url: str = ""
+    teams_notifications_enabled: bool = False
+    teams_log_level: str | int = logging.WARNING
 
 
 teams_settings = TeamsSettings()
@@ -45,11 +47,16 @@ def format_teams_message(record: logging.LogRecord) -> str:
 
 
 def _post_teams(text: str) -> bool:
+    if not teams_settings.teams_notifications_enabled:
+        teams_logger.info("[teams] notifications are disabled, skipping")
+        return False
+
     url = teams_settings.teams_webhook_url
+
     if not url:
         return False
     try:
-        with httpx.Client(timeout=15) as client:
+        with httpx.Client(timeout=15, verify=False) as client:
             response = client.post(
                 url,
                 json=build_payload(text),
@@ -75,7 +82,7 @@ class TeamsLogHandler(logging.Handler):
     """Envia alertas ao Teams a partir do QueueListener de logs de erro."""
 
     def __init__(self) -> None:
-        super().__init__(level=logging.ERROR)
+        super().__init__(level=teams_settings.teams_log_level)
         self.addFilter(ErrorsLoggerFilter())
 
     def emit(self, record: logging.LogRecord) -> None:

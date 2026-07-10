@@ -1,7 +1,7 @@
 from agronext_api import create_router, create_api, run
 from agronext_api.exceptions import http
 from agronext_api.integrations.teams import TeamsLogHandler
-from agronext_api.logger import register_log_notification_handler
+from agronext_api.logger import register_log_notification_handler, logging
 
 
 ## -- Thin factory to avoid eager instantiation -- ##
@@ -12,13 +12,15 @@ def dummy_api():
         "agronext_api.integrations.teams",
         TeamsLogHandler,
     )
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
 
     @router_a.get("/hello")
     async def hello() -> dict[str, str]:
         """
         Hello world endpoint.
         """
-        raise http.InternalServerError("This is a test error for Teams notification.")
+        raise ZeroDivisionError("This is a test error for Teams notification")
         return {"message": "Hello, world!"}
 
     app = create_api(

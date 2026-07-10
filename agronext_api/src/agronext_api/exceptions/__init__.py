@@ -89,11 +89,14 @@ def init_error_handling(app: FastAPI, custom_handlers: list) -> None:
     async def custom_http_exception_handler(
         request: Request, exc: Exception
     ) -> JSONResponse:
+        headers = dict(request.headers)
+        headers.pop("authorization", None)
+        headers.pop("cookie", None)
         error_details = {
             "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "method": request.method,
-            "url": request.url._url,
-            "headers": dict(request.headers),
+            "url": str(request.url),
+            "headers": headers,
             "client": request.client.host,
             "traceback": traceback.format_exc(),
             "exception_type": type(exc).__name__,
