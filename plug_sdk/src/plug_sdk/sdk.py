@@ -2,6 +2,10 @@ from datetime import date
 from typing import Optional
 
 from .async_client import URL, BaseAsyncClient, RequestOptions
+from .documents.schemas import (
+    FormDocumentRequest,
+    FormDocumentResponse,
+)
 from .external_users import (
     CreateExternalUserRequest,
     CreateExternalUserResponse,
@@ -222,6 +226,44 @@ class PlugSDK:
     ) -> PolicyDocumentResponse:
         return await self.client.get(
             endpoint=f"v1/formularios/{proposal_id}/documentos?relatorio_id={report_type}",
+            response_model=PolicyDocumentResponse,
+        )
+
+    async def submit_form_document(
+        self,
+        endorsement_id: int, # erp_id
+        file_name: str,
+        observation_code: int, # 4 - Quotation, 3 - Proposal, 1 - Policy
+        reference_number: str, # currently sending the proposal id
+        base64_content: str,
+        document_type_code: int = 5, # 5 = Endosso and is the only option available
+        domain_code: int = 2, # 2 = Endosso and is the only option available
+        treatment_code: int = 1, # 1 = normal and is the only option available
+    ) -> FormDocumentResponse:
+        request = FormDocumentRequest(
+            document_type_code=document_type_code,
+            domain_code=domain_code,
+            treatment_code=treatment_code,
+            endorsement_id=endorsement_id,
+            file_name=file_name,
+            observation_code=observation_code,
+            reference_number=reference_number,
+            base64_content=base64_content,
+        )
+        return await self.client.post(
+            endpoint="/v1/formularios",
+            response_model=FormDocumentResponse,
+            payload=request.model_dump(mode="json", by_alias=True, exclude_none=True),
+        )
+
+    async def get_form_document(
+        self,
+        endorsement_id: int,
+        document_id: int,
+    ) -> PolicyDocumentResponse:
+        return await self.client.get(
+            # This endpoint is under testing, a preview was provided to us.
+            endpoint=f"/v1/formularios/{document_id}/endossos/{endorsement_id}",
             response_model=PolicyDocumentResponse,
         )
 

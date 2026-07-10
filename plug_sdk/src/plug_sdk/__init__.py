@@ -10,6 +10,10 @@ from .validations.schemas import (
     TechnicalRestrictionRequest,
     TechnicalRestrictionResponse,
 )
+from .documents.schemas import (
+    FormDocumentRequest,
+    FormDocumentResponse,
+)
 from .policy.schemas import (
     ReportType,
     ResponseCodes,
@@ -117,6 +121,8 @@ __all__ = [
     "SubmitQuotationRequest",
     "BaseERPResponse",
     "SubmitQuotationResponse",
+    "FormDocumentRequest",
+    "FormDocumentResponse",
     "GetProposalRequest",
     "ProposalStatus",
     "RejectProposalRequest",
