@@ -11,7 +11,7 @@ ERRORS_LOGGER_NAME = "errors"
 
 
 class TeamsSettings(BaseSettings):
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore", case_sensitive=False)
 
     teams_webhook_url: str = ""
 
