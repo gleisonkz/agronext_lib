@@ -2,9 +2,10 @@ import agronext_procurement as procurement
 from collections.abc import Sequence
 from typing import Any
 
-from ...utils import format_phone
+from ...utils import format_document_number, format_phone, text_or_default
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
+from .address import build_policy_insured_address
 
 
 _REVENUE_RANGE_LABELS = {
@@ -164,3 +165,30 @@ def build_simulation_applicant(
         name=name or "Não informado",
         phone_number=format_phone(phone=phone) or "Não informado",
     )
+
+
+def build_policy_insured(view: procurement.ProposalView) -> dict[str, str]:
+    applicant_data = build_applicant(view)
+    address_data = build_policy_insured_address(view)
+
+    document_number = applicant_data.cpf or applicant_data.document_number
+
+    return {
+        "name": text_or_default(applicant_data.name),
+        "social_name": (
+            "-"
+            if str(applicant_data.social_name or "").strip().lower() in {"", "não informado"}
+            else text_or_default(applicant_data.social_name)
+        ),
+        "document": format_document_number(document_number),
+        "birth_date": text_or_default(applicant_data.birth_date),
+        "additional_document": text_or_default(applicant_data.document_number),
+        "document_issuing_authority": text_or_default(applicant_data.issuing_authority),
+        "document_issue_date": text_or_default(applicant_data.issue_date),
+        "email": text_or_default(applicant_data.main_email),
+        "phone": text_or_default(applicant_data.phone_number),
+        "address": address_data["address"],
+        "neighborhood": address_data["neighborhood"],
+        "zip_code": address_data["zip_code"],
+        "city_state": address_data["city_state"],
+    }

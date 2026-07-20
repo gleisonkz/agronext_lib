@@ -4,7 +4,7 @@ from agronext_procurement.views.common import CoverageDetailsView
 import unicodedata
 
 from ...schemas import CoverageData
-from ...utils import format_monetary_value, format_percentage, format_decimal
+from ...utils import format_monetary_value, format_percentage, format_decimal, format_date_br
 
 
 def _normalize_text(value: str) -> str:
@@ -42,6 +42,41 @@ def _extract_coverage_name_from_documents(docs: list | None) -> str:
             return f"{matched_crop} - {matched_peril}"
 
     return ""
+
+
+def _normalize_percentage_fraction(value: float | int | None) -> float:
+    if value is None:
+        return 0.0
+
+    normalized = float(value)
+    if normalized > 1:
+        normalized /= 100
+
+    return min(max(normalized, 0.0), 1.0)
+
+
+def _resolve_policy_main_label(
+    coverage: CoverageDetailsView | None,
+    *,
+    include_coverage_code: bool = True,
+    default: str = "Não informado",
+) -> str:
+    if coverage is None:
+        return default
+
+    if include_coverage_code:
+        coverage_label = repositories.COVERAGES.get(getattr(coverage, "susep_code", None))
+        if coverage_label:
+            return str(coverage_label).strip()
+
+    main_peril = getattr(getattr(coverage, "conditions", None), "main_peril", None)
+    if main_peril:
+        peril_label = repositories.PERIL_TAXONOMY_DICT.get(main_peril, main_peril)
+        peril_label = str(peril_label or "").strip()
+        if peril_label:
+            return peril_label
+
+    return default
 
 def build_coverage(
     view: procurement.ProposalView | procurement.QuotationView,
@@ -143,3 +178,71 @@ def build_simulation_coverage(
         value_with_only_state_brl=format_monetary_value(value_with_only_state_subsidy),
         applicant_value=format_monetary_value(value=discounted_premium),
     )
+
+
+def build_policy_coverage_details(coverage: CoverageDetailsView | None) -> dict[str, str]:
+    conditions = coverage.conditions if coverage else None
+    term = coverage.term if coverage else None
+    financials = coverage.financials if coverage else None
+
+    crop_label = (
+        repositories.CROP_TAXONOMY_DICT.get(conditions.crop.crop, conditions.crop.crop)
+        if conditions
+        else "Não informado"
+    )
+    peril_label = _resolve_policy_main_label(
+        coverage,
+        include_coverage_code=False,
+        default="",
+    )
+    if not peril_label:
+        peril_label = _resolve_policy_main_label(coverage)
+
+    main_coverage = peril_label if peril_label else "Não informado"
+    if crop_label and peril_label:
+        product = f"{crop_label} - {peril_label}"
+    else:
+        product = "Não informado"
+
+    validity_period = "Não informado"
+    if term:
+        validity_period = (
+            "das 24h do dia "
+            f"{format_date_br(term.start_date)} às 24h do dia {format_date_br(term.end_date)}"
+        )
+
+    policy_limit = financials.policy_limit if financials else 0.0
+    net_premium = financials.net_estimated_premium if financials else 0.0
+    applicant_total = financials.discounted_premium if financials else 0.0
+
+    return {
+        "crop": crop_label,
+        "main_coverage": main_coverage,
+        "product": product,
+        "validity_period": validity_period,
+        "lmga": format_monetary_value(policy_limit),
+        "total_premium": format_monetary_value(net_premium),
+        "policy_net_premium": format_monetary_value(net_premium),
+        "premium_to_pay": format_monetary_value(applicant_total),
+    }
+
+
+def build_policy_coverage_lines(coverage: CoverageDetailsView | None) -> list[list[str]]:
+    financials = coverage.financials if coverage else None
+    if financials is None or coverage is None:
+        return []
+
+    main_coverage = _resolve_policy_main_label(coverage)
+
+    deductible_percentage = getattr(financials.deductible_details, "percentage", 0.0)
+    deductible_fraction = _normalize_percentage_fraction(deductible_percentage)
+
+    return [
+        [
+            f"Cobertura {coverage.susep_code} - {main_coverage}",
+            "Principal",
+            format_percentage(value=deductible_fraction * 100),
+            format_monetary_value(financials.policy_limit),
+            format_monetary_value(financials.net_estimated_premium),
+        ],
+    ]

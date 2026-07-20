@@ -4,6 +4,7 @@ import agronext_procurement_repositories as repositories
 from agronext_procurement.views.common import CoverageFinancialsView
 
 from ...schemas import BrokerData, CoverageData, PaymentData
+from ...utils import format_monetary_value, parse_brl_amount
 
 
 def _build_installment_rows(billing_info: list | None) -> list[list[str]]:
@@ -23,33 +24,14 @@ def _build_installment_rows(billing_info: list | None) -> list[list[str]]:
     return rows
 
 
-def _parse_brl_amount(value: str | None) -> float:
-    if not value:
-        return 0.0
-
-    normalized = "".join(ch for ch in value if ch.isdigit() or ch in ",.-")
-    if not normalized:
-        return 0.0
-
-    if "," in normalized and "." in normalized:
-        normalized = normalized.replace(".", "").replace(",", ".")
-    elif "," in normalized:
-        normalized = normalized.replace(",", ".")
-
-    try:
-        return float(normalized)
-    except ValueError:
-        return 0.0
-
-
 def _apply_subsidy_installment_rule(
     installments: list[list[str]],
     coverage_data: CoverageData,
 ) -> list[list[str]]:
     filtered_installments = installments
 
-    state_subsidy = _parse_brl_amount(coverage_data.state_subsidy_brl)
-    federal_subsidy = _parse_brl_amount(coverage_data.federal_subsidy_brl)
+    state_subsidy = parse_brl_amount(coverage_data.state_subsidy_brl)
+    federal_subsidy = parse_brl_amount(coverage_data.federal_subsidy_brl)
 
     if state_subsidy > 0:
         filtered_installments = filtered_installments[:-1]
@@ -58,6 +40,26 @@ def _apply_subsidy_installment_rule(
         filtered_installments = filtered_installments[:-1]
 
     return filtered_installments
+
+def _resolve_policy_installment_payer(
+    installment_number: int,
+    number_of_installments: int,
+    has_state_subsidy: bool,
+    has_federal_subsidy: bool,
+) -> str:
+    if installment_number <= number_of_installments:
+        return "Segurado"
+
+    first_subsidy_number = number_of_installments + 1
+    if has_state_subsidy and installment_number == first_subsidy_number:
+        return "Subvenção Estadual"
+
+    if has_federal_subsidy:
+        federal_number = first_subsidy_number + 1 if has_state_subsidy else first_subsidy_number
+        if installment_number == federal_number:
+            return "Subvenção Federal"
+
+    return "Segurado"
 
 
 def build_payment(
@@ -91,3 +93,54 @@ def build_payment(
         )
 
     return payment_data
+
+
+def build_policy_installment_lines(
+    metadata: repositories.QuotationMetadata,
+    financials: CoverageFinancialsView | None,
+    billing_info: list | None = None,
+) -> list[list[str]]:
+    if not financials or not billing_info:
+        return []
+
+    number_of_installments = metadata.number_of_installments or 1
+    has_state_subsidy = financials.state_subsidy_discount > 0
+    has_federal_subsidy = financials.federal_subsidy_discount > 0
+
+    lines: list[list[str]] = []
+    for installment in billing_info:
+        number = getattr(installment, "installment_number", None)
+        title = getattr(installment, "title", None)
+        due_date = getattr(installment, "due_date", None)
+        total_amount = getattr(installment, "total_amount", None)
+
+        if isinstance(installment, dict):
+            number = installment.get("installment_number", installment.get("nr_parcela", number))
+            title = installment.get("title", installment.get("titulo", title))
+            due_date = installment.get("due_date", installment.get("dt_vencimento", due_date))
+            total_amount = installment.get("total_amount", installment.get("vl_total", total_amount))
+
+        if number is None:
+            continue
+
+        try:
+            installment_number = int(number)
+        except (TypeError, ValueError):
+            continue
+
+        lines.append(
+            [
+                str(installment_number),
+                datetime.strptime(due_date, "%Y-%m-%d").strftime("%d/%m/%Y") if due_date else "-",
+                format_monetary_value(parse_brl_amount(total_amount)),
+                str(title).strip() if title else "-",
+                _resolve_policy_installment_payer(
+                    installment_number=installment_number,
+                    number_of_installments=number_of_installments,
+                    has_state_subsidy=has_state_subsidy,
+                    has_federal_subsidy=has_federal_subsidy,
+                ),
+            ]
+        )
+
+    return lines

@@ -1,6 +1,12 @@
 import agronext_procurement as procurement
 
 from ...schemas import AddressData
+from ...utils import (
+    format_address_line,
+    format_city_state,
+    format_zip_code,
+    text_or_default,
+)
 
 
 def build_proposal_address(view: procurement.ProposalView) -> AddressData:
@@ -32,3 +38,33 @@ def build_proposal_address(view: procurement.ProposalView) -> AddressData:
     address_data.complement = mailing_address.complement or "Não informado"
 
     return address_data
+
+
+def build_policy_insured_address(view: procurement.ProposalView) -> dict[str, str]:
+    data = {
+        "address": "Não informado",
+        "neighborhood": "Não informado",
+        "zip_code": "Não informado",
+        "city_state": "Não informado",
+    }
+
+    applicant = getattr(view, "applicant", None)
+    if not applicant:
+        return data
+
+    contact_information = getattr(applicant, "contact_information", None)
+    mailing_address = getattr(contact_information, "mailing_address", None)
+    if not mailing_address:
+        return data
+
+    data["address"] = format_address_line(
+        getattr(mailing_address, "street", None),
+        getattr(mailing_address, "number", None),
+    )
+    data["neighborhood"] = text_or_default(getattr(mailing_address, "neighborhood", None))
+    data["zip_code"] = format_zip_code(getattr(mailing_address, "postal_code", None))
+    data["city_state"] = format_city_state(
+        getattr(mailing_address, "city", None),
+        getattr(mailing_address, "state", None),
+    )
+    return data

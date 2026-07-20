@@ -1,33 +1,16 @@
 import agronext_procurement as procurement
 
 from ...schemas import BeneficiaryData
-
-
-def _format_birth_date(value: object) -> str:
-    if hasattr(value, "strftime"):
-        return value.strftime("%d/%m/%Y")
-    return str(value) if value else ""
-
-
-def _format_phone(value: object) -> str:
-    #TODO: replace with the format phone from utils, test before opening PR
-    if value is None:
-        return ""
-
-    area_code = getattr(value, "area_code", None)
-    number = getattr(value, "number", None)
-
-    formatted_number = ""
-    if number is not None:
-        digits = "".join(char for char in str(number) if char.isdigit())
-        local_number = digits[-9:] if len(digits) >= 9 else digits
-        formatted_number = f"{local_number[:5]}-{local_number[5:]}"
-
-    if area_code is not None and number is not None:
-        return f"({area_code}) {formatted_number}"
-    if number is not None:
-        return formatted_number
-    return str(value)
+from ...utils import (
+    format_address_line,
+    format_city_state,
+    format_date_br,
+    format_document_number,
+    format_percentage,
+    format_phone,
+    format_zip_code,
+    text_or_default,
+)
 
 
 def build_proposal_beneficiaries(
@@ -43,7 +26,7 @@ def build_proposal_beneficiaries(
             identity = b.identity
             name = identity.full_name
             cpf = identity.cpf.number
-            birth_date = _format_birth_date(identity.birth_date)
+            birth_date = format_date_br(identity.birth_date)
             social_name = identity.social_name or "Não informado"
         else:
             identity = b.identity
@@ -53,8 +36,10 @@ def build_proposal_beneficiaries(
             social_name = "Não informado"
 
         email = b.contact_information.email
-        phone = _format_phone(
-            b.contact_information.phones[0] if b.contact_information.phones else None
+        phone = (
+            format_phone(phone=b.contact_information.phones[0])
+            if b.contact_information.phones
+            else ""
         )
         percentage = b.benefit_percentage
         relationship = b.relationship_to_applicant
@@ -72,4 +57,89 @@ def build_proposal_beneficiaries(
                 relationship=relationship or "Não informado",
             )
         )
+    return result
+
+
+def build_policy_primary_beneficiary(
+    beneficiaries: list[procurement.NPBeneficiaryView | procurement.LEBeneficiaryView] | None,
+) -> dict[str, str]:
+    result = {
+        "name": "Não informado",
+        "document": "Não informado",
+        "share": "100%",
+    }
+
+    if not beneficiaries:
+        return result
+
+    first = beneficiaries[0]
+    if isinstance(first, procurement.NPBeneficiaryView):
+        result["name"] = first.identity.full_name or "Não informado"
+    else:
+        result["name"] = first.identity.trade_name or "Não informado"
+
+    result["document"] = format_document_number(first.document_number)
+    try:
+        share = float(first.benefit_percentage) if first.benefit_percentage is not None else 100.0
+    except (TypeError, ValueError):
+        share = 100.0
+
+    result["share"] = format_percentage(value=share)
+    return result
+
+
+def build_policy_beneficiaries(
+    beneficiaries: list[procurement.NPBeneficiaryView | procurement.LEBeneficiaryView] | None,
+) -> list[BeneficiaryData]:
+    if not beneficiaries:
+        return []
+
+    result: list[BeneficiaryData] = []
+    for beneficiary in beneficiaries:
+        if isinstance(beneficiary, procurement.NPBeneficiaryView):
+            name = beneficiary.identity.full_name or "Não informado"
+            social_name = beneficiary.identity.social_name or "Não informado"
+        else:
+            name = beneficiary.identity.trade_name or "Não informado"
+            social_name = "Não informado"
+
+        mailing_address = getattr(
+            getattr(beneficiary, "contact_information", None),
+            "mailing_address",
+            None,
+        )
+
+        address = format_address_line(
+            getattr(mailing_address, "street", None),
+            getattr(mailing_address, "number", None),
+        )
+        neighborhood = text_or_default(getattr(mailing_address, "neighborhood", None))
+        city_state = format_city_state(
+            getattr(mailing_address, "city", None),
+            getattr(mailing_address, "state", None),
+        )
+        zip_code = format_zip_code(getattr(mailing_address, "postal_code", None))
+
+        try:
+            share = (
+                str(beneficiary.benefit_percentage)
+                if beneficiary.benefit_percentage is not None
+                else "0"
+            )
+        except (TypeError, ValueError):
+            share = "0"
+
+        result.append(
+            BeneficiaryData(
+                name=name,
+                cpf=format_document_number(beneficiary.document_number),
+                social_name=social_name,
+                address=address,
+                neighborhood=neighborhood,
+                city_state=city_state,
+                zip_code=zip_code,
+                percentage=share,
+            )
+        )
+
     return result

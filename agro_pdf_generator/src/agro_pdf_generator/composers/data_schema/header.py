@@ -7,6 +7,7 @@ from agronext_procurement.views.common import CoverageDetailsView
 
 from ...constants import PDF_LOGO
 from ...schemas import HeaderData
+from ...utils import format_date_br
 
 
 def build_header(
@@ -87,5 +88,15 @@ def build_simulation_header(
         susep="15414.004513/2012-47",
         mapa_code="12",
     )
+
+
+def build_policy_issue_date(proposal_metadata: object) -> str:
+    tz = ZoneInfo("America/Sao_Paulo")
+    issued_at = (
+        getattr(proposal_metadata, "issued_at", None)
+        or getattr(proposal_metadata, "updated_at", None)
+        or datetime.datetime.now(tz=tz)
+    )
+    return format_date_br(issued_at, tz_name="America/Sao_Paulo")
 
 

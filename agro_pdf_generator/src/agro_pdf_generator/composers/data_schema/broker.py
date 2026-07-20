@@ -1,6 +1,14 @@
 import re
 
 from ...schemas import BrokerData
+from ...utils import (
+    format_address_line,
+    format_city_state,
+    format_document_number,
+    format_phone_number as util_format_phone_number,
+    format_zip_code,
+    text_or_default,
+)
 
 
 _TRAILING_PARENTHESIS_PATTERN = re.compile(r"\s*\([^()]*\)\s*$")
@@ -45,24 +53,13 @@ def _extract_phone_parts(phone_item: object) -> dict:
 
 
 def _format_phone_number(value: object) -> str:
-    #TODO: replace with the format phone from utils, test before opening PR, review and add the logic to identify the phone type and if it's whatsapp based on the type hint and tags in the phone number
     text = str(value).strip() if value is not None else ""
     if not text or text.lower() == "não informado":
         return "Não informado"
 
     cleaned = _strip_trailing_phone_tags(text)
-    digits = "".join(char for char in cleaned if char.isdigit())
-
-    if digits.startswith("55") and len(digits) in {12, 13}:
-        digits = digits[2:]
-
-    if len(digits) == 11:
-        return f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"
-
-    if len(digits) == 10:
-        return f"({digits[:2]}) {digits[2:6]}-{digits[6:]}"
-
-    return cleaned
+    formatted = util_format_phone_number(phone=cleaned)
+    return formatted if formatted else "Não informado"
 
 
 def _resolve_base_tag(phone_number: str, type_hint: str) -> str:
@@ -143,6 +140,25 @@ def _resolve_primary_phone(broker_details: dict) -> str:
     return "Não informado"
 
 
+def _resolve_primary_address(addresses: object) -> dict:
+    if not isinstance(addresses, list) or not addresses:
+        return {}
+
+    parsed = [item for item in addresses if isinstance(item, dict)]
+    if not parsed:
+        return {}
+
+    return next((item for item in parsed if item.get("is_primary")), parsed[0])
+
+
+def _first_informed(*values: object) -> str:
+    for value in values:
+        text = str(value).strip() if value is not None else ""
+        if text and text.lower() != "não informado":
+            return text
+    return ""
+
+
 def build_broker(broker_details: dict) -> BrokerData:
     # Broker
     phone = _resolve_primary_phone(broker_details)
@@ -159,3 +175,79 @@ def build_broker(broker_details: dict) -> BrokerData:
     )
 
     return broker_data
+
+
+def build_policy_broker_from_user(
+    broker_user: object,
+    broker_user_details: dict | None = None,
+) -> dict[str, str]:
+    data = {
+        "name": "Não informado",
+        "document": "Não informado",
+        "susep_code": "Não informado",
+        "address": "Não informado",
+        "neighborhood": "Não informado",
+        "zip_code": "Não informado",
+        "city_state": "Não informado",
+        "phone": "Não informado",
+    }
+
+    broker = getattr(broker_user, "broker", None)
+    if broker is None:
+        return data
+
+    data["name"] = getattr(broker, "name", None) or getattr(broker, "trade_name", None) or "Não informado"
+    data["document"] = format_document_number(getattr(broker, "cnpj", None))
+    data["susep_code"] = getattr(broker, "susep_code", None) or "Não informado"
+    data["phone"] = _format_phone_number(getattr(broker, "phone", None))
+
+    if not broker_user_details:
+        return data
+
+    identity = (
+        broker_user_details.get("identity")
+        if isinstance(broker_user_details, dict)
+        else None
+    )
+    identity = identity if isinstance(identity, dict) else {}
+    contact = (
+        broker_user_details.get("contact")
+        if isinstance(broker_user_details, dict)
+        else None
+    )
+    contact = contact if isinstance(contact, dict) else {}
+
+    data["name"] = (
+        _first_informed(
+            identity.get("trade_name"),
+            data["name"],
+        )
+        or "Não informado"
+    )
+    data["document"] = format_document_number(
+        _first_informed(identity.get("cnpj"), data["document"]) or None,
+    )
+
+    lookup_phone = _resolve_primary_phone({"phones": contact.get("phones")})
+    if lookup_phone != "Não informado":
+        data["phone"] = lookup_phone
+
+    primary_address = _resolve_primary_address(contact.get("addresses"))
+    if primary_address:
+        address_line = format_address_line(
+            primary_address.get("street"),
+            primary_address.get("number"),
+        )
+        if address_line == "Não informado":
+            address_line = text_or_default(primary_address.get("address_description"))
+
+        data["address"] = address_line
+        data["neighborhood"] = text_or_default(primary_address.get("neighborhood"))
+        data["zip_code"] = format_zip_code(primary_address.get("postal_code"))
+        state_value = str(primary_address.get("state_type_id") or "").strip()
+        data["city_state"] = format_city_state(
+            primary_address.get("city"),
+            state_value,
+        )
+
+    return data
