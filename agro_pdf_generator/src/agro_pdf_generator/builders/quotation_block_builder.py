@@ -231,7 +231,7 @@ class QuotationBlockBuilder:
                 [
                     {
                         "label": "CEP",
-                        "value": self._format_zip_code(e.zip_code),
+                        "value": e.zip_code,
                         "width": "20%",
                     },
                     {
@@ -426,7 +426,7 @@ class QuotationBlockBuilder:
                 [
                     {
                         "label": "CEP",
-                        "value": self._format_zip_code(prop.zip_code),
+                        "value": prop.zip_code,
                         "width": "20%",
                     },
                     {
@@ -580,16 +580,6 @@ class QuotationBlockBuilder:
             else f"<div>{item}</div>"
             for i, item in enumerate(items)
         )
-
-    def _format_zip_code(self, zip_code: str | None) -> str:
-        if not zip_code:
-            return ""
-
-        digits = "".join(char for char in zip_code if char.isdigit())
-        if len(digits) != 8:
-            return zip_code
-
-        return f"{digits[:5]}-{digits[5:]}"
 
     def _format_country(self, country: str | None) -> str:
         if not country:

@@ -39,7 +39,7 @@ from .declarations import build_declarations
 from .excluded_risks import build_excluded_risks
 from .grace_period import build_grace_period
 from .header import build_header, build_policy_issue_date, build_simulation_header
-from .land_property import build_policy_property, build_property, build_simulation_property
+from .land_property import build_property, build_simulation_property
 from .lgpd import build_lgpd_consent
 from .notifications import build_proponent_notifications
 from .payment import build_payment, build_policy_installment_lines
@@ -280,7 +280,11 @@ def build_policy_data_from_domain(
         none_if_not_informed(address_data.state),
     )
 
-    property_data = build_policy_property(view, municipality_code=municipality_code)
+    property_data = build_property(
+        view,
+        municipality_code=municipality_code,
+        for_policy=True,
+    )
     beneficiaries_data = build_policy_beneficiaries(view.beneficiaries)
     primary_beneficiary = beneficiaries_data[0] if beneficiaries_data else None
     broker_data = build_policy_broker_from_user(
