@@ -3,17 +3,9 @@ from collections.abc import Sequence
 from enum import Enum
 from typing import Any
 
-from ...utils import (
-    format_address_line,
-    format_city_state,
-    format_document_number,
-    format_phone,
-    text_or_default,
-    none_if_not_informed,
-)
+from ...utils import format_phone
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
-from .address import build_address
 
 
 _REVENUE_RANGE_LABELS = {
@@ -96,7 +88,9 @@ def _fill_contact_info(
     applicant_data.is_whatsapp = "Sim" if phone and phone.is_whatsapp else "Não"
 
 
-def build_applicant(view: procurement.QuotationView) -> ApplicantData:
+def build_applicant(
+    view: procurement.QuotationView | procurement.ProposalView,
+) -> ApplicantData:
 
     # Applicant
     applicant_data = ApplicantData(
@@ -164,6 +158,7 @@ def build_applicant(view: procurement.QuotationView) -> ApplicantData:
 
     return applicant_data
 
+
 def build_simulation_applicant(
     *,
     name: str,
@@ -175,34 +170,3 @@ def build_simulation_applicant(
     )
 
 
-def build_policy_insured(view: procurement.ProposalView) -> ApplicantData:
-    applicant_data = build_applicant(view)
-    address_data = build_address(view)
-
-    primary_document_number = applicant_data.cpf or applicant_data.document_number
-
-    applicant_data.name = text_or_default(applicant_data.name)
-    applicant_data.social_name = (
-        text_or_default(applicant_data.social_name)
-        if str(applicant_data.social_name or "").strip().lower() not in {"", "não informado"}
-        else "-"
-    )
-    applicant_data.cpf = format_document_number(primary_document_number)
-    applicant_data.birth_date = text_or_default(applicant_data.birth_date)
-    applicant_data.document_number = text_or_default(applicant_data.document_number)
-    applicant_data.issuing_authority = text_or_default(applicant_data.issuing_authority)
-    applicant_data.issue_date = text_or_default(applicant_data.issue_date)
-    applicant_data.main_email = text_or_default(applicant_data.main_email)
-    applicant_data.phone_number = text_or_default(applicant_data.phone_number)
-    applicant_data.address = format_address_line(
-        none_if_not_informed(address_data.street),
-        none_if_not_informed(address_data.number),
-    )
-    applicant_data.neighborhood = text_or_default(address_data.neighborhood)
-    applicant_data.zip_code = text_or_default(address_data.zip_code)
-    applicant_data.city_state = format_city_state(
-        none_if_not_informed(address_data.city),
-        none_if_not_informed(address_data.state),
-    )
-
-    return applicant_data

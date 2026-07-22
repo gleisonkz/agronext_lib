@@ -7,10 +7,18 @@ from ...schemas import BeneficiaryData
 from ...schemas import PaymentData
 from ...schemas import PDFData
 from ...schemas import PolicyDocumentData
-from ...utils import format_decimal, format_harvest_label
+from ...utils import (
+    format_address_line,
+    format_city_state,
+    format_decimal,
+    format_document_number,
+    format_harvest_label,
+    none_if_not_informed,
+    text_or_default,
+)
 from .acceptance import build_acceptance, build_simulation_general_info_html
 from .address import build_address
-from .applicant import build_applicant, build_policy_insured, build_simulation_applicant
+from .applicant import build_applicant, build_simulation_applicant
 from .authorization import (
     build_proposal_authorization_term,
     build_proposal_beneficiary_authorization,
@@ -257,7 +265,21 @@ def build_policy_data_from_domain(
 ) -> PolicyDocumentData:
     coverage = view.coverages[0].coverage if view.coverages else None
     financials = coverage.financials if coverage else None
-    insured_data = build_policy_insured(view)
+    insured_data = build_applicant(view)
+    insured_data.cpf = format_document_number(insured_data.cpf or insured_data.document_number)
+    address_data = build_address(view)
+
+    insured_data.address = format_address_line(
+        none_if_not_informed(address_data.street),
+        none_if_not_informed(address_data.number),
+    )
+    insured_data.neighborhood = text_or_default(address_data.neighborhood)
+    insured_data.zip_code = text_or_default(address_data.zip_code)
+    insured_data.city_state = format_city_state(
+        none_if_not_informed(address_data.city),
+        none_if_not_informed(address_data.state),
+    )
+
     property_data = build_policy_property(view, municipality_code=municipality_code)
     beneficiaries_data = build_policy_beneficiaries(view.beneficiaries)
     primary_beneficiary = beneficiaries_data[0] if beneficiaries_data else None
