@@ -109,16 +109,10 @@ def build_policy_installment_lines(
 
     lines: list[list[str]] = []
     for installment in billing_info:
-        number = getattr(installment, "installment_number", None)
-        title = getattr(installment, "title", None)
-        due_date = getattr(installment, "due_date", None)
-        total_amount = getattr(installment, "total_amount", None)
-
-        if isinstance(installment, dict):
-            number = installment.get("installment_number", installment.get("nr_parcela", number))
-            title = installment.get("title", installment.get("titulo", title))
-            due_date = installment.get("due_date", installment.get("dt_vencimento", due_date))
-            total_amount = installment.get("total_amount", installment.get("vl_total", total_amount))
+        number = installment.installment_number
+        title = installment.title
+        due_date = installment.due_date
+        total_amount = installment.total_amount
 
         if number is None:
             continue
