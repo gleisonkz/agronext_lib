@@ -85,10 +85,15 @@ def build_proposal_beneficiary_authorization(
     authorization_text = "Nessa situação, autorizo que o crédito referente ao pagamento de qualquer restituição ou devolução de prêmio atinente ao seguro proposto seja efetuado em conta bancária de titularidade do beneficiário da garantia, conforme dados abaixo indicado, de minha responsabilidade."
     observation_text = "*É obrigatória a manifestação de vontade do próprio proponente para autorizar o crédito na conta de beneficiário, sendo expressamente vedada esta declaração por terceiros (incluindo corretor de seguros)."
 
-    premium_refund_beneficiary = next(
-        (beneficiary for beneficiary in beneficiaries if beneficiary.premium_refund),
-        None,
-    ) if beneficiaries else None
+    premium_refund_beneficiary = None
+    if beneficiaries:
+        for beneficiary in beneficiaries:
+            refund_flag = beneficiary.premium_refund
+            relationship = beneficiary.relationship_to_applicant
+
+            if refund_flag and relationship != procurement.BeneficiaryType.SELF:
+                premium_refund_beneficiary = beneficiary
+                break
 
     if premium_refund_beneficiary is None:
         return AuthorizationBeneficiaryData(

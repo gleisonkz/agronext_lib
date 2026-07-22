@@ -1029,7 +1029,6 @@ class ProposalBlockBuilder:
                 type=BlockType.AUTHORIZATION_TERM,
                 section_header="Termo Autorização para Pagamento ou Devolução de Crédito por Depósito em Conta Bancária",
                 estimated_height=600,
-                stops_header_repeat=True,
                 force_page_break=True,
                 authorization_term={
                     "fields": [
@@ -1064,7 +1063,12 @@ class ProposalBlockBuilder:
         ben = self._data.authorization_beneficiary
         current_year = date.today().year
 
-        if not ben.beneficiary_name:
+        authorization_answer = (ben.authorization_answer or "").strip().lower()
+        if authorization_answer != "sim":
+            return []
+
+        beneficiary_name = (ben.beneficiary_name or ben.beneficiary_full_name or "").strip()
+        if not beneficiary_name:
             return []
 
         return [
@@ -1077,7 +1081,7 @@ class ProposalBlockBuilder:
                     "initial_fields": [
                         {
                             "label": "Nome do Beneficiário",
-                            "value": ben.beneficiary_name,
+                            "value": beneficiary_name,
                         },
                         {
                             "label": "Número da Proposta",
@@ -1119,16 +1123,6 @@ class ProposalBlockBuilder:
                         {
                             "label": "Conta Conjunta",
                             "value": ben.joint_account,
-                            "gap_before": True,
-                        },
-                        {
-                            "label": "Tipo de Chave Pix",
-                            "value": ben.pix_type,
-                            "gap_before": True,
-                        },
-                        {
-                            "label": "Chave Pix",
-                            "value": ben.pix_key,
                             "gap_before": True,
                         },
                     ],
