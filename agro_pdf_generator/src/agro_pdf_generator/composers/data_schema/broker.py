@@ -160,28 +160,27 @@ def _first_informed(*values: object) -> str:
     return ""
 
 
-def build_broker(broker_details: dict) -> BrokerData:
-    # Broker
-    phone = _resolve_primary_phone(broker_details)
-    phones = _build_phone_list(broker_details, phone)
-
-    broker_data = BrokerData(
-        name=broker_details.get("trade_name") or "Não informado",
-        susep=broker_details.get("susep_code") or "Não informado",
-        social_name=broker_details.get("preferred_name") or "Não informado",
-        commission_pct="0.0%",
-        phone=phone,
-        emails=[broker_details.get("email") or "Não informado"],
-        phones=phones,
-    )
-
-    return broker_data
-
-
-def build_policy_broker_from_user(
-    broker_user: Any,
+def build_broker(
+    broker_details: dict | None = None,
+    *,
+    broker_user: Any = None,
     broker_user_details: dict | None = None,
 ) -> BrokerData:
+    if broker_user is None and broker_user_details is None:
+        details = broker_details if isinstance(broker_details, dict) else {}
+        phone = _resolve_primary_phone(details)
+        phones = _build_phone_list(details, phone)
+
+        return BrokerData(
+            name=details.get("trade_name") or "Não informado",
+            susep=details.get("susep_code") or "Não informado",
+            social_name=details.get("preferred_name") or "Não informado",
+            commission_pct="0.0%",
+            phone=phone,
+            emails=[details.get("email") or "Não informado"],
+            phones=phones,
+        )
+
     data = BrokerData(
         name="Não informado",
         susep="Não informado",

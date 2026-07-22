@@ -26,7 +26,7 @@ from .authorization import (
 from .authorized import build_proposal_authorized_persons
 from .available_documents import build_available_documents
 from .beneficiaries import build_policy_beneficiaries, build_proposal_beneficiaries
-from .broker import build_broker, build_policy_broker_from_user
+from .broker import build_broker
 from .coordinates import build_coordinates
 from .coverage import (
     build_coverage,
@@ -287,8 +287,8 @@ def build_policy_data_from_domain(
     )
     beneficiaries_data = build_policy_beneficiaries(view.beneficiaries)
     primary_beneficiary = beneficiaries_data[0] if beneficiaries_data else None
-    broker_data = build_policy_broker_from_user(
-        broker_user,
+    broker_data = build_broker(
+        broker_user=broker_user,
         broker_user_details=broker_user_details,
     )
     coverage_data = build_policy_coverage_details(coverage)
