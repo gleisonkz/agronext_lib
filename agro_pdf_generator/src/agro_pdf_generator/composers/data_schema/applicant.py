@@ -9,10 +9,11 @@ from ...utils import (
     format_document_number,
     format_phone,
     text_or_default,
+    none_if_not_informed,
 )
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
-from .address import build_policy_insured_address
+from .address import build_address
 
 
 _REVENUE_RANGE_LABELS = {
@@ -176,7 +177,7 @@ def build_simulation_applicant(
 
 def build_policy_insured(view: procurement.ProposalView) -> ApplicantData:
     applicant_data = build_applicant(view)
-    address_data = build_policy_insured_address(view)
+    address_data = build_address(view)
 
     primary_document_number = applicant_data.cpf or applicant_data.document_number
 
@@ -193,9 +194,15 @@ def build_policy_insured(view: procurement.ProposalView) -> ApplicantData:
     applicant_data.issue_date = text_or_default(applicant_data.issue_date)
     applicant_data.main_email = text_or_default(applicant_data.main_email)
     applicant_data.phone_number = text_or_default(applicant_data.phone_number)
-    applicant_data.address = format_address_line(address_data.street, address_data.number)
+    applicant_data.address = format_address_line(
+        none_if_not_informed(address_data.street),
+        none_if_not_informed(address_data.number),
+    )
     applicant_data.neighborhood = text_or_default(address_data.neighborhood)
     applicant_data.zip_code = text_or_default(address_data.zip_code)
-    applicant_data.city_state = format_city_state(address_data.city, address_data.state)
+    applicant_data.city_state = format_city_state(
+        none_if_not_informed(address_data.city),
+        none_if_not_informed(address_data.state),
+    )
 
     return applicant_data

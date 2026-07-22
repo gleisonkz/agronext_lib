@@ -39,6 +39,13 @@ def next_month(date: datetime) -> datetime:
     return new_date
 
 
+def none_if_not_informed(value: object | None) -> object | None:
+    text = str(value).strip() if value is not None else ""
+    if not text or text.lower() == "não informado":
+        return None
+    return value
+
+
 def format_phone(*, phone: PhoneView | str) -> str:
     if isinstance(phone, PhoneView):
         formatted_phone = format_phone_object(phone=phone)

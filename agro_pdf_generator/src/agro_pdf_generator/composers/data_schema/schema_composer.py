@@ -5,7 +5,7 @@ import agronext_procurement_repositories as repositories
 
 from ...schemas import PDFData
 from .acceptance import build_acceptance, build_simulation_general_info_html
-from .address import build_proposal_address
+from .address import build_address
 from .applicant import build_applicant, build_simulation_applicant
 from .authorization import (
     build_proposal_authorization_term,
@@ -138,7 +138,7 @@ def build_proposal_data_from_domain(
     )
     applicant_data = build_applicant(view)
 
-    address_data = build_proposal_address(view)
+    address_data = build_address(view)
 
     political_exposure = build_proposal_political_exposure(
         applicant_data, quotation_metadata.has_political_exposure
