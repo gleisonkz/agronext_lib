@@ -29,6 +29,10 @@ class ApplicantData:
     business_activity: str = ""
     annual_gross_revenue: str = ""
     net_worth: str = ""
+    address: str = ""
+    neighborhood: str = ""
+    zip_code: str = ""
+    city_state: str = ""
 
 
 @dataclass
@@ -52,6 +56,9 @@ class PoliticalExposureData:
 @dataclass
 class CoverageData:
     name: str = ""
+    crop: str = ""
+    main_coverage: str = ""
+    validity_period: str = ""
     policy_limit_brl: str = ""
     deductible_pct: str = ""
     coverage_rate_pct: str = ""
@@ -85,8 +92,13 @@ class PaymentData:
 class BrokerData:
     name: str = ""
     susep: str = ""
+    document: str = ""
     social_name: str = ""
     commission_pct: str = ""
+    address: str = ""
+    neighborhood: str = ""
+    zip_code: str = ""
+    city_state: str = ""
     phone: str = ""
     emails: list[str] = field(default_factory=list)
     phones: list[str] = field(default_factory=list)

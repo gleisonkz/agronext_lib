@@ -1,8 +1,15 @@
 import agronext_procurement as procurement
 from collections.abc import Sequence
+from enum import Enum
 from typing import Any
 
-from ...utils import format_document_number, format_phone, text_or_default
+from ...utils import (
+    format_address_line,
+    format_city_state,
+    format_document_number,
+    format_phone,
+    text_or_default,
+)
 from ...schemas import ApplicantData
 from agronext_procurement.value_objects.shared.contact_information import ContactInformation
 from .address import build_policy_insured_address
@@ -20,7 +27,7 @@ def _format_revenue_range(value: object | None) -> str:
     if value is None:
         return "Não informado"
 
-    raw_value = getattr(value, "value", value)
+    raw_value = value.value if isinstance(value, Enum) else value
     normalized = str(raw_value).strip()
 
     if not normalized:
@@ -33,7 +40,7 @@ def _format_document_type(value: object | None) -> str:
     if value is None:
         return "Documento"
 
-    raw_value = getattr(value, "value", value)
+    raw_value = value.value if isinstance(value, Enum) else value
     normalized = str(raw_value).strip()
     if not normalized:
         return "Documento"
@@ -69,7 +76,7 @@ def _select_preferred_document(documents: Sequence[Any] | None) -> Any | None:
         (
             document
             for document in documents
-            if getattr(document, "type", None) == procurement.DocumentTypes.RG
+            if document.type in {procurement.DocumentTypes.RG, procurement.DocumentTypes.RG.value}
         ),
         None,
     )
@@ -167,28 +174,28 @@ def build_simulation_applicant(
     )
 
 
-def build_policy_insured(view: procurement.ProposalView) -> dict[str, str]:
+def build_policy_insured(view: procurement.ProposalView) -> ApplicantData:
     applicant_data = build_applicant(view)
     address_data = build_policy_insured_address(view)
 
-    document_number = applicant_data.cpf or applicant_data.document_number
+    primary_document_number = applicant_data.cpf or applicant_data.document_number
 
-    return {
-        "name": text_or_default(applicant_data.name),
-        "social_name": (
-            "-"
-            if str(applicant_data.social_name or "").strip().lower() in {"", "não informado"}
-            else text_or_default(applicant_data.social_name)
-        ),
-        "document": format_document_number(document_number),
-        "birth_date": text_or_default(applicant_data.birth_date),
-        "additional_document": text_or_default(applicant_data.document_number),
-        "document_issuing_authority": text_or_default(applicant_data.issuing_authority),
-        "document_issue_date": text_or_default(applicant_data.issue_date),
-        "email": text_or_default(applicant_data.main_email),
-        "phone": text_or_default(applicant_data.phone_number),
-        "address": address_data["address"],
-        "neighborhood": address_data["neighborhood"],
-        "zip_code": address_data["zip_code"],
-        "city_state": address_data["city_state"],
-    }
+    applicant_data.name = text_or_default(applicant_data.name)
+    applicant_data.social_name = (
+        text_or_default(applicant_data.social_name)
+        if str(applicant_data.social_name or "").strip().lower() not in {"", "não informado"}
+        else "-"
+    )
+    applicant_data.cpf = format_document_number(primary_document_number)
+    applicant_data.birth_date = text_or_default(applicant_data.birth_date)
+    applicant_data.document_number = text_or_default(applicant_data.document_number)
+    applicant_data.issuing_authority = text_or_default(applicant_data.issuing_authority)
+    applicant_data.issue_date = text_or_default(applicant_data.issue_date)
+    applicant_data.main_email = text_or_default(applicant_data.main_email)
+    applicant_data.phone_number = text_or_default(applicant_data.phone_number)
+    applicant_data.address = format_address_line(address_data.street, address_data.number)
+    applicant_data.neighborhood = text_or_default(address_data.neighborhood)
+    applicant_data.zip_code = text_or_default(address_data.zip_code)
+    applicant_data.city_state = format_city_state(address_data.city, address_data.state)
+
+    return applicant_data

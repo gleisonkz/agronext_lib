@@ -4,8 +4,6 @@ from ...schemas import PropertyData
 from ...utils import (
     format_coordinates,
     format_state,
-    format_address_line,
-    format_city_state,
     format_dms_coordinates,
     format_zip_code,
 )
@@ -63,40 +61,39 @@ def build_simulation_property(
 def build_policy_property(
     view: procurement.ProposalView,
     municipality_code: str | None = None,
-) -> dict[str, str]:
-    data = {
-        "address": "Não informado",
-        "neighborhood": "Não informado",
-        "zip_code": "Não informado",
-        "city_state": "Não informado",
-        "bacen_code": municipality_code or "Não informado",
-        "name": "Não informado",
-        "coordinates": "Não informado",
-    }
+) -> PropertyData:
+    data = PropertyData(
+        name="Não informado",
+        ownership_type="",
+        coordinates="Não informado",
+        zip_code="Não informado",
+        country="",
+        state="",
+        city="",
+        bacen_code=municipality_code or "Não informado",
+        neighborhood="Não informado",
+        street="",
+        number="",
+    )
 
     prop = view.properties[0] if view.properties else None
     if prop is None:
         return data
 
-    data["name"] = prop.name or "Não informado"
+    data.name = prop.name or "Não informado"
 
-    address = getattr(prop, "address", None)
+    address = prop.address
     if address is not None:
-        data["address"] = format_address_line(
-            getattr(address, "street", None),
-            getattr(address, "number", None),
-        )
-        data["neighborhood"] = getattr(address, "neighborhood", None) or "Não informado"
-        data["zip_code"] = format_zip_code(getattr(address, "postal_code", None))
-        data["city_state"] = format_city_state(
-            getattr(address, "city", None),
-            getattr(address, "state", None),
-        )
+        data.street = address.street or ""
+        data.number = address.number or ""
+        data.neighborhood = address.neighborhood or "Não informado"
+        data.zip_code = format_zip_code(address.postal_code)
+        data.city = address.city or ""
+        data.state = address.state or ""
+        data.country = address.country or ""
 
-    location = getattr(prop, "city_location", None)
-    latitude = getattr(location, "latitude", None)
-    longitude = getattr(location, "longitude", None)
-    if latitude is not None and longitude is not None:
-        data["coordinates"] = format_dms_coordinates(latitude, longitude)
+    location = prop.city_location
+    if location is not None and location.latitude is not None and location.longitude is not None:
+        data.coordinates = format_dms_coordinates(location.latitude, location.longitude)
 
     return data

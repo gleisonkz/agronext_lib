@@ -23,7 +23,7 @@ def _extract_coverage_name_from_documents(docs: list | None) -> str:
     normalized_perils = {peril: _normalize_text(peril) for peril in perils}
 
     for doc in docs:
-        doc_name = (getattr(doc, "name", None) or "").strip()
+        doc_name = (doc.name or "").strip()
         if not doc_name:
             continue
 
@@ -65,11 +65,11 @@ def _resolve_policy_main_label(
         return default
 
     if include_coverage_code:
-        coverage_label = repositories.COVERAGES.get(getattr(coverage, "susep_code", None))
+        coverage_label = repositories.COVERAGES.get(coverage.susep_code)
         if coverage_label:
             return str(coverage_label).strip()
 
-    main_peril = getattr(getattr(coverage, "conditions", None), "main_peril", None)
+    main_peril = coverage.conditions.main_peril
     if main_peril:
         peril_label = repositories.PERIL_TAXONOMY_DICT.get(main_peril, main_peril)
         peril_label = str(peril_label or "").strip()
@@ -180,7 +180,7 @@ def build_simulation_coverage(
     )
 
 
-def build_policy_coverage_details(coverage: CoverageDetailsView | None) -> dict[str, str]:
+def build_policy_coverage_details(coverage: CoverageDetailsView | None) -> CoverageData:
     conditions = coverage.conditions if coverage else None
     term = coverage.term if coverage else None
     financials = coverage.financials if coverage else None
@@ -215,16 +215,15 @@ def build_policy_coverage_details(coverage: CoverageDetailsView | None) -> dict[
     net_premium = financials.net_estimated_premium if financials else 0.0
     applicant_total = financials.discounted_premium if financials else 0.0
 
-    return {
-        "crop": crop_label,
-        "main_coverage": main_coverage,
-        "product": product,
-        "validity_period": validity_period,
-        "lmga": format_monetary_value(policy_limit),
-        "total_premium": format_monetary_value(net_premium),
-        "policy_net_premium": format_monetary_value(net_premium),
-        "premium_to_pay": format_monetary_value(applicant_total),
-    }
+    return CoverageData(
+        name=product,
+        crop=crop_label,
+        main_coverage=main_coverage,
+        validity_period=validity_period,
+        policy_limit_brl=format_monetary_value(policy_limit),
+        net_premium=format_monetary_value(net_premium),
+        applicant_value=format_monetary_value(applicant_total),
+    )
 
 
 def build_policy_coverage_lines(coverage: CoverageDetailsView | None) -> list[list[str]]:
@@ -234,7 +233,7 @@ def build_policy_coverage_lines(coverage: CoverageDetailsView | None) -> list[li
 
     main_coverage = _resolve_policy_main_label(coverage)
 
-    deductible_percentage = getattr(financials.deductible_details, "percentage", 0.0)
+    deductible_percentage = financials.deductible_details.percentage
     deductible_fraction = _normalize_percentage_fraction(deductible_percentage)
 
     return [

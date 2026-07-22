@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from ...schemas import BrokerData
 from ...utils import (
@@ -178,28 +179,30 @@ def build_broker(broker_details: dict) -> BrokerData:
 
 
 def build_policy_broker_from_user(
-    broker_user: object,
+    broker_user: Any,
     broker_user_details: dict | None = None,
-) -> dict[str, str]:
-    data = {
-        "name": "Não informado",
-        "document": "Não informado",
-        "susep_code": "Não informado",
-        "address": "Não informado",
-        "neighborhood": "Não informado",
-        "zip_code": "Não informado",
-        "city_state": "Não informado",
-        "phone": "Não informado",
-    }
+) -> BrokerData:
+    data = BrokerData(
+        name="Não informado",
+        susep="Não informado",
+        document="Não informado",
+        social_name="Não informado",
+        commission_pct="0.0%",
+        address="Não informado",
+        neighborhood="Não informado",
+        zip_code="Não informado",
+        city_state="Não informado",
+        phone="Não informado",
+    )
 
-    broker = getattr(broker_user, "broker", None)
+    broker = broker_user.broker if broker_user is not None else None
     if broker is None:
         return data
 
-    data["name"] = getattr(broker, "name", None) or getattr(broker, "trade_name", None) or "Não informado"
-    data["document"] = format_document_number(getattr(broker, "cnpj", None))
-    data["susep_code"] = getattr(broker, "susep_code", None) or "Não informado"
-    data["phone"] = _format_phone_number(getattr(broker, "phone", None))
+    data.name = broker.name or broker.trade_name or "Não informado"
+    data.document = format_document_number(broker.cnpj)
+    data.susep = broker.susep_code or "Não informado"
+    data.phone = _format_phone_number(broker.phone)
 
     if not broker_user_details:
         return data
@@ -217,20 +220,20 @@ def build_policy_broker_from_user(
     )
     contact = contact if isinstance(contact, dict) else {}
 
-    data["name"] = (
+    data.name = (
         _first_informed(
             identity.get("trade_name"),
-            data["name"],
+            data.name,
         )
         or "Não informado"
     )
-    data["document"] = format_document_number(
-        _first_informed(identity.get("cnpj"), data["document"]) or None,
+    data.document = format_document_number(
+        _first_informed(identity.get("cnpj"), data.document) or None,
     )
 
     lookup_phone = _resolve_primary_phone({"phones": contact.get("phones")})
     if lookup_phone != "Não informado":
-        data["phone"] = lookup_phone
+        data.phone = lookup_phone
 
     primary_address = _resolve_primary_address(contact.get("addresses"))
     if primary_address:
@@ -241,11 +244,11 @@ def build_policy_broker_from_user(
         if address_line == "Não informado":
             address_line = text_or_default(primary_address.get("address_description"))
 
-        data["address"] = address_line
-        data["neighborhood"] = text_or_default(primary_address.get("neighborhood"))
-        data["zip_code"] = format_zip_code(primary_address.get("postal_code"))
+        data.address = address_line
+        data.neighborhood = text_or_default(primary_address.get("neighborhood"))
+        data.zip_code = format_zip_code(primary_address.get("postal_code"))
         state_value = str(primary_address.get("state_type_id") or "").strip()
-        data["city_state"] = format_city_state(
+        data.city_state = format_city_state(
             primary_address.get("city"),
             state_value,
         )
