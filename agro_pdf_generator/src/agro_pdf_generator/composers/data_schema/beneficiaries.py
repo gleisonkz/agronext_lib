@@ -103,22 +103,28 @@ def build_policy_beneficiaries(
             name = beneficiary.identity.trade_name or "Não informado"
             social_name = "Não informado"
 
-        mailing_address = getattr(
-            getattr(beneficiary, "contact_information", None),
-            "mailing_address",
-            None,
+        contact_information = beneficiary.contact_information
+        mailing_address = (
+            contact_information.mailing_address if contact_information else None
         )
 
+        street = mailing_address.street if mailing_address else None
+        number = mailing_address.number if mailing_address else None
+        neighborhood_value = mailing_address.neighborhood if mailing_address else None
+        city = mailing_address.city if mailing_address else None
+        state = mailing_address.state if mailing_address else None
+        postal_code = mailing_address.postal_code if mailing_address else None
+
         address = format_address_line(
-            getattr(mailing_address, "street", None),
-            getattr(mailing_address, "number", None),
+            street,
+            number,
         )
-        neighborhood = text_or_default(getattr(mailing_address, "neighborhood", None))
+        neighborhood = text_or_default(neighborhood_value)
         city_state = format_city_state(
-            getattr(mailing_address, "city", None),
-            getattr(mailing_address, "state", None),
+            city,
+            state,
         )
-        zip_code = format_zip_code(getattr(mailing_address, "postal_code", None))
+        zip_code = format_zip_code(postal_code)
 
         try:
             share = (
