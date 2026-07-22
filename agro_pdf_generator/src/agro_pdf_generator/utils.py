@@ -104,6 +104,19 @@ def format_percentage(*, value: float) -> str:
     return f"{value:.2f}%".replace(".", ",")
 
 
+def format_harvest_label(harvest: object) -> str:
+    value = str(harvest).strip() if harvest is not None else ""
+    if not value:
+        return "Não informado"
+
+    try:
+        year = int(value)
+    except ValueError:
+        return value
+
+    return f"{year}/{year + 1}"
+
+
 def text_or_default(
     value: object | None,
     *,

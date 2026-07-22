@@ -545,6 +545,10 @@ def _build_page_one(
     page_number: int,
     total_pages: int,
 ) -> str:
+    insured = data.insured
+    property_data = data.property
+    primary_beneficiary = data.primary_beneficiary
+
     beneficiary_section = ""
     if data.has_beneficiary:
         beneficiaries = list(getattr(data, "beneficiaries", []) or [])
@@ -586,12 +590,12 @@ def _build_page_one(
   <div class=\"line\"></div>
   <div class=\"section-title\">Dados do Beneficiário</div>
   <table class=\"kv-grid\">
-    <tr><td colspan=\"2\"><span class=\"label\">Nome/Razão Social:</span> {escape(data.beneficiary_name)}</td></tr>
-    <tr><td colspan=\"2\"><span class=\"label\">Nome Social:</span> {escape(_social_name_or_dash(getattr(data, "beneficiary_social_name", None)))}</td></tr>
-    <tr><td colspan=\"2\"><span class=\"label\">CPF/CNPJ:</span> {escape(data.beneficiary_document)}</td></tr>
-    <tr><td colspan=\"2\"><span class=\"label\">Endereço:</span> {escape(str(getattr(data, "beneficiary_address", "Não informado") or "Não informado"))}</td></tr>
-    <tr><td><span class=\"label\">Bairro:</span> {escape(str(getattr(data, "beneficiary_neighborhood", "Não informado") or "Não informado"))}</td><td><span class=\"label\">Cidade/UF:</span> {escape(str(getattr(data, "beneficiary_city_state", "Não informado") or "Não informado"))}</td></tr>
-    <tr><td><span class=\"label\">CEP:</span> {escape(str(getattr(data, "beneficiary_zip_code", "Não informado") or "Não informado"))}</td><td><span class=\"label\">Percentual de Participação:</span> {escape(data.beneficiary_share)}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Nome/Razão Social:</span> {escape(primary_beneficiary.name)}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Nome Social:</span> {escape(_social_name_or_dash(primary_beneficiary.social_name))}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">CPF/CNPJ:</span> {escape(_beneficiary_document(primary_beneficiary))}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Endereço:</span> {escape(primary_beneficiary.address or "Não informado")}</td></tr>
+    <tr><td><span class=\"label\">Bairro:</span> {escape(primary_beneficiary.neighborhood or "Não informado")}</td><td><span class=\"label\">Cidade/UF:</span> {escape(primary_beneficiary.city_state or "Não informado")}</td></tr>
+    <tr><td><span class=\"label\">CEP:</span> {escape(primary_beneficiary.zip_code or "Não informado")}</td><td><span class=\"label\">Percentual de Participação:</span> {escape(_beneficiary_share(primary_beneficiary))}%</td></tr>
   </table>
 """
 
@@ -605,24 +609,24 @@ def _build_page_one(
 
   <div class=\"section-title\">Dados do Segurado</div>
   <table class=\"kv-grid\">
-    <tr><td colspan="2"><span class="label">Nome/Razão Social:</span> {escape(data.insured_name)}</td></tr>
-    <tr><td colspan="2"><span class="label">Nome Social:</span> {escape(_social_name_or_dash(data.insured_social_name))}</td></tr>
-    <tr><td><span class="label">CPF/CNPJ:</span> {escape(data.insured_document)}</td><td><span class="label">Data de Nascimento:</span> {escape(data.insured_birth_date)}</td></tr>
-    <tr><td><span class="label">E-mail:</span> {escape(data.insured_email)}</td><td><span class="label">Documento:</span> {escape(data.insured_additional_document)}</td></tr>
-    <tr><td><span class="label">Órgão Expedição:</span> {escape(data.insured_document_issuing_authority)}</td><td><span class="label">Data Expedição:</span> {escape(data.insured_document_issue_date)}</td></tr>
-    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(data.insured_address)}</td></tr>
-    <tr><td><span class="label">Bairro:</span> {escape(data.insured_neighborhood)}</td><td><span class="label">Cidade/UF:</span> {escape(data.insured_city_state)}</td></tr>
-    <tr><td><span class="label">CEP:</span> {escape(data.insured_zip_code)}</td><td><span class="label">Telefone(s):</span> {escape(data.insured_phone)}</td></tr>
+    <tr><td colspan="2"><span class="label">Nome/Razão Social:</span> {escape(insured.name)}</td></tr>
+    <tr><td colspan="2"><span class="label">Nome Social:</span> {escape(_social_name_or_dash(insured.social_name))}</td></tr>
+    <tr><td><span class="label">CPF/CNPJ:</span> {escape(insured.cpf)}</td><td><span class="label">Data de Nascimento:</span> {escape(insured.birth_date)}</td></tr>
+    <tr><td><span class="label">E-mail:</span> {escape(insured.main_email)}</td><td><span class="label">Documento:</span> {escape(insured.document_number)}</td></tr>
+    <tr><td><span class="label">Órgão Expedição:</span> {escape(insured.issuing_authority)}</td><td><span class="label">Data Expedição:</span> {escape(insured.issue_date)}</td></tr>
+    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(insured.address)}</td></tr>
+    <tr><td><span class="label">Bairro:</span> {escape(insured.neighborhood)}</td><td><span class="label">Cidade/UF:</span> {escape(insured.city_state)}</td></tr>
+    <tr><td><span class="label">CEP:</span> {escape(insured.zip_code)}</td><td><span class="label">Telefone(s):</span> {escape(insured.phone_number)}</td></tr>
   </table>
 
   <div class=\"line\"></div>
   <div class=\"section-title\">Dados da Propriedade</div>
   <table class=\"kv-grid\">
-    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(data.property_address)}</td></tr>
-    <tr><td><span class="label">Bairro:</span> {escape(data.property_neighborhood)}</td><td><span class="label">Cidade/UF:</span> {escape(data.property_city_state)}</td></tr>
-    <tr><td><span class="label">CEP:</span> {escape(data.property_zip_code)}</td><td><span class="label">Código BACEN:</span> {escape(data.property_bacen_code)}</td></tr>
-    <tr><td colspan="2"><span class="label">Nome da Propriedade:</span> {escape(data.property_name)}</td></tr>
-    <tr><td colspan=\"2\"><span class=\"label\">Coordenadas Geográficas:</span> {escape(data.property_coordinates)}</td></tr>
+    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(_format_address_line(property_data.street, property_data.number))}</td></tr>
+    <tr><td><span class="label">Bairro:</span> {escape(property_data.neighborhood)}</td><td><span class="label">Cidade/UF:</span> {escape(_format_city_state_from_parts(property_data.city, property_data.state))}</td></tr>
+    <tr><td><span class="label">CEP:</span> {escape(property_data.zip_code)}</td><td><span class="label">Código BACEN:</span> {escape(property_data.bacen_code)}</td></tr>
+    <tr><td colspan="2"><span class="label">Nome da Propriedade:</span> {escape(property_data.name)}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Coordenadas Geográficas:</span> {escape(property_data.coordinates)}</td></tr>
   </table>
 
   {beneficiary_section}
@@ -641,6 +645,9 @@ def _build_page_two(
     page_number: int,
     total_pages: int,
 ) -> str:
+    coverage = data.coverage
+    payment = data.payment
+
     coverage_rows = "".join(
         (
             "<tr>"
@@ -664,7 +671,7 @@ def _build_page_two(
         f"<td>{escape(_row_cell(line, 4))}</td>"
             "</tr>"
         )
-        for line in data.installments
+        for line in payment.installments
     )
 
     return f"""
@@ -673,19 +680,19 @@ def _build_page_two(
 
   <div class=\"section-title\">Dados da Corretora de Seguros</div>
   <table class=\"kv-grid\">
-    <tr><td colspan=\"2\"><span class=\"label\">Razão Social:</span> {escape(data.broker_name)}</td></tr>
-    <tr><td><span class=\"label\">CNPJ:</span> {escape(data.broker_document)}</td><td><span class=\"label\">SUSEP:</span> {escape(data.broker_susep_code)}</td></tr>
-    <tr><td colspan=\"2\"><span class=\"label\">Endereço:</span> {escape(data.broker_address)}</td></tr>
-    <tr><td><span class=\"label\">Bairro:</span> {escape(data.broker_neighborhood)}</td><td><span class=\"label\">Cidade/UF:</span> {escape(_format_city_state(data.broker_city_state))}</td></tr>
-    <tr><td><span class=\"label\">CEP:</span> {escape(data.broker_zip_code)}</td><td><span class=\"label\">Telefone:</span> {escape(data.broker_phone)}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Razão Social:</span> {escape(data.broker.name)}</td></tr>
+    <tr><td><span class=\"label\">CNPJ:</span> {escape(data.broker.document)}</td><td><span class=\"label\">SUSEP:</span> {escape(data.broker.susep)}</td></tr>
+    <tr><td colspan=\"2\"><span class=\"label\">Endereço:</span> {escape(data.broker.address)}</td></tr>
+    <tr><td><span class=\"label\">Bairro:</span> {escape(data.broker.neighborhood)}</td><td><span class=\"label\">Cidade/UF:</span> {escape(_format_city_state(data.broker.city_state))}</td></tr>
+    <tr><td><span class=\"label\">CEP:</span> {escape(data.broker.zip_code)}</td><td><span class=\"label\">Telefone:</span> {escape(data.broker.phone)}</td></tr>
   </table>
 
   <div class=\"line\"></div>
   <div class=\"section-title\">Dados do Seguro</div>
   <table class=\"kv-grid\">
-    <tr><td><span class=\"label\">Cultura:</span> {escape(data.crop)}</td><td><span class=\"label\">Código Bacen:</span> {escape(data.bacen_code)}</td></tr>
+    <tr><td><span class=\"label\">Cultura:</span> {escape(coverage.crop)}</td><td><span class=\"label\">Código Bacen:</span> {escape(data.bacen_code)}</td></tr>
     <tr><td><span class=\"label\">Área Total da Cultura:</span> {escape(data.total_area)}ha</td><td><span class=\"label\">Itens Segurados:</span> {escape(data.insured_items)}</td></tr>
-    <tr><td><span class=\"label\">LMGA:</span> {escape(data.lmga)}</td><td><span class=\"label\">Prêmio Total:</span> {escape(data.total_premium)}</td></tr>
+    <tr><td><span class=\"label\">LMGA:</span> {escape(coverage.policy_limit_brl)}</td><td><span class=\"label\">Prêmio Total:</span> {escape(coverage.net_premium)}</td></tr>
   </table>
 
   <div class=\"line\"></div>
@@ -706,10 +713,10 @@ def _build_page_two(
   </table>
 
   <div class=\"premium-summary\">
-    <div class=\"premium-summary-line mono-strong\">Prêmio Líquido - {escape(data.policy_net_premium)}</div>
-    <div class=\"premium-summary-line mono-strong\">Custo de Apólice - {escape(data.policy_cost)}</div>
-    <div class=\"premium-summary-line mono-strong\">IOF - {escape(data.iof)}</div>
-    <div class="premium-summary-line mono-strong">Prêmio a Pagar - {escape(data.policy_net_premium)}</div>
+    <div class=\"premium-summary-line mono-strong\">Prêmio Líquido - {escape(payment.net_premium)}</div>
+    <div class=\"premium-summary-line mono-strong\">Custo de Apólice - {escape(payment.policy_cost)}</div>
+    <div class=\"premium-summary-line mono-strong\">IOF - {escape(payment.iof)}</div>
+    <div class="premium-summary-line mono-strong">Prêmio a Pagar - {escape(payment.net_premium)}</div>
   </div>
 
   <div class=\"section-title\">Forma de Pagamento</div>
@@ -1135,6 +1142,32 @@ def _beneficiary_share(beneficiary: object) -> str:
   if share.endswith("%"):
     share = share[:-1].strip()
   return share or "0"
+
+
+def _format_address_line(street: str | None, number: str | None) -> str:
+  street_text = str(street or "").strip()
+  number_text = str(number or "").strip()
+
+  if street_text and number_text:
+    return f"{street_text}, {number_text}"
+  if street_text:
+    return street_text
+  if number_text:
+    return number_text
+  return "Não informado"
+
+
+def _format_city_state_from_parts(city: str | None, state: str | None) -> str:
+  city_text = str(city or "").strip()
+  state_text = str(state or "").strip()
+
+  if city_text and state_text:
+    return _format_city_state(f"{city_text}/{state_text}")
+  if city_text:
+    return city_text
+  if state_text:
+    return _format_city_state(state_text)
+  return "Não informado"
 
 
 def _format_date_with_full_month_name(date_text: str) -> str:

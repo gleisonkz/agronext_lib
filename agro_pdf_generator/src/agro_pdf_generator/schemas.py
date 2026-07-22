@@ -327,55 +327,20 @@ class PolicyDocumentData:
     main_coverage: str
     validity_period: str
 
-    insured_name: str
-    insured_social_name: str
-    insured_document: str
-    insured_birth_date: str
-    insured_additional_document: str
-    insured_document_issuing_authority: str
-    insured_document_issue_date: str
-    insured_email: str
-    insured_address: str
-    insured_neighborhood: str
-    insured_zip_code: str
-    insured_city_state: str
-    insured_phone: str
+    insured: ApplicantData
+    property: PropertyData
+    primary_beneficiary: BeneficiaryData
 
-    property_address: str
-    property_neighborhood: str
-    property_zip_code: str
-    property_city_state: str
-    property_bacen_code: str
-    property_name: str
-    property_coordinates: str
+    broker: BrokerData
+    coverage: CoverageData
 
-    beneficiary_name: str
-    beneficiary_document: str
-    beneficiary_share: str
-
-    broker_name: str
-    broker_document: str
-    broker_susep_code: str
-    broker_address: str
-    broker_neighborhood: str
-    broker_zip_code: str
-    broker_city_state: str
-    broker_phone: str
-
-    crop: str
     total_area: str
-    lmga: str
     bacen_code: str
     insured_items: str
-    total_premium: str
+    payment: PaymentData
 
     beneficiaries: list[BeneficiaryData] = field(default_factory=list)
     coverage_lines: list[list[str]] = field(default_factory=list)
-    policy_net_premium: str = "R$ 0,00"
-    policy_cost: str = "R$ 0,00"
-    iof: str = "R$ 0,00"
-    premium_to_pay: str = "R$ 0,00"
-    installments: list[list[str]] = field(default_factory=list)
     risk_items: list[list[str]] = field(default_factory=list)
     has_beneficiary: bool = False
 

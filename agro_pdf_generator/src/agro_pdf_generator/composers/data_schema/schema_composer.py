@@ -3,32 +3,41 @@ from datetime import datetime
 import agronext_procurement as procurement
 import agronext_procurement_repositories as repositories
 
+from ...schemas import BeneficiaryData
+from ...schemas import PaymentData
 from ...schemas import PDFData
+from ...schemas import PolicyDocumentData
+from ...utils import format_decimal, format_harvest_label
 from .acceptance import build_acceptance, build_simulation_general_info_html
 from .address import build_address
-from .applicant import build_applicant, build_simulation_applicant
+from .applicant import build_applicant, build_policy_insured, build_simulation_applicant
 from .authorization import (
     build_proposal_authorization_term,
     build_proposal_beneficiary_authorization,
 )
 from .authorized import build_proposal_authorized_persons
 from .available_documents import build_available_documents
-from .beneficiaries import build_proposal_beneficiaries
-from .broker import build_broker
+from .beneficiaries import build_policy_beneficiaries, build_proposal_beneficiaries
+from .broker import build_broker, build_policy_broker_from_user
 from .coordinates import build_coordinates
-from .coverage import build_coverage, build_simulation_coverage
+from .coverage import (
+    build_coverage,
+    build_policy_coverage_details,
+    build_policy_coverage_lines,
+    build_simulation_coverage,
+)
 from .coverage_restrictions import build_coverage_restrictions
 from .declarations import build_declarations
 from .excluded_risks import build_excluded_risks
 from .grace_period import build_grace_period
-from .header import build_header, build_simulation_header
-from .land_property import build_property, build_simulation_property
+from .header import build_header, build_policy_issue_date, build_simulation_header
+from .land_property import build_policy_property, build_property, build_simulation_property
 from .lgpd import build_lgpd_consent
 from .notifications import build_proponent_notifications
-from .payment import build_payment
+from .payment import build_payment, build_policy_installment_lines
 from .political_exposure import build_proposal_political_exposure
 from .prop_declaration import build_proposal_proponent_declaration
-from .risk_data import build_risk_data
+from .risk_data import build_policy_risk_items, build_risk_data
 from .risk_questionnaire import build_risk_questionnaire
 from .subsidy import (
     build_proposal_federal_subsidy_term,
@@ -235,6 +244,81 @@ def build_proposal_data_from_domain(
         state_subsidy_term=state_subsidy_term_data,
     )
     return data
+
+
+def build_policy_data_from_domain(
+    view: procurement.ProposalView,
+    quotation_metadata: repositories.QuotationMetadata,
+    proposal_metadata: repositories.ProposalMetadata,
+    broker_user: repositories.tables.BrokerUser,
+    municipality_code: str | None = None,
+    broker_user_details: dict | None = None,
+    billing_info: list | None = None,
+) -> PolicyDocumentData:
+    coverage = view.coverages[0].coverage if view.coverages else None
+    financials = coverage.financials if coverage else None
+    insured_data = build_policy_insured(view)
+    property_data = build_policy_property(view, municipality_code=municipality_code)
+    beneficiaries_data = build_policy_beneficiaries(view.beneficiaries)
+    primary_beneficiary = beneficiaries_data[0] if beneficiaries_data else None
+    broker_data = build_policy_broker_from_user(
+        broker_user,
+        broker_user_details=broker_user_details,
+    )
+    coverage_data = build_policy_coverage_details(coverage)
+    coverage_lines = build_policy_coverage_lines(coverage)
+    installments = build_policy_installment_lines(
+        quotation_metadata,
+        financials,
+        billing_info=billing_info,
+    )
+    payment_data = PaymentData(
+        net_premium=coverage_data.net_premium,
+        policy_cost="R$ 0,00",
+        iof="R$ 0,00",
+        total_premium=coverage_data.applicant_value,
+        installments=installments,
+    )
+    risk_items = build_policy_risk_items(view, financials)
+    issue_date = build_policy_issue_date(proposal_metadata)
+
+    proposal_number = proposal_metadata.proposal_id or proposal_metadata.public_id or view.id
+    policy_number = proposal_metadata.policy_id or "Não informado"
+    insured_items_count = len(risk_items) or view.items_count or 0
+
+    return PolicyDocumentData(
+        proposal_number=str(proposal_number),
+        issue_date=issue_date,
+        harvest=format_harvest_label(quotation_metadata.harvest),
+        product=coverage_data.name,
+        policy_number=str(policy_number),
+        endorsement_number="0",
+        branch="01 - Rio de Janeiro",
+        susep_process="15414.004511/2012-58",
+        main_coverage=coverage_data.main_coverage,
+        validity_period=coverage_data.validity_period,
+        insured=insured_data,
+        property=property_data,
+        primary_beneficiary=(
+            primary_beneficiary
+            if primary_beneficiary
+            else BeneficiaryData(
+                name="Não informado",
+                cpf="Não informado",
+                percentage="0,00%",
+            )
+        ),
+        broker=broker_data,
+        coverage=coverage_data,
+        total_area=format_decimal(value=view.total_insured_area_ha or 0.0),
+        bacen_code="11283005",
+        insured_items=str(insured_items_count),
+        payment=payment_data,
+        beneficiaries=beneficiaries_data,
+        coverage_lines=coverage_lines,
+        risk_items=risk_items,
+        has_beneficiary=bool(view.beneficiaries),
+    )
 
 def build_simulation_pdf_data(
     *,
