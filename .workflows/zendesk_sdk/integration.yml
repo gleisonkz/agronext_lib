@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - zendesk_sdk/**
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - "zendesk_sdk/**"
+
+pool:
+  name: "AgroNext-Linux-Python"
+
+variables:
+  - name: "package_path"
+    value: "zendesk_sdk"
+
+resources:
+  repositories:
+    - repository: workflows
+      type: git
+      name: agronext_workflows
+
+jobs:
+  - template: integration.yml@workflows
+    parameters:
+      package_path: "$(package_path)"

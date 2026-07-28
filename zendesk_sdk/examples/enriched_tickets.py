@@ -1,0 +1,139 @@
+"""Enriched tickets example for Zendesk SDK.
+
+This example demonstrates:
+- Loading tickets with all related data (comments, users, organization, field definitions)
+- Batch loading multiple enriched tickets with get_many_enriched()
+- Using EnrichedTicket for efficient data access
+- Accessing the ticket's organization (sideloaded, no extra request)
+- Accessing custom field values with human-readable names
+- Minimizing API requests with batch loading
+"""
+
+import asyncio
+
+from zendesk_sdk import ZendeskClient, ZendeskConfig
+
+
+async def main() -> None:
+    config = ZendeskConfig(
+        subdomain="your-subdomain",
+        email="your-email@example.com",
+        token="your-api-token",
+    )
+
+    async with ZendeskClient(config) as client:
+        # ==================== Single enriched ticket ====================
+
+        # Get a single ticket with all related data
+        # This makes 2 parallel API calls: ticket (with sideloaded users + organization) + fields
+        # Then fetches comments
+        enriched = await client.tickets.get_enriched(12345)
+
+        print(f"Ticket: {enriched.ticket.subject}")
+        print(f"Status: {enriched.ticket.status}")
+
+        # Access requester directly
+        requester = enriched.requester
+        if requester:
+            print(f"Requester: {requester.name} ({requester.email})")
+
+        # Access assignee directly
+        assignee = enriched.assignee
+        if assignee:
+            print(f"Assignee: {assignee.name}")
+        else:
+            print("Ticket is unassigned")
+
+        # ==================== Organization ====================
+
+        # The ticket's organization is sideloaded with the ticket (no extra request).
+        # It is None when the ticket has no organization assigned.
+        organization = enriched.organization
+        if organization:
+            print(f"Organization: {organization.name}")
+        else:
+            print("Ticket has no organization")
+
+        # ==================== Custom field values ====================
+
+        # Get all custom field values as dict with human-readable names
+        field_values = enriched.get_field_values()
+        print(f"\nCustom fields ({len(field_values)}):")
+        for name, value in field_values.items():
+            print(f"  {name}: {value}")
+
+        # Or get specific field value by ID
+        subscription = enriched.get_field_value(360001234)  # Replace with your field ID
+        if subscription:
+            print(f"\nSubscription level: {subscription}")
+
+        # Get field definition for more details
+        field = enriched.get_field(360001234)
+        if field:
+            print(f"Field type: {field.type}, Required: {field.required}")
+
+        # ==================== Last comment shortcut ====================
+
+        # Get just the last comment with its author (single API call)
+        result = await client.tickets.comments.get_last(12345)
+        if result:
+            comment, author = result
+            author_name = author.name if author else "Unknown"
+            body_preview = comment.body[:80] if comment.body else "(no body)"
+            print(f"\nLast comment by {author_name}: {body_preview}")
+
+        # ==================== Comments with authors ====================
+
+        # Process comments with author information
+        print(f"\nComments ({len(enriched.comments)}):")
+        for comment in enriched.comments:
+            author = enriched.get_comment_author(comment)
+            body_preview = (comment.body[:50] + "...") if comment.body else "(no body)"
+            if author:
+                print(f"  - {author.name}: {body_preview}")
+            else:
+                print(f"  - Unknown: {body_preview}")
+
+        # ==================== Batch enriched tickets ====================
+
+        # Load multiple tickets with all related data at once
+        # Much more efficient than calling get_enriched() in a loop:
+        # - 1 API call for all tickets (show_many)
+        # - 1 API call for all users (show_many), concurrent with...
+        # - 1 API call for all organizations (show_many)
+        # - 1 API call for field definitions
+        # - N parallel API calls for comments (one per ticket)
+        ticket_ids = [12345, 12346, 12347]
+        enriched_list = await client.tickets.get_many_enriched(ticket_ids)
+
+        print(f"\n--- Batch loaded {len(enriched_list)} enriched tickets ---")
+        for item in enriched_list:
+            print(f"  #{item.ticket.id}: {item.ticket.subject}")
+            print(f"    Requester: {item.requester.name if item.requester else 'N/A'}")
+            print(f"    Organization: {item.organization.name if item.organization else 'N/A'}")
+            print(f"    Comments: {len(item.comments)}")
+
+        # ==================== Search with enrichment ====================
+
+        # Search for tickets and load all related data
+        # This efficiently batch-loads users using show_many endpoint
+        print("\n--- Searching tickets with enriched data ---")
+        async for item in client.tickets.search_enriched("status:open priority:high", limit=10):
+            print(f"\nTicket #{item.ticket.id}: {item.ticket.subject}")
+            print(f"  Requester: {item.requester.name if item.requester else 'N/A'}")
+            print(f"  Assignee: {item.assignee.name if item.assignee else 'Unassigned'}")
+            print(f"  Comments: {len(item.comments)}")
+
+        # ==================== Collect enriched tickets ====================
+
+        # You can also collect enriched tickets to a list
+        print("\n--- Collecting enriched tickets ---")
+        enriched_tickets = [item async for item in client.tickets.search_enriched("status:pending", limit=5)]
+        print(f"Collected {len(enriched_tickets)} enriched tickets")
+
+        for item in enriched_tickets:
+            print(f"  #{item.ticket.id}: {item.ticket.subject}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
