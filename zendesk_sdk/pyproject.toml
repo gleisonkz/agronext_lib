@@ -1,12 +1,10 @@
 [project]
 name = "python-zendesk-sdk"
-version = "0.1.0"
+version = "0.0.1"
 description = "Modern Python SDK for Zendesk API"
-authors = [
-    {name = "bormog"}
-]
+authors = [{ name = "bormog" }]
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 requires-python = ">=3.8.1"
 keywords = ["zendesk", "api", "sdk", "client"]
 classifiers = [
@@ -49,6 +47,15 @@ Homepage = "https://github.com/bormog/python-zendesk-sdk"
 Repository = "https://github.com/bormog/python-zendesk-sdk"
 Issues = "https://github.com/bormog/python-zendesk-sdk/issues"
 
+[tool.uv]
+[[tool.uv.index]]
+name = "artifactory"
+default = true
+allow-insecure = true
+url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple"
+publish-url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/"
+
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -59,13 +66,7 @@ packages = ["src/zendesk_sdk"]
 # Allowlist: only these paths go into the sdist. Anything not listed (local-only
 # working dirs, dev configs) is never packaged, regardless of build environment.
 [tool.hatch.build.targets.sdist]
-include = [
-    "/src",
-    "/tests",
-    "/examples",
-    "/README.md",
-    "/LICENSE",
-]
+include = ["/src", "/tests", "/examples", "/README.md", "/LICENSE"]
 
 [tool.black]
 line-length = 120
@@ -124,11 +125,7 @@ warn_return_any = false
 minversion = "7.0"
 addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
-filterwarnings = [
-    "error",
-    "ignore::UserWarning",
-    "ignore::DeprecationWarning",
-]
+filterwarnings = ["error", "ignore::UserWarning", "ignore::DeprecationWarning"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
@@ -137,10 +134,7 @@ asyncio_mode = "auto"
 
 [tool.coverage.run]
 source = ["src/zendesk_sdk"]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-]
+omit = ["*/tests/*", "*/test_*"]
 
 [tool.coverage.report]
 exclude_lines = [
