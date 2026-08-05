@@ -622,7 +622,7 @@ def _build_page_one(
   <div class=\"line\"></div>
   <div class=\"section-title\">Dados da Propriedade</div>
   <table class=\"kv-grid\">
-    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(_format_address_line(property_data.street, property_data.number))}</td></tr>
+    <tr><td colspan="2"><span class="label">Endereço:</span> {escape(_format_address_line(property_data.street, property_data.number, property_data.complement))}</td></tr>
     <tr><td><span class="label">Bairro:</span> {escape(property_data.neighborhood)}</td><td><span class="label">Cidade/UF:</span> {escape(_format_city_state_from_parts(property_data.city, property_data.state))}</td></tr>
     <tr><td><span class="label">CEP:</span> {escape(property_data.zip_code)}</td><td><span class="label">Código BACEN:</span> {escape(property_data.bacen_code)}</td></tr>
     <tr><td colspan="2"><span class="label">Nome da Propriedade:</span> {escape(property_data.name)}</td></tr>
@@ -1144,12 +1144,21 @@ def _beneficiary_share(beneficiary: object) -> str:
   return share or "0"
 
 
-def _format_address_line(street: str | None, number: str | None) -> str:
+def _format_address_line(
+    street: str | None,
+    number: str | None,
+    complement: str | None = None,
+) -> str:
   street_text = str(street or "").strip()
   number_text = str(number or "").strip()
+  complement_text = str(complement or "").strip()
 
+  if street_text and number_text and complement_text:
+    return f"{street_text}, {number_text} - {complement_text}"
   if street_text and number_text:
     return f"{street_text}, {number_text}"
+  if street_text and complement_text:
+    return f"{street_text} - {complement_text}"
   if street_text:
     return street_text
   if number_text:
