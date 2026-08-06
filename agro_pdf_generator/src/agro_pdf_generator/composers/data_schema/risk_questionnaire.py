@@ -8,7 +8,7 @@ def build_risk_questionnaire(
 ) -> RiskQuestionnaireData:
     # Risk questionnaire
     another_insurance_question = RiskQuestionItem(
-        question="Existe Outro Seguro Contratado Para a Mesma Área?",
+        question="Há outro seguro sobre a mesma área?",
         answer="Não",
     )
     if metadata.another_insurance:
@@ -21,7 +21,7 @@ def build_risk_questionnaire(
         another_insurance_question.answer = "Não"
 
     pre_existing_damages_question = RiskQuestionItem(
-        question="Existem Danos de Pelo Menos Um dos Eventos Cobertos na Safra Atual?",
+        question="Há danos de pelo menos um dos eventos cobertos na safra atual?",
     )
     if metadata.pre_existing_damage:
         pre_existing_damages_question.answer = "Sim"
@@ -29,7 +29,7 @@ def build_risk_questionnaire(
         pre_existing_damages_question.answer = "Não"
 
     all_land_declared_question = RiskQuestionItem(
-        question="As Áreas Declaradas Nas Unidades Seguradas da Proposta Representam Toda a Área Cultivada Desta Cultura na Propriedade?",
+        question="As áreas declaradas nas Unidades Seguradas da proposta representam toda a área cultivada desta cultura na propriedade?",
     )
     if metadata.all_land_declared:
         all_land_declared_question.answer = "Sim"
@@ -60,7 +60,7 @@ def build_risk_questionnaire(
         all_land_declared_question.extra_fields = extra_fields
 
     other_culture_lands_question = RiskQuestionItem(
-        question="O Proponente Possui Outra Lavoura/Pomar Desta Cultura no Mesmo Município?",
+        question="O proponente possui outra lavoura/pomar desta cultura no mesmo município?",
     )
     if metadata.another_plot_same_crop:
         other_culture_lands_question.answer = "Sim"
@@ -71,7 +71,7 @@ def build_risk_questionnaire(
         other_culture_lands_question.answer = "Não"
 
     conservation_unit_question = RiskQuestionItem(
-        question="Alguma parcela/talhão da área segurada está total ou parcialmente localizada em Unidade de Conservação (Federal/Estadual/Municipal), Áreas de Preservação Ambiental (exceto se houver aprovação oficial constante em plano de manejo), Área de Preservação Permanente, Reserva Legal, Área embargada por órgão ambiental (IBAMA, ICMBio ou órgão estadual/municipal), Terra Indígena, Território Quilombola ou qualquer área restrita, protegida ou embargada? (Estas informações são relevantes para a aceitação e precificação do seguro, conforme o art. 44 da Lei nº 15.040/2024. Omissões ou inexatidões podem implicar recusa da proposta, revisão de condições ou outras medidas previstas em lei e no contrato.)",
+        question="Algum local da propriedade segurada está total ou parcialmente localizada em Unidade de Conservação (Federal/Estadual/Municipal), Áreas de Preservação Ambiental (exceto se houver aprovação oficial constante em plano de manejo), Área de Preservação Permanente, Reserva Legal, Área embargada por órgão ambiental (IBAMA, ICMBio ou órgão estadual/municipal), Terra Indígena, Território Quilombola ou qualquer área restrita, protegida ou embargada? \"Estas informações são relevantes para a aceitação e precificação (art. 44 da Lei 15.040/24). Omissões ou inexatidões podem implicar recusa da proposta, revisão de condições ou outras medidas previstas em lei e no contrato.\"",
         answer="Sim" if metadata.esg_compliant else "Não",
     )
 
