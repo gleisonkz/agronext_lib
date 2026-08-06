@@ -4,6 +4,7 @@ from weasyprint import HTML
 
 from agro_pdf_generator.blocks import BlockConfig, render_blocks_to_pages
 from agro_pdf_generator.layout import build_full_page, get_base_css
+from agro_pdf_generator.pdf_logging import disable_noisy_pdf_backend_loggers
 
 
 class PdfGenerator:
@@ -50,4 +51,5 @@ class PdfGenerator:
 </html>"""
 
     def _convert_to_pdf(self, html: str) -> bytes:
+        disable_noisy_pdf_backend_loggers()
         return HTML(string=html, base_url=self._base_url).write_pdf()

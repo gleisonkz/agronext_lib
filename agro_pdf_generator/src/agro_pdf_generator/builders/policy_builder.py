@@ -6,6 +6,7 @@ from pathlib import Path
 
 from weasyprint import HTML
 
+from ..pdf_logging import disable_noisy_pdf_backend_loggers
 from ..schemas import PolicyDocumentData
 
 
@@ -149,7 +150,6 @@ def build_policy_pdf(
     )
 
     font_face_css = ""
-    font_synthesis_css = "font-synthesis: weight;"
     if font_uri:
         font_face_css = (
             "@font-face {"
@@ -174,7 +174,6 @@ def build_policy_pdf(
                 "font-style: normal;"
                 "}"
             )
-            font_synthesis_css = "font-synthesis: none;"
 
     html = f"""<!DOCTYPE html>
 <html lang=\"pt-BR\">
@@ -191,7 +190,6 @@ def build_policy_pdf(
     body {{
       margin: 0;
       font-family: 'PTMonoCustom', 'Courier New', 'Liberation Mono', monospace;
-      {font_synthesis_css}
       color: #111;
       font-size: 16px;
       line-height: 1.1;
@@ -311,7 +309,8 @@ def build_policy_pdf(
       padding: 1px 4px 1px 0;
       vertical-align: top;
       width: 50%;
-      word-break: break-word;
+      word-break: normal;
+      overflow-wrap: anywhere;
     }}
 
     .meta-grid .meta-line-compact {{
@@ -526,6 +525,7 @@ def build_policy_pdf(
         font_path,
     )
     base_url = str(Path(base_asset_path).resolve().parent) if base_asset_path else str(Path.cwd())
+    disable_noisy_pdf_backend_loggers()
     return HTML(string=html, base_url=base_url).write_pdf()
 
 
