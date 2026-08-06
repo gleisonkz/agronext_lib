@@ -117,6 +117,7 @@ class PropertyData:
     neighborhood: str = ""
     street: str = ""
     number: str = ""
+    complement: str = ""
 
 
 @dataclass

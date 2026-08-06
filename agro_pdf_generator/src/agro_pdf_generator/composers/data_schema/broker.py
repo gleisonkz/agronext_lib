@@ -239,6 +239,7 @@ def build_broker(
         address_line = format_address_line(
             primary_address.get("street"),
             primary_address.get("number"),
+            primary_address.get("complement"),
         )
         if address_line == "Não informado":
             address_line = text_or_default(primary_address.get("address_description"))
