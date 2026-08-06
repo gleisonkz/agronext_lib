@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from weasyprint import HTML
 
@@ -50,4 +51,11 @@ class PdfGenerator:
 </html>"""
 
     def _convert_to_pdf(self, html: str) -> bytes:
-        return HTML(string=html, base_url=self._base_url).write_pdf()
+        subset_logger = logging.getLogger("fontTools.subset")
+        previous_level = subset_logger.level
+
+        try:
+            subset_logger.setLevel(logging.WARNING)
+            return HTML(string=html, base_url=self._base_url).write_pdf()
+        finally:
+            subset_logger.setLevel(previous_level)

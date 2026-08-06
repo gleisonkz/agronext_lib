@@ -775,7 +775,7 @@ class ProposalBlockBuilder:
         estimated_height = max(120, int(60 + estimated_lines * 20))
         wrapped_value = (
             '<span style="display: block; white-space: pre-wrap; '
-            'overflow-wrap: anywhere; word-break: break-word;">'
+            'overflow-wrap: anywhere;">'
             f"{escape(observations)}"
             "</span>"
         )

@@ -85,7 +85,7 @@ def build_info_table(
                 if text_color:
                     label_style = f"font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM}; font-weight: {Fonts.WEIGHT_SEMIBOLD}; line-height: {LineHeight.NORMAL}; color: {text_color};"
                     # Special styled cell: bold, centered
-                    value_style = f"font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM}; font-weight: {Fonts.WEIGHT_SEMIBOLD}; line-height: {LineHeight.NORMAL}; color: {text_color}; word-break: break-word; text-align: center;"
+                    value_style = f"font-family: {Fonts.FAMILY}; font-size: {Fonts.SIZE_MEDIUM}; font-weight: {Fonts.WEIGHT_SEMIBOLD}; line-height: {LineHeight.NORMAL}; color: {text_color}; overflow-wrap: anywhere; text-align: center;"
                     # Use centered flex layout for special cells
                     cell_layout = f"flex: 0 0 {width}; max-width: {width}; {Styles.INFO_CELL} {cell_border} {bg_style} justify-content: center; align-items: center;"
                     cells_html.append(f'''
@@ -95,7 +95,7 @@ def build_info_table(
                 ''')
                 else:
                     label_style = Styles.LABEL
-                    value_style = f"{Styles.VALUE} word-break: break-word;"
+                    value_style = f"{Styles.VALUE} overflow-wrap: anywhere;"
                     cells_html.append(f'''
                     <div style="flex: 0 0 {width}; max-width: {width}; {Styles.INFO_CELL} {cell_border} {bg_style}">
                         <span style="{label_style}">{label}</span>
