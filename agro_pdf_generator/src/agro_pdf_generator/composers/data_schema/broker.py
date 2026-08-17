@@ -236,6 +236,15 @@ def build_broker(
     data.document = format_document_number(
         _first_informed(identity.get("cnpj"), data.document) or None,
     )
+    data.susep = (
+        _first_informed(
+            broker_user_details.get("susep_code") if isinstance
+            (broker_user_details, dict) else None,
+            data.susep,
+        )
+        or "Não informado"
+    )
+
 
     lookup_phone = _resolve_primary_phone({"phones": contact.get("phones")})
     if lookup_phone != "Não informado":
