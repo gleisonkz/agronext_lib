@@ -15,6 +15,10 @@ from ...utils import (
 _TRAILING_PARENTHESIS_PATTERN = re.compile(r"\s*\([^()]*\)\s*$")
 
 
+def _phone_digits(value: str) -> str:
+    return "".join(char for char in value if char.isdigit())
+
+
 def _strip_trailing_phone_tags(value: str) -> str:
     cleaned = value.strip()
     # Remove trailing tags like "(Celular/ WhatsApp)" while preserving area-code prefix.
@@ -102,29 +106,32 @@ def _format_phone_with_tag(
 def _build_phone_list(broker_details: dict, fallback_phone: str) -> list[str]:
     raw_phones = broker_details.get("phones")
     if isinstance(raw_phones, list) and raw_phones:
+        primary_digits = _phone_digits(fallback_phone)
         tagged_phones = []
+        seen: set[str] = set()
         for item in raw_phones:
             parts = _extract_phone_parts(item)
-            tagged_phones.append(
-                _format_phone_with_tag(
-                    parts["contact"],
-                    type_hint=parts["type_hint"],
-                    is_whatsapp=parts["is_whatsapp"],
-                )
+            formatted_phone = _format_phone_with_tag(
+                parts["contact"],
+                type_hint=parts["type_hint"],
+                is_whatsapp=parts["is_whatsapp"],
             )
-        return tagged_phones
+            if formatted_phone == "Não informado":
+                continue
 
-    return [
-        _format_phone_with_tag(
-            fallback_phone,
-            type_hint=str(
-                broker_details.get("phone_type")
-                or broker_details.get("communication_type_description")
-                or ""
-            ),
-            is_whatsapp=broker_details.get("is_whatsapp"),
-        )
-    ]
+            # Additional phones must not repeat the primary broker phone.
+            if primary_digits and _phone_digits(formatted_phone) == primary_digits:
+                continue
+
+            if formatted_phone in seen:
+                continue
+
+            seen.add(formatted_phone)
+            tagged_phones.append(formatted_phone)
+
+        return tagged_phones or ["Não informado"]
+
+    return ["Não informado"]
 
 
 def _resolve_primary_phone(broker_details: dict) -> str:
