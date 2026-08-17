@@ -110,6 +110,7 @@ def build_policy_beneficiaries(
 
         street = mailing_address.street if mailing_address else None
         number = mailing_address.number if mailing_address else None
+        complement = mailing_address.complement if mailing_address else None
         neighborhood_value = mailing_address.neighborhood if mailing_address else None
         city = mailing_address.city if mailing_address else None
         state = mailing_address.state if mailing_address else None
@@ -118,6 +119,7 @@ def build_policy_beneficiaries(
         address = format_address_line(
             street,
             number,
+            complement,
         )
         neighborhood = text_or_default(neighborhood_value)
         city_state = format_city_state(

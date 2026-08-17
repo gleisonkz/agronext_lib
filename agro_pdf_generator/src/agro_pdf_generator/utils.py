@@ -153,14 +153,20 @@ def format_zip_code(
 def format_address_line(
     street: object | None,
     number: object | None,
+    complement: object | None = None,
     *,
     default: str = "Não informado",
 ) -> str:
     street_text = str(street).strip() if street else ""
     number_text = str(number).strip() if number else ""
+    complement_text = str(complement).strip() if complement else ""
 
+    if street_text and number_text and complement_text:
+        return f"{street_text}, {number_text} - {complement_text}"
     if street_text and number_text:
         return f"{street_text}, {number_text}"
+    if street_text and complement_text:
+        return f"{street_text} - {complement_text}"
     if street_text:
         return street_text
     return default

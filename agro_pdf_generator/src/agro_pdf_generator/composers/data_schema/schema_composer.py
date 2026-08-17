@@ -272,6 +272,7 @@ def build_policy_data_from_domain(
     insured_data.address = format_address_line(
         none_if_not_informed(address_data.street),
         none_if_not_informed(address_data.number),
+        none_if_not_informed(address_data.complement),
     )
     insured_data.neighborhood = text_or_default(address_data.neighborhood)
     insured_data.zip_code = text_or_default(address_data.zip_code)

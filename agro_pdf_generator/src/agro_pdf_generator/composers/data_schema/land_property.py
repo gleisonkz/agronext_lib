@@ -27,6 +27,7 @@ def build_property(
         neighborhood="",
         street="",
         number="",
+        complement="",
     )
 
     prop = view.properties[0] if view.properties else None
@@ -40,6 +41,7 @@ def build_property(
     if address is not None:
         property_data.street = address.street or ""
         property_data.number = address.number or ""
+        property_data.complement = address.complement or ""
         property_data.neighborhood = address.neighborhood or ""
         property_data.city = address.city or ""
         property_data.state = address.state or ""
