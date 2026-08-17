@@ -97,7 +97,7 @@ def build_applicant(
         name="Não informado",
         cpf="Não informado",
         birth_date="Não informado",
-        social_name="Não informado",
+        social_name="-",
         document_type="Não informado",
         document_number="Não informado",
         issuing_authority="Não informado",
@@ -122,7 +122,7 @@ def build_applicant(
         )
         applicant_data.cpf = identity.cpf.number
         applicant_data.birth_date = identity.birth_date.strftime("%d/%m/%Y")
-        applicant_data.social_name = identity.social_name or "Não informado"
+        applicant_data.social_name = identity.social_name or "-"
         applicant_data.document_type = _document_type_from_primary_document(applicant_data.cpf)
         applicant_data.document_number = applicant_data.cpf
         applicant_data.professional_category = (

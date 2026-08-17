@@ -27,13 +27,13 @@ def build_proposal_beneficiaries(
             name = identity.full_name
             cpf = identity.cpf.number
             birth_date = format_date_br(identity.birth_date)
-            social_name = identity.social_name or "Não informado"
+            social_name = identity.social_name or "-"
         else:
             identity = b.identity
             name = identity.trade_name
             cpf = identity.cnpj.number
             birth_date = "Não informado"
-            social_name = "Não informado"
+            social_name = "-"
 
         email = b.contact_information.email
         phone = (
@@ -98,10 +98,10 @@ def build_policy_beneficiaries(
     for beneficiary in beneficiaries:
         if isinstance(beneficiary, procurement.NPBeneficiaryView):
             name = beneficiary.identity.full_name or "Não informado"
-            social_name = beneficiary.identity.social_name or "Não informado"
+            social_name = beneficiary.identity.social_name or "-"
         else:
             name = beneficiary.identity.trade_name or "Não informado"
-            social_name = "Não informado"
+            social_name = "-"
 
         contact_information = beneficiary.contact_information
         mailing_address = (
