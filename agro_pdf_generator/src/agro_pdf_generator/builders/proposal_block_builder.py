@@ -350,7 +350,11 @@ class ProposalBlockBuilder:
             row_gap_after=[0],
             rows=[
                 [
-                    {"label": "Cobertura", "value": c.name, "width": "13%"},
+                    {
+                        "label": "Cobertura",
+                        "value": "Cobertura 101 - Granizo (Maçã e Pera)",
+                        "width": "13%",
+                    },
                     {
                         "label": "LMGA (R$)",
                         "value": c.policy_limit_brl,
