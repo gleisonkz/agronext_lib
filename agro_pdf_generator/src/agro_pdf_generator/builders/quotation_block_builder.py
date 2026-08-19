@@ -267,28 +267,23 @@ class QuotationBlockBuilder:
                     {
                         "label": "Cobertura",
                         "value": "Cobertura 101 - Granizo (Maçã e Pera)",
-                        "width": "13%",
+                        "width": "26%",
                     },
                     {
                         "label": "LMGA (R$)",
                         "value": c.policy_limit_brl,
-                        "width": "11%",
+                        "width": "12%",
                     },
                     {
                         "label": "Franquia (%)",
                         "value": c.deductible_pct,
-                        "width": "11%",
+                        "width": "12%",
                     },
-                    {"label": "Taxa (%)", "value": c.coverage_rate_pct, "width": "8%"},
+                    {"label": "Taxa (%)", "value": c.coverage_rate_pct, "width": "9%"},
                     {
                         "label": "Prêmio Tarifário (R$)",
                         "value": c.tariff_premium,
                         "width": "17%",
-                    },
-                    {
-                        "label": "Área Segurada (ha)",
-                        "value": self._format_decimal_separator(c.insured_area_ha),
-                        "width": "16%",
                     },
                     {
                         "label": "Quadra/Talhão Segurados (Qtd)",
@@ -298,24 +293,29 @@ class QuotationBlockBuilder:
                 ],
                 [
                     {
-                        "label": "Prêmio Líquido Aproximado (R$)",
+                        "label": "Área Segurada (ha)",
+                        "value": self._format_decimal_separator(c.insured_area_ha),
+                        "width": "16%",
+                    },
+                    {
+                        "label": "Prêmio Líquido (R$)",
                         "value": c.net_premium,
-                        "width": "25%",
+                        "width": "21%",
                     },
                     {
                         "label": "Subvenção Federal (R$)",
                         "value": c.federal_subsidy_brl,
-                        "width": "23%",
+                        "width": "21%",
                     },
                     {
                         "label": "Subvenção Estadual (R$)",
                         "value": c.state_subsidy_brl,
-                        "width": "25%",
+                        "width": "21%",
                     },
                     {
-                        "label": "Valor Proponente Aproximado (R$)",
+                        "label": "Valor Proponente (R$)",
                         "value": c.applicant_value,
-                        "width": "27%",
+                        "width": "21%",
                     },
                 ],
             ],
