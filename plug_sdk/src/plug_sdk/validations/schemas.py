@@ -18,6 +18,7 @@ class PostalCodeLookupResponse(BaseModel):
     state: str = Field(alias="uf")
     locality_number: int = Field(alias="numeroLocalidade")
     city: str = Field(alias="localidade")
+    city_alt: str = Field(alias="localidadeSuperior")
     street: Optional[str] = Field(alias="logradouro", default=None)
     street_name: Optional[str] = Field(alias="nomeLogradouro", default=None)
     neighborhood: Optional[str] = Field(alias="bairro", default=None)
