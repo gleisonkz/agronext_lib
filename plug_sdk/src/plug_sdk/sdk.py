@@ -3,8 +3,15 @@ from typing import Optional
 
 from .async_client import URL, BaseAsyncClient, RequestOptions
 from .documents.schemas import (
+    DOCUMENT_TYPE_CODE,
+    DOMAIN_CODE,
+    TREATMENT_CODE,
+    FormDocumentItem,
     FormDocumentRequest,
     FormDocumentResponse,
+    ListFormDocumentsResponse,
+    ObservationCode,
+    ObservationName,
 )
 from .external_users import (
     CreateExternalUserRequest,
@@ -18,9 +25,9 @@ from .external_users import (
 from .financial import (
     BoletoRequest,
     BoletoResponse,
+    CadinPlugResponse,
     CadinRequest,
     CadinResponse,
-    CadinPlugResponse,
     InstallmentRequest,
     InstallmentResponse,
     SubsidyLimitRequest,
@@ -81,6 +88,7 @@ from .scap import (
     DocumentResponse,
     DocumentSearchParams,
     DomainTypes,
+    ERPPartySearchParams,
     ListDomainResponse,
     ListPartyRolesResponse,
     ListRolesResponse,
@@ -92,9 +100,10 @@ from .scap import (
     Party,
     PartyResponse,
     PartySearchParams,
-    Roles as RoleIDs,
     SearchIncludeOptions,
-    ERPPartySearchParams,
+)
+from .scap import (
+    Roles as RoleIDs,
 )
 from .validations import (
     AddressLookupRequest,
@@ -231,14 +240,14 @@ class PlugSDK:
 
     async def submit_form_document(
         self,
-        endorsement_id: int, # erp_id
+        endorsement_id: int,
         file_name: str,
-        observation_code: int, # 4 - Quotation, 3 - Proposal, 1 - Policy
-        reference_number: str, # currently sending the proposal id
+        observation_code: ObservationCode,
+        reference_number: str,
         base64_content: str,
-        document_type_code: int = 5, # 5 = Endosso and is the only option available
-        domain_code: int = 2, # 2 = Endosso and is the only option available
-        treatment_code: int = 1, # 1 = normal and is the only option available
+        document_type_code: int = DOCUMENT_TYPE_CODE,
+        domain_code: int = DOMAIN_CODE,
+        treatment_code: int = TREATMENT_CODE,
     ) -> FormDocumentResponse:
         request = FormDocumentRequest(
             document_type_code=document_type_code,
@@ -265,6 +274,24 @@ class PlugSDK:
             # This endpoint is under testing, a preview was provided to us.
             endpoint=f"/v1/formularios/{document_id}/endossos/{endorsement_id}",
             response_model=PolicyDocumentResponse,
+        )
+
+    async def list_form_documents(
+        self,
+        endorsement_id: int,
+        observation_names: Optional[list[ObservationName]] = None,
+    ) -> ListFormDocumentsResponse:
+        # http://uatintegrador.essor.net/servicos/consultar/documents/ecm?idEndosso=X
+        response = await self.client.get(
+            # This endpoint is under testing, a preview was provided to us.
+            endpoint="http://uatintegrador.essor.net/servicos/consultar/documentos/ecm",
+            params={"idEndosso": endorsement_id},
+            response_model=ListFormDocumentsResponse,
+        )
+        return (
+            [doc for doc in response.root if doc.observation_name in observation_names]
+            if observation_names
+            else response
         )
 
     ## Financial Methods
