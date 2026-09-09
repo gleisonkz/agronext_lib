@@ -281,11 +281,9 @@ class PlugSDK:
         endorsement_id: int,
         observation_names: Optional[list[ObservationName]] = None,
     ) -> ListFormDocumentsResponse:
-        # http://uatintegrador.essor.net/servicos/consultar/documents/ecm?idEndosso=X
         response = await self.client.get(
             # This endpoint is under testing, a preview was provided to us.
-            endpoint="http://uatintegrador.essor.net/servicos/consultar/documentos/ecm",
-            params={"idEndosso": endorsement_id},
+            endpoint=f"http://uatplug.essor.net/v1/documentos/ecm/endossos/{endorsement_id}",
             response_model=ListFormDocumentsResponse,
         )
         return (
