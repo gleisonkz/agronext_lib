@@ -18,6 +18,7 @@ from .schemas import (
     DocumentRequest,
     DocumentResponse,
     DocumentSearchParams,
+    ERPPartySearchParams,
     ListDomainResponse,
     ListPartyRolesResponse,
     ListRolesResponse,
@@ -31,5 +32,4 @@ from .schemas import (
     PartySearchParams,
     Roles,
     SearchIncludeOptions,
-    ERPPartySearchParams,
 )

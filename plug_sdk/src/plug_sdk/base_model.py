@@ -1,5 +1,11 @@
 from pydantic import BaseModel as PydanticBaseModel  # noqa: F401
-from pydantic import ConfigDict, EmailStr, Field, RootModel, computed_field  # noqa: F401
+from pydantic import (  # noqa: F401
+    ConfigDict,
+    EmailStr,
+    Field,
+    RootModel,
+    computed_field,
+)
 
 
 class BaseModel(PydanticBaseModel):

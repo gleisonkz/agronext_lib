@@ -21,15 +21,9 @@ class ObservationName(StrEnum):
 
 
 class FormDocumentRequest(BaseModel):
-    document_type_code: int = Field(
-        alias="codigoTipoDocumento", default=5
-    )  # 5 = Endosso and is the only option available
-    domain_code: int = Field(
-        alias="codigoDominio", default=2
-    )  # 2 = Endosso and is the only option available
-    treatment_code: int = Field(
-        alias="codigoTratamento", default=1
-    )  # 1 = normal and is the only option available
+    document_type_code: int = Field(alias="codigoTipoDocumento", default=5)  # 5 = Endosso and is the only option available
+    domain_code: int = Field(alias="codigoDominio", default=2)  # 2 = Endosso and is the only option available
+    treatment_code: int = Field(alias="codigoTratamento", default=1)  # 1 = normal and is the only option available
     endorsement_id: int = Field(alias="idEndosso")  # erp_id
     file_name: str = Field(alias="nomeArquivo")
     observation_code: ObservationCode = Field(alias="codigoObservacao")

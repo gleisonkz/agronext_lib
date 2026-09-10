@@ -54,7 +54,6 @@ from .transmission_schemas import (
     Variety,
 )
 
-
 __all__ = [
     "GetProposalRequest",
     "GetProposalResponse",

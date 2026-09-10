@@ -1,7 +1,7 @@
+from enum import StrEnum
 from typing import Optional, Self
 
 from plug_sdk.base_model import BaseModel, Field
-from enum import StrEnum
 
 
 class InstallmentItem(BaseModel):
@@ -85,21 +85,13 @@ class PartyCadinStatus(StrEnum):
 
 
 class CadinInsured(BaseModel):
-    party_document: str = Field(
-        alias="nrCpfCnpjSegurado", description="CPF or CNPJ of the insured"
-    )
-    party_status: PartyCadinStatus = Field(
-        alias="stPessoa", description="Status of the consulted CPF or CNPJ"
-    )
+    party_document: str = Field(alias="nrCpfCnpjSegurado", description="CPF or CNPJ of the insured")
+    party_status: PartyCadinStatus = Field(alias="stPessoa", description="Status of the consulted CPF or CNPJ")
 
 
 class CadinPlugResponse(BaseModel):
-    transaction: CadinTransaction = Field(
-        alias="transacao", description="Object with transaction information"
-    )
-    insured: CadinInsured = Field(
-        alias="segurado", description="Object with consulted insured information"
-    )
+    transaction: CadinTransaction = Field(alias="transacao", description="Object with transaction information")
+    insured: CadinInsured = Field(alias="segurado", description="Object with consulted insured information")
 
 
 class CadinResponse(BaseModel):

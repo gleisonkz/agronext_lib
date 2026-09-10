@@ -44,9 +44,7 @@ class AddressLookupLink(BaseModel):
 
 
 class AddressLookupResponse(BaseModel):
-    addresses: list[PostalCodeLookupResponse] = Field(
-        alias="itens", default_factory=list
-    )
+    addresses: list[PostalCodeLookupResponse] = Field(alias="itens", default_factory=list)
     links: list[AddressLookupLink] = Field(alias="links", default_factory=list)
     pagination: AddressLookupPage = Field(alias="page", default=None)
 

@@ -9,8 +9,8 @@ from httpx import (
     HTTPStatusError,
     RequestError,
     Response,
-    codes,
     TimeoutException,
+    codes,
 )
 
 logger = logging.getLogger("async_client")
@@ -139,9 +139,7 @@ class BaseAsyncClient(AsyncClient):
             # )
             response = self._handle_response(response, response_model)
         except HTTPStatusError as e:
-            logger.error(
-                f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
-            )
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
             raise
         except RequestError as e:
             logger.error(f"An error occurred while requesting {e.request.url!r}.")

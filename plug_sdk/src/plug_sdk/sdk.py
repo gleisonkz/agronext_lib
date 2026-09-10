@@ -100,11 +100,9 @@ from .scap import (
     Party,
     PartyResponse,
     PartySearchParams,
-    SearchIncludeOptions,
 )
-from .scap import (
-    Roles as RoleIDs,
-)
+from .scap import Roles as RoleIDs
+from .scap import SearchIncludeOptions
 from .validations import (
     AddressLookupRequest,
     AddressLookupResponse,
@@ -126,23 +124,15 @@ class PlugSDK:
         default_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {credentials.get('api_key', '')}"
-            if credentials
-            else "",
-            "External-User-Id": credentials.get("external_user_id", "")
-            if credentials
-            else "",
+            "Authorization": f"Bearer {credentials.get('api_key', '')}" if credentials else "",
+            "External-User-Id": credentials.get("external_user_id", "") if credentials else "",
         }
         headers = default_headers.update(headers) if headers else default_headers
 
-        self.client = BaseAsyncClient(
-            base_url=URL(base_url), headers=headers, timeout=timeout
-        )
+        self.client = BaseAsyncClient(base_url=URL(base_url), headers=headers, timeout=timeout)
 
     ## External Users Methods
-    async def create_external_user(
-        self, email: str, phone: str, name: str
-    ) -> CreateExternalUserResponse:
+    async def create_external_user(self, email: str, phone: str, name: str) -> CreateExternalUserResponse:
         request = CreateExternalUserRequest(email=email, phone_number=phone, name=name)
         return await self.client.post(
             endpoint="/authentication-system/v1/users",
@@ -156,9 +146,7 @@ class PlugSDK:
             response_model=ExternalUserResponse,
         )
 
-    async def update_external_user(
-        self, user_id: str, user_data: UpdateExternalUserRequest
-    ) -> UpdateExternalUserResponse:
+    async def update_external_user(self, user_id: str, user_data: UpdateExternalUserRequest) -> UpdateExternalUserResponse:
         return await self.client.patch(
             endpoint=f"/authentication-system/v1/users/{user_id}",
             payload=user_data.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -286,11 +274,7 @@ class PlugSDK:
             endpoint=f"http://uatplug.essor.net/v1/documentos/ecm/endossos/{endorsement_id}",
             response_model=ListFormDocumentsResponse,
         )
-        return (
-            [doc for doc in response.root if doc.observation_name in observation_names]
-            if observation_names
-            else response
-        )
+        return [doc for doc in response.root if doc.observation_name in observation_names] if observation_names else response
 
     ## Financial Methods
 
@@ -318,9 +302,7 @@ class PlugSDK:
             response_model=BoletoResponse,
         )
 
-    async def get_federal_subsidy_limit(
-        self, cpf_cnpj: str, year: int
-    ) -> SubsidyLimitResponse:
+    async def get_federal_subsidy_limit(self, cpf_cnpj: str, year: int) -> SubsidyLimitResponse:
         payload = SubsidyLimitRequest(cpf_cnpj=cpf_cnpj, year=year)
         return await self.client.get(
             endpoint="/v1/pessoas/agricultura/subvencao-federal",
@@ -364,9 +346,7 @@ class PlugSDK:
         )
 
     # Parties
-    async def verify_technical_restriction(
-        self, cpf_cnpj: str
-    ) -> TechnicalRestrictionResponse:
+    async def verify_technical_restriction(self, cpf_cnpj: str) -> TechnicalRestrictionResponse:
         request = TechnicalRestrictionRequest(cpf_cnpj=cpf_cnpj)
         return await self.client.get(
             endpoint=f"/v1/pessoas/{request.cpf_cnpj}/restricao-tecnica",
@@ -432,9 +412,7 @@ class PlugSDK:
             proposal_number=proposal_number,
             policy_number=policy_number,
             proposal_id=int(proposal_id) if proposal_id else None,
-            attachments=[Attachments(**attachment) for attachment in attachments]
-            if attachments
-            else None,
+            attachments=[Attachments(**attachment) for attachment in attachments] if attachments else None,
         )
         return await self.client.post(
             endpoint="/v1/notificacoes",
@@ -495,9 +473,7 @@ class PlugSDK:
             response_model=PartyResponse,
         )
 
-    async def assign_role(
-        self, person_id: str, payload: AssignRoleRequest
-    ) -> AssignRoleResponse:
+    async def assign_role(self, person_id: str, payload: AssignRoleRequest) -> AssignRoleResponse:
         """Assign a role to a person"""
 
         return await self.client.post(
@@ -540,9 +516,7 @@ class PlugSDK:
         )
 
     #
-    async def register_bank_account(
-        self, payload: BankingDetailsRequest
-    ) -> BankingDetailsResponse:
+    async def register_bank_account(self, payload: BankingDetailsRequest) -> BankingDetailsResponse:
         """Create a new bank account"""
 
         return await self.client.post(
@@ -558,9 +532,7 @@ class PlugSDK:
             response_model=BankingDetailsResponse,
         )
 
-    async def update_bank_account(
-        self, id: str, payload: BankingDetails
-    ) -> BankingDetailsResponse:
+    async def update_bank_account(self, id: str, payload: BankingDetails) -> BankingDetailsResponse:
         """Update an existing bank account"""
 
         return await self.client.put(
@@ -570,9 +542,7 @@ class PlugSDK:
         )
 
     #
-    async def register_contact_information(
-        self, payload: ContactInformationRequest
-    ) -> ContactInformationResponse:
+    async def register_contact_information(self, payload: ContactInformationRequest) -> ContactInformationResponse:
         """Create a new communication"""
 
         return await self.client.post(
@@ -588,9 +558,7 @@ class PlugSDK:
             response_model=ContactInformationResponse,
         )
 
-    async def update_contact_information(
-        self, id: str, payload: ContactInformation
-    ) -> ContactInformationResponse:
+    async def update_contact_information(self, id: str, payload: ContactInformation) -> ContactInformationResponse:
         """Update an existing communication"""
 
         return await self.client.put(
@@ -616,9 +584,7 @@ class PlugSDK:
             response_model=DocumentResponse,
         )
 
-    async def update_document(
-        self, document_id: str, payload: Document
-    ) -> DocumentResponse:
+    async def update_document(self, document_id: str, payload: Document) -> DocumentResponse:
         """Update an existing document"""
 
         return await self.client.put(
@@ -652,9 +618,7 @@ class PlugSDK:
             gender_type_id=gender_type_id,
             page=page,
             per_page=per_page,
-            include=[i for i in include if i is not SearchIncludeOptions.PARTY]
-            if include
-            else None,
+            include=[i for i in include if i is not SearchIncludeOptions.PARTY] if include else None,
         )
 
         return await self.client.get(
