@@ -104,7 +104,7 @@ wheels = [
 
 [[package]]
 name = "plug-sdk"
-version = "0.0.32"
+version = "0.0.33"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
