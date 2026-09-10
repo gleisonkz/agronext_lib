@@ -271,7 +271,7 @@ class PlugSDK:
     ) -> ListFormDocumentsResponse:
         response = await self.client.get(
             # This endpoint is under testing, a preview was provided to us.
-            endpoint=f"http://uatplug.essor.net/v1/documentos/ecm/endossos/{endorsement_id}",
+            endpoint=f"/v1/documentos/ecm/endossos/{endorsement_id}",
             response_model=ListFormDocumentsResponse,
         )
         return [doc for doc in response.root if doc.observation_name in observation_names] if observation_names else response
