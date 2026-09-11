@@ -393,7 +393,7 @@ class Location(BaseModel):
 
 
 class IdentificationDocument(BaseModel):
-    number: int = Field(alias="numero")
+    number: str = Field(alias="numero")
     issuing_agency: str = Field(alias="orgaoExpedidor")
     issue_date: str = Field(alias="dataExpedicao")
     state: str = Field(alias="uf")
