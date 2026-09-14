@@ -1,8 +1,7 @@
 from typing import Optional
 
-from pydantic import field_validator
-
 from plug_sdk.base_model import BaseModel, Field
+from pydantic import field_validator
 
 
 class PostalCodeLookupRequest(BaseModel):
