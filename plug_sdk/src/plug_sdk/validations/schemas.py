@@ -1,5 +1,7 @@
 from typing import Optional
 
+from pydantic import field_validator
+
 from plug_sdk.base_model import BaseModel, Field
 
 
@@ -18,7 +20,7 @@ class PostalCodeLookupResponse(BaseModel):
     state: str = Field(alias="uf")
     locality_number: int = Field(alias="numeroLocalidade")
     city: str = Field(alias="localidade")
-    city_alt: Optional[str] = Field(alias="localidadeSuperior")
+    city_alt: Optional[str] = Field(alias="localidadeSuperior", default=None)
     street: Optional[str] = Field(alias="logradouro", default=None)
     street_name: Optional[str] = Field(alias="nomeLogradouro", default=None)
     neighborhood: Optional[str] = Field(alias="bairro", default=None)
@@ -46,7 +48,18 @@ class AddressLookupLink(BaseModel):
 class AddressLookupResponse(BaseModel):
     addresses: list[PostalCodeLookupResponse] = Field(alias="itens", default_factory=list)
     links: list[AddressLookupLink] = Field(alias="links", default_factory=list)
-    pagination: AddressLookupPage = Field(alias="page", default=None)
+    pagination: AddressLookupPage | None = Field(alias="page", default=None)
+
+    @field_validator("pagination", mode="before")
+    @classmethod
+    def normalize_unavailable_pagination(cls, value):
+        unavailable_page = {
+            "size": None,
+            "totalElements": None,
+            "totalPages": None,
+            "number": None,
+        }
+        return None if value == unavailable_page else value
 
 
 class TechnicalRestrictionRequest(BaseModel):
