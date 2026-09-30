@@ -1,0 +1,80 @@
+[project]
+name = "agronext-gis-sdk"
+version = "0.0.1"
+description = "Async Python client for the agronext_gis API: screening, rates, policies and the catalogue."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
+
+# An SDK (§7.4.1): httpx and pydantic, nothing else at runtime. It never
+# depends on the API or on agronext_gis_repository (§7.5) — the wire is the
+# contract, and the models here are the SDK's own (tests/test_contract.py keeps
+# them honest against the API's OpenAPI document).
+dependencies = ["httpx>=0.28.1", "pydantic>=2.12.0"]
+
+[dependency-groups]
+# Nothing under src/ may import any of these (§10.4).
+dev = ["mypy>=1.18.2", "pytest>=8.4.2", "pytest-asyncio>=1.2.0", "ruff>=0.14.0"]
+
+
+[tool.uv]
+[[tool.uv.index]]
+name = "artifactory"
+default = true
+allow-insecure = true
+url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/simple"
+publish-url = "https://artifactory.azure.scor.com/artifactory/api/pypi/pypi/"
+
+
+[build-system]
+requires = ["uv_build>=0.9.10,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = "src"
+module-name = "agronext_gis_sdk"
+
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors (includes E722, bare except)
+    "W",
+    "F",
+    "I",   # import sorting
+    "N",   # naming
+    "UP",  # pyupgrade
+    "B",   # bugbear (includes B904, raise-from)
+    "C4",
+    "SIM",
+    "RET",
+    "TRY",
+    "PL",  # includes PLR2004, magic value comparison
+    "T20", # no print
+    "RUF",
+]
+ignore = [
+    # Optional[X] vs X | None is not policed by house rules (§19.10).
+    "UP045",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]
+"scripts/**" = ["T20"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

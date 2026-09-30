@@ -1,0 +1,10 @@
+# This package reads no environment (§7.3): configuration arrives through the
+# client's constructor. `uv.lock` IS committed.
+
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
