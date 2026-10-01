@@ -113,8 +113,7 @@ class ProposalBlockBuilder:
     def _build_header_block(self) -> BlockConfig:
         h = self._data.header
         version_label = h.version or "Não informado"
-        version_date = h.version_date or "Não informado"
-        version_value = f"{version_label} - Data: {version_date}"
+        version_value = f"{version_label}"
         return BlockConfig(
             type=BlockType.INFO_TABLE,
             estimated_height=150,
@@ -135,12 +134,12 @@ class ProposalBlockBuilder:
                     {
                         "label": "Versão da Cotação",
                         "value": version_value,
-                        "width": "20%",
+                        "width": "15%",
                     },
                     {
                         "label": "Vigência do Contrato de Seguro",
                         "value": h.validity_period,
-                        "width": "39%",
+                        "width": "32%",
                     },
                     {"label": "Página", "value": "{{page}}", "width": "10%"},
                 ],
