@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING, Optional
 
 import httpx
 
+from ..exceptions import ZendeskValidationException
+from ..models.comment import CommentAttachment
+
 if TYPE_CHECKING:
     from ..config import ZendeskConfig
     from ..http_client import HTTPClient
@@ -15,6 +18,7 @@ class AttachmentsClient:
     Example:
         async with ZendeskClient(config) as client:
             # Download an attachment
+            attachment = await client.attachments.get(12345)
             content = await client.attachments.download(attachment.content_url)
             with open("file.pdf", "wb") as f:
                 f.write(content)
@@ -40,6 +44,13 @@ class AttachmentsClient:
         """
         self._http = http_client
         self._config = config
+
+    async def get(self, attachment_id: int) -> CommentAttachment:
+        """Get attachment metadata, including the download URL, by ID."""
+        response = await self._http.get(f"attachments/{attachment_id}.json")
+        if response is None:
+            raise ZendeskValidationException("Zendesk returned no attachment metadata")
+        return CommentAttachment.model_validate(response["attachment"])
 
     async def download(self, content_url: str) -> bytes:
         """Download attachment content from Zendesk.
