@@ -27,11 +27,14 @@ from agronext_gis_sdk._rates_models import (
     ProductCreateRequest,
     ProductItem,
     ProductResponse,
+    ProductsOnSaleResponse,
     ProductUpdateRequest,
     RateCellSummaryItem,
     RateHeatmapRequest,
     RateHeatmapResponse,
     RateItem,
+    RateResolutionPolygonsRequest,
+    RateResolutionPolygonsResponse,
     RateResolutionPreflightRequest,
     RateResolutionPreflightResponse,
     RateResolutionRequest,
@@ -52,9 +55,11 @@ from agronext_gis_sdk._rates_models import (
     SeasonItem,
     SeasonProductsRequest,
     SeasonResponse,
+    SeasonTerritoryResponse,
     SeasonUpdateRequest,
     SeasonWithCopiesResponse,
     SoldTerritoryItem,
+    SoldTerritoryRefreshResponse,
 )
 from agronext_gis_sdk._wire import GeometryInput, LayerLevel, Page, to_geojson
 
@@ -189,6 +194,31 @@ class Seasons:
             "PUT",
             f"{_RATES}/seasons/{season_id}/products",
             body=request,
+        )
+
+    async def list_sold_territory(self, season_id: int) -> SeasonTerritoryResponse:
+        """Where ANYTHING is on sale in this safra: the UFs some produto reaches
+        and, under each, the municípios with something to sell.
+
+        Read from a listing the API holds; `refreshed_at` says how old it is.
+        """
+        return await self._http.model(
+            SeasonTerritoryResponse, "GET", f"{_RATES}/seasons/{season_id}/territory"
+        )
+
+    async def list_products_on_sale(
+        self, season_id: int, municipality_id: int
+    ) -> ProductsOnSaleResponse:
+        """What is on sale in one município this safra: each produto with its
+        `crop`, its `peril` and the franquias on offer there.
+
+        `municipality_id` is the IBGE 7-digit code, as `list_sold_territory`
+        returns it. An unknown code raises `NotFoundError`.
+        """
+        return await self._http.model(
+            ProductsOnSaleResponse,
+            "GET",
+            f"{_RATES}/seasons/{season_id}/municipalities/{municipality_id}/products",
         )
 
 
@@ -527,17 +557,51 @@ class Rates:
         *,
         product_id: int,
         deductible_id: int,
-        cell_m: int,
+        cell_m: int | None = None,
         season_id: int | None = None,
     ) -> RateResolutionResponse:
-        """The rate over a polygon: per tile, and area-weighted. Pins a run.
-        `season_id` None resolves in the latest safra."""
+        """The rate over ONE polygon: per tile, and area-weighted. Pins a run.
+
+        `season_id` None resolves in the latest safra. `cell_m` None resolves on
+        the finest grid the tile budget affords; the answer's `cell_m` is the
+        grid used.
+        """
         return await self._http.model(
             RateResolutionResponse,
             "POST",
             f"{_RATES}/resolve",
             body=RateResolutionRequest(
                 geometry=to_geojson(geometry),
+                season_id=season_id,
+                product_id=product_id,
+                deductible_id=deductible_id,
+                cell_m=cell_m,
+            ),
+        )
+
+    async def resolve_polygons(
+        self,
+        geometries: Sequence[GeometryInput],
+        *,
+        product_id: int,
+        deductible_id: int,
+        cell_m: int | None = None,
+        season_id: int | None = None,
+    ) -> RateResolutionPolygonsResponse:
+        """The rate of one sale: every polygon's, and the sale's over all of
+        them, in ONE request. Pins a run per polygon.
+
+        ALL OR NOTHING: a polygon that cannot be resolved raises
+        `PolygonsRefusedError`, whose `refusals` name every polygon that failed
+        and why. `cell_m` None resolves each polygon on the finest grid its own
+        extent affords.
+        """
+        return await self._http.model(
+            RateResolutionPolygonsResponse,
+            "POST",
+            f"{_RATES}/resolve/polygons",
+            body=RateResolutionPolygonsRequest(
+                geometries=[to_geojson(geometry) for geometry in geometries],
                 season_id=season_id,
                 product_id=product_id,
                 deductible_id=deductible_id,
@@ -579,6 +643,16 @@ class Rates:
     async def get_run(self, run_id: int) -> RateResolutionRunResponse:
         """One pinned resolution, with the polygon that produced it."""
         return await self._http.model(RateResolutionRunResponse, "GET", f"{_RATES}/runs/{run_id}")
+
+    async def refresh_sold_territory(self) -> SoldTerritoryRefreshResponse:
+        """Refresh the API's held listing of what is on sale, and wait for it.
+
+        The API refreshes it by itself after the writes that change it; this is
+        for a caller that wants it refreshed now.
+        """
+        return await self._http.model(
+            SoldTerritoryRefreshResponse, "POST", f"{_RATES}/territory/refresh"
+        )
 
 
 def _pair(season_id: int, product_id: int) -> str:

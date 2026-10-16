@@ -46,6 +46,17 @@ class PolicyOverlapRequest(WireModel):
     planting_window_ids: Sequence[int] | None = None
 
 
+class PolicyOverlapPolygonsRequest(WireModel):
+    """C-18 asked about every polygon of one sale at once. The filters read as
+    `PolicyOverlapRequest`'s, and hold for every polygon."""
+
+    geometries: Sequence[GeoJson]
+    product_id: int | None = None
+    season_ids: Sequence[int] | None = None
+    running_only: bool = True
+    planting_window_ids: Sequence[int] | None = None
+
+
 class PolicyOverlapItem(WireModel):
     policy_id: str
     area_id: int
@@ -70,6 +81,29 @@ class PolicyOverlapResponse(WireModel):
     unchecked_undated_seasons: Sequence[PolicySeasonItem] = ()
     total_matches: int
     matches: Sequence[PolicyOverlapItem]
+
+
+class PolicyOverlapPolygonItem(WireModel):
+    """One polygon of the request, and the policies it collides with. Every
+    match's `overlap_pct` is a share of THIS polygon."""
+
+    #: Its position among the polygons given.
+    polygon_index: int
+    total_matches: int
+    matches: Sequence[PolicyOverlapItem]
+
+
+class PolicyOverlapPolygonsResponse(WireModel):
+    """Every polygon's collisions, with the safras and windows asked — stated
+    once, because they are the same for all of them."""
+
+    checked_seasons: Sequence[PolicySeasonItem]
+    checked_planting_windows: Sequence[PolicyPlantingWindowItem] = ()
+    unchecked_undated_seasons: Sequence[PolicySeasonItem] = ()
+    #: Over every polygon: zero means the sale collides with nothing asked.
+    total_matches: int
+    #: In the order the polygons were given.
+    polygons: Sequence[PolicyOverlapPolygonItem]
 
 
 class PolicyAreaItem(WireModel):
@@ -133,6 +167,15 @@ class Policies:
         """Does this polygon collide with a policy already running? Reads only."""
         return await self._http.model(
             PolicyOverlapResponse, "POST", f"{_POLICIES}/overlap", body=request
+        )
+
+    async def check_polygons_overlap(
+        self, request: PolicyOverlapPolygonsRequest
+    ) -> PolicyOverlapPolygonsResponse:
+        """Does any polygon of one sale collide with a policy already running?
+        Each polygon is answered as `check_overlap` answers one; reads only."""
+        return await self._http.model(
+            PolicyOverlapPolygonsResponse, "POST", f"{_POLICIES}/overlap/polygons", body=request
         )
 
     async def list_policy_areas(  # noqa: PLR0913 — the listing's filters, all keyword-only
@@ -201,6 +244,9 @@ __all__ = [
     "PolicyLoadRequest",
     "PolicyLoadResponse",
     "PolicyOverlapItem",
+    "PolicyOverlapPolygonItem",
+    "PolicyOverlapPolygonsRequest",
+    "PolicyOverlapPolygonsResponse",
     "PolicyOverlapRequest",
     "PolicyOverlapResponse",
     "PolicyPlantingWindowItem",

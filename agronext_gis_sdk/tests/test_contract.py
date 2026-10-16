@@ -112,6 +112,7 @@ CALLS: Final[Mapping[str, Call]] = {
         as_of=datetime.datetime(2026, 1, 1, tzinfo=datetime.UTC)
     ),
     "overlaps": lambda gis: gis.screening.overlaps(POINT, limit=5),
+    "overlaps_polygons": lambda gis: gis.screening.overlaps_polygons([POINT, POINT], limit=5),
     "list_screening_runs": lambda gis: gis.screening.list_runs(
         kind=sdk.RunKind.SCREENING, user_id=2, page=1, size=5
     ),
@@ -188,6 +189,8 @@ CALLS: Final[Mapping[str, Call]] = {
     "set_season_products": lambda gis: gis.seasons.set_season_products(
         1, sdk.SeasonProductsRequest(product_ids=[8])
     ),
+    "list_sold_territory": lambda gis: gis.seasons.list_sold_territory(1),
+    "list_products_on_sale": lambda gis: gis.seasons.list_products_on_sale(1, 4205506),
     # pairs
     "configuration": lambda gis: gis.pairs.configuration(1, 8),
     "list_planting_windows": lambda gis: gis.pairs.list_planting_windows(
@@ -265,6 +268,9 @@ CALLS: Final[Mapping[str, Call]] = {
     ),
     "rates_preflight": lambda gis: gis.rates.preflight(POINT, cell_m=100),
     "resolve": lambda gis: gis.rates.resolve(POINT, product_id=8, deductible_id=2, cell_m=100),
+    "resolve_polygons": lambda gis: gis.rates.resolve_polygons(
+        [POINT, POINT], product_id=8, deductible_id=2, cell_m=100, season_id=1
+    ),
     "heatmap": lambda gis: gis.rates.heatmap(
         sdk.RateHeatmapRequest(
             product_id=8, deductible_id=2, cell_m=250, bbox=(-50.0, -30.0, -45.0, -25.0)
@@ -274,9 +280,13 @@ CALLS: Final[Mapping[str, Call]] = {
         user_id=2, season_id=1, product_id=8, deductible_id=2, page=1, size=5
     ),
     "get_rate_run": lambda gis: gis.rates.get_run(4),
+    "refresh_sold_territory": lambda gis: gis.rates.refresh_sold_territory(),
     # policies
     "check_overlap": lambda gis: gis.policies.check_overlap(
         sdk.PolicyOverlapRequest(geometry=POINT, product_id=8)
+    ),
+    "check_polygons_overlap": lambda gis: gis.policies.check_polygons_overlap(
+        sdk.PolicyOverlapPolygonsRequest(geometries=[POINT], product_id=8)
     ),
     "list_policy_areas": lambda gis: gis.policies.list_policy_areas(
         season_id=1,
@@ -305,6 +315,30 @@ CALLS: Final[Mapping[str, Call]] = {
         sdk.KmlExportRequest(polygons=[sdk.NamedPolygonRequest(geometry=POINT)])
     ),
     "summarise_polygon": lambda gis: gis.tools.summarise_polygon(POINT),
+    # underwriting: the calls of a sale, each on the route that already owns it
+    "underwriting.list_open_seasons": lambda gis: gis.underwriting.list_open_seasons(),
+    "underwriting.list_sold_territory": lambda gis: gis.underwriting.list_sold_territory(1),
+    "underwriting.list_products_on_sale": lambda gis: gis.underwriting.list_products_on_sale(
+        1, 4205506
+    ),
+    "underwriting.list_car_properties": lambda gis: gis.underwriting.list_car_properties(POINT),
+    "underwriting.validate_group": lambda gis: gis.underwriting.validate_group(
+        [POINT, POINT], municipality_id=4205506, min_shared_municipality_pct=50.0
+    ),
+    "underwriting.resolve_rates": lambda gis: gis.underwriting.resolve_rates(
+        [POINT, POINT], season_id=1, product_id=8, deductible_id=2
+    ),
+    "underwriting.screen_car_properties": lambda gis: gis.underwriting.screen_car_properties(
+        ["SC-1", "SC-2"]
+    ),
+    "underwriting.screen_polygons": lambda gis: gis.underwriting.screen_polygons([POINT, POINT]),
+    "underwriting.check_policy_overlap": lambda gis: gis.underwriting.check_policy_overlap(
+        [POINT, POINT],
+        product_id=8,
+        season_ids=[1],
+        running_only=False,
+        planting_window_ids=[3],
+    ),
 }
 
 

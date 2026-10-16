@@ -1,4 +1,5 @@
-"""The entry point: one client, one namespace per area of the API."""
+"""The entry point: one client, one namespace per area of the API, and one for
+the calls a sale makes (`underwriting`)."""
 
 import enum
 import os
@@ -22,6 +23,7 @@ from agronext_gis_sdk._policies import Policies
 from agronext_gis_sdk._rates import Pairs, Products, Rates, Seasons
 from agronext_gis_sdk._screening import Screening
 from agronext_gis_sdk._tools import Tools
+from agronext_gis_sdk._underwriting import Underwriting
 from agronext_gis_sdk._wire import Page, WireModel
 
 #: Where the readiness probe lives: beside the API, not under its prefix.
@@ -45,7 +47,9 @@ class AgronextGisClient:
 
     ```python
     async with AgronextGisClient(base_url="https://gis.example", api_key=key) as gis:
-        answer = await gis.rates.resolve(polygon, product_id=8, deductible_id=2, cell_m=100)
+        rate = await gis.underwriting.resolve_rates(
+            polygons, season_id=3, product_id=8, deductible_id=13
+        )
     ```
 
     `base_url` is the API's root (the `/api/v1` prefix is the client's to add).
@@ -108,6 +112,14 @@ class AgronextGisClient:
         self.groups = Groups(self._http)
         #: KML in and out, polygon measurement.
         self.tools = Tools(self._http)
+        #: A sale, step by step, built on the namespaces above.
+        self.underwriting = Underwriting(
+            seasons=self.seasons,
+            screening=self.screening,
+            groups=self.groups,
+            rates=self.rates,
+            policies=self.policies,
+        )
 
     async def ready(self) -> ReadinessResponse:
         """Whether the API can serve. A down dependency answers 503, which raises

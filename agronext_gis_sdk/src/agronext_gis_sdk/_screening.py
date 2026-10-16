@@ -210,6 +210,34 @@ class OverlapsResponse(WireModel):
     sources: Sequence[SnapshotReference]
 
 
+class OverlapsPolygonsRequest(WireModel):
+    """Several polygons to inspect at once; `limit` caps the CAR imóveis listed
+    per polygon."""
+
+    geometries: Sequence[GeoJson]
+    limit: int | None = None
+
+
+class OverlapsPolygonItem(WireModel):
+    """One polygon of the request: what the inspection of that polygon alone
+    answers. Every share is of THIS polygon."""
+
+    #: Its position among the polygons given.
+    polygon_index: int
+    car: CarOverlaps
+    esg: Sequence[EsgOverlapItem]
+    esg_covered_pct: float
+
+
+class OverlapsPolygonsResponse(WireModel):
+    """CAR imóveis and restriction features over each of several polygons."""
+
+    #: In the order the polygons were given.
+    polygons: Sequence[OverlapsPolygonItem]
+    #: The registry copies read — the same ones for every polygon.
+    sources: Sequence[SnapshotReference]
+
+
 class ScreeningRunItem(WireModel):
     id: int
     kind: RunKind
@@ -297,6 +325,20 @@ class Screening:
             body=OverlapsRequest(geometry=to_geojson(geometry), limit=limit),
         )
 
+    async def overlaps_polygons(
+        self, geometries: Sequence[GeometryInput], *, limit: int | None = None
+    ) -> OverlapsPolygonsResponse:
+        """Registry features over EVERY polygon of one sale, in one request.
+        Each polygon is answered as `overlaps` answers one; reads only."""
+        return await self._http.model(
+            OverlapsPolygonsResponse,
+            "POST",
+            f"{_SCREENING}/overlaps/polygons",
+            body=OverlapsPolygonsRequest(
+                geometries=[to_geojson(geometry) for geometry in geometries], limit=limit
+            ),
+        )
+
     async def list_runs(
         self,
         *,
@@ -324,6 +366,9 @@ __all__ = [
     "EsgOverlapItem",
     "FindingMeasuredAgainst",
     "NormReferenceRef",
+    "OverlapsPolygonItem",
+    "OverlapsPolygonsRequest",
+    "OverlapsPolygonsResponse",
     "OverlapsRequest",
     "OverlapsResponse",
     "Screening",

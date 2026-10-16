@@ -1,10 +1,10 @@
 [project]
 name = "agronext-gis-sdk"
-version = "0.0.1"
+version = "0.0.2"
 description = "Async Python client for the agronext_gis API: screening, rates, policies and the catalogue."
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
+authors = [{ name = "Cristovam Silva", email = "cristovam.silva@icloud.com" }]
 
 # An SDK (§7.4.1): httpx and pydantic, nothing else at runtime. It never
 # depends on the API or on agronext_gis_repository (§7.5) — the wire is the
@@ -13,11 +13,20 @@ authors = [{ name = "Cristovam Silva", email = "cristovam.lage@essor.com.br" }]
 dependencies = ["httpx>=0.28.1", "pydantic>=2.12.0"]
 
 [dependency-groups]
-# Nothing under src/ may import any of these (§10.4).
-dev = ["mypy>=1.18.2", "pytest>=8.4.2", "pytest-asyncio>=1.2.0", "ruff>=0.14.0"]
-
+# Nothing under src/ may import any of these (§10.4). `example.py` lives beside
+# src/ and is not part of the package, so what it needs — pydantic-settings for
+# its own GIS_* block, typer for its options — is here and in no wheel (§6.3).
+dev = [
+    "mypy>=1.18.2",
+    "pydantic-settings>=2.7.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.14.0",
+    "typer>=0.19.0",
+]
 
 [tool.uv]
+
 [[tool.uv.index]]
 name = "artifactory"
 default = true
@@ -38,7 +47,8 @@ module-name = "agronext_gis_sdk"
 [tool.ruff]
 target-version = "py312"
 line-length = 100
-src = ["src"]
+# "." for `example.py`, beside src/: first-party to the import sorter, as it is.
+src = ["src", "."]
 
 [tool.ruff.lint]
 select = [
@@ -72,9 +82,11 @@ docstring-code-format = true
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src", "tests"]
+files = ["src", "tests", "example.py"]
 plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# `example.py`, beside src/: its tests import it by name.
+pythonpath = ["."]
 asyncio_mode = "auto"

@@ -1,5 +1,88 @@
 # Changelog
 
+## 0.8.0 — 2026-10-13
+
+`gis.underwriting` is complete: the nine calls of a sale, each ONE request.
+
+- `underwriting.list_open_seasons()` is where a sale starts: the safras being
+  sold today, each with the `id` every later call takes. It takes nothing, so
+  no id of the flow has to be known in advance. It is `seasons.list_open_seasons`
+  at route level, which is unchanged.
+- The rate of a sale, over every polygon of it:
+  - `underwriting.resolve_rates(polygons, season_id=, product_id=,
+    deductible_id=)` returns `RateResolutionPolygonsResponse`: the sale's
+    commercial and risk rates, weighted by area over every polygon, and each
+    polygon's own rates, layers and `run_id` (`RateResolutionPolygonItem`).
+    No grid is named: each polygon is resolved on the finest grid its size
+    allows, and its `cell_m` says which.
+  - It is all or nothing. A polygon that cannot be resolved raises
+    `PolygonsRefusedError` (an `UnprocessableError`,
+    `rates.resolve.polygons_refused`), whose `refusals` name every polygon that
+    failed: `PolygonRefusal` with `polygon_index`, `code`, `detail` and
+    `context`. `RateRefusalCode` lists the reasons.
+  - At route level: `rates.resolve_polygons(geometries, product_id=,
+    deductible_id=, season_id=None, cell_m=None)`.
+- `rates.resolve` no longer needs a grid: `cell_m` is optional, and None
+  resolves on the finest grid the tile budget affords. The answer's `cell_m` is
+  the grid used. Passing one behaves as before.
+- While the polygons are drawn:
+  - `underwriting.list_car_properties(polygon)` is the CAR imóveis one polygon
+    touches, to pick the one it belongs to.
+  - `underwriting.validate_group(polygons, municipality_id=,
+    min_shared_municipality_pct=None)` is whether they may go in one contract,
+    in the município the sale is in.
+- After the purchase, the contract's three screenings:
+  - `underwriting.screen_car_properties(car_codes)` takes CAR codes and nothing
+    else.
+  - `underwriting.screen_polygons(polygons)` returns `OverlapsPolygonsResponse`:
+    the registry features over each polygon (`OverlapsPolygonItem`), with the
+    sources once. At route level: `screening.overlaps_polygons(geometries,
+    limit=None)`.
+  - `underwriting.check_policy_overlap(polygons, product_id=None,
+    season_ids=None, running_only=True, planting_window_ids=None)` returns
+    `PolicyOverlapPolygonsResponse`: each polygon's collisions
+    (`PolicyOverlapPolygonItem`) and the total. At route level:
+    `policies.check_polygons_overlap(PolicyOverlapPolygonsRequest(...))`.
+- A request about several polygons that names one the API cannot read is
+  refused with `geometry.invalid`, and its `context["polygon_index"]` says
+  which. No polygon, or more than the deployment allows (12 by default), is
+  refused with `rates.resolve.polygon_count`,
+  `screening.overlaps.polygon_count` or `policies.overlap.polygon_count`.
+- `example.py` is rewritten around these calls, and is how the SDK is validated
+  against a live API: the client as a dependency, one function per call, and a
+  command that walks a whole sale over the network. `--season-id`,
+  `--municipality-id`, `--product-id` and `--deductible-id` name what a buyer
+  would pick; unnamed, the safra is the one open today and the rest the first
+  offered. It prints the id of everything an option can name before picking
+  from it. It ends `9 calls answered`, or non-zero: 2 when it could not go on,
+  1 when a request failed. It needs `typer` and
+  `pydantic-settings`, both development dependencies — the wheel is unchanged.
+- Nothing was removed or renamed. Every route-level method is unchanged, apart
+  from `rates.resolve`'s `cell_m` becoming optional.
+
+## 0.7.0 — 2026-10-13
+
+- `gis.underwriting`: the calls a sale makes, in the order it makes them. Each
+  takes what the caller holds at that step and returns what the next one needs.
+  The first two:
+  - `list_sold_territory(season_id)` is where anything is on sale in a safra:
+    only the states that have produtos and, under each, only the municípios
+    with rates. It returns `SeasonTerritoryResponse`.
+  - `list_products_on_sale(season_id, municipality_id)` is what is sold in one
+    município, by its IBGE code: each produto with its `crop`, its `peril` and
+    the franquias on offer there, as `id` and `value`. It returns
+    `ProductsOnSaleResponse`. An unknown code or safra raises `NotFoundError`.
+- The same two calls at route level, `seasons.list_sold_territory` and
+  `seasons.list_products_on_sale`, and `rates.refresh_sold_territory()`, which
+  asks the API to refresh that listing now and waits for it.
+- Both answers carry `refreshed_at`. The API holds this listing and refreshes
+  it after the writes that change what is on sale; the instant says how old
+  the answer is. A rate is never read from it.
+- New models: `SeasonTerritoryResponse`, `SoldStateItem`, `SoldPlaceItem`,
+  `ProductsOnSaleResponse`, `OnSaleProductItem`, `SoldTerritoryRefreshResponse`.
+- Nothing was removed or renamed. `pairs.territory(season_id, product_id)`, the
+  listing for one produto, is unchanged.
+
 ## 0.6.0 — 2026-09-30
 
 - A resolution carries every parameter of its own arithmetic, so a caller can

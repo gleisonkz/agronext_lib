@@ -373,6 +373,60 @@ class SoldTerritoryItem(WireModel):
     municipalities: Sequence[SoldMunicipalityItem] = ()
 
 
+class SoldPlaceItem(WireModel):
+    """One município with something on sale in the safra."""
+
+    #: IBGE 7-digit code: what `list_products_on_sale` and `groups.validate` take.
+    municipality_id: int
+    name: str
+
+
+class SoldStateItem(WireModel):
+    """One UF with something on sale, and its municípios that have."""
+
+    state_id: int
+    abbr: str
+    name: str
+    municipalities: Sequence[SoldPlaceItem] = ()
+
+
+class SeasonTerritoryResponse(WireModel):
+    """Where anything is on sale in one safra: only UFs and municípios with
+    something to sell."""
+
+    season_id: int
+    #: When the API last refreshed this listing. None: it holds nothing at all.
+    refreshed_at: datetime.datetime | None = None
+    states: Sequence[SoldStateItem] = ()
+
+
+class OnSaleProductItem(WireModel):
+    """One produto sold in a município, with the franquias on offer THERE."""
+
+    id: int
+    code: str
+    name: str | None = None
+    crop: str | None = None
+    peril: str | None = None
+    #: Ascending by value.
+    deductibles: Sequence[DeductibleItem] = ()
+
+
+class ProductsOnSaleResponse(WireModel):
+    """What is on sale in one município this safra. No products: nothing is."""
+
+    season_id: int
+    municipality_id: int
+    refreshed_at: datetime.datetime | None = None
+    products: Sequence[OnSaleProductItem] = ()
+
+
+class SoldTerritoryRefreshResponse(WireModel):
+    """The listing of what is on sale, after a forced refresh."""
+
+    refreshed_at: datetime.datetime | None = None
+
+
 class ContestMemberItem(WireModel):
     """One polygon's place in one contest. Position 1 wins."""
 
@@ -594,13 +648,25 @@ class RateResolutionPreflightResponse(WireModel):
 
 class RateResolutionRequest(WireModel):
     """A resolution: `season_id` None asks the latest safra; `cell_m` is one of 10, 30,
-    100 or 250."""
+    100 or 250, and None the finest of them the tile budget affords for the polygon."""
 
     geometry: GeoJson
     season_id: int | None = None
     product_id: int
     deductible_id: int
-    cell_m: int
+    cell_m: int | None = None
+
+
+class RateResolutionPolygonsRequest(WireModel):
+    """The rate of one sale over every polygon of it. The célula and `cell_m`
+    are asked once and hold for every polygon; `cell_m` None resolves each on
+    the finest grid its own extent affords."""
+
+    geometries: Sequence[GeoJson]
+    season_id: int | None = None
+    product_id: int
+    deductible_id: int
+    cell_m: int | None = None
 
 
 class LayerAdjustmentItem(WireModel):
@@ -682,6 +748,54 @@ class RateResolutionResponse(WireModel):
     grid: RateGrid
 
 
+class RateResolutionPolygonItem(WireModel):
+    """One polygon of a sale: its own rates, and the run that pins them.
+
+    What a resolution of that polygon alone answers, without the raster.
+    """
+
+    #: Its position among the polygons given.
+    polygon_index: int
+    #: This polygon's own pinned run: `gis.rates.get_run(run_id)` holds the
+    #: polygon and the grid.
+    run_id: int
+    #: The grid THIS polygon was resolved on.
+    cell_m: int
+    aggregate_value: decimal.Decimal | None = None
+    aggregate_risk_value: decimal.Decimal | None = None
+    #: kg/ha; None unless every tile of this polygon states one.
+    aggregate_expected_yield_kg_ha: decimal.Decimal | None = None
+    #: The polygon as its tiles measure it, in hectares: its weight in the
+    #: sale's aggregates.
+    area_ha: float
+    tile_count: int
+    layers: Sequence[ResolvedLayerItem]
+
+
+class RateResolutionPolygonsResponse(WireModel):
+    """Every polygon's rate, and the sale's.
+
+    The sale's aggregates are sum(value * area_ha) / sum(area_ha) over every
+    layer of every polygon, rounded half-up to the rate's quantum — so they are
+    recomputable from `polygons`. An answer means EVERY polygon is sellable.
+    """
+
+    season_id: int
+    product_id: int
+    deductible_id: int
+    mode: RateMode = RateMode.DEDUCTIBLE
+    commercial_ratio: decimal.Decimal | None = None
+    risk_ratio: decimal.Decimal | None = None
+    aggregate_value: decimal.Decimal | None = None
+    aggregate_risk_value: decimal.Decimal | None = None
+    #: kg/ha; None unless every tile of every polygon states one.
+    aggregate_expected_yield_kg_ha: decimal.Decimal | None = None
+    #: The polygons' `area_ha`, summed: the aggregates' denominator.
+    area_ha: float
+    #: In the order the polygons were given.
+    polygons: Sequence[RateResolutionPolygonItem]
+
+
 class RateHeatmapRequest(WireModel):
     """One franquia's rate surface over the liberada inside `bbox`
     (west, south, east, north — EPSG:4326)."""
@@ -748,6 +862,7 @@ __all__ = [
     "DeductibleResponse",
     "GridOptionItem",
     "LayerAdjustmentItem",
+    "OnSaleProductItem",
     "PairConfigurationResponse",
     "PairCopyResponse",
     "PlantingWindowDeclaration",
@@ -760,11 +875,15 @@ __all__ = [
     "ProductItem",
     "ProductResponse",
     "ProductUpdateRequest",
+    "ProductsOnSaleResponse",
     "RateCellSummaryItem",
     "RateGrid",
     "RateHeatmapRequest",
     "RateHeatmapResponse",
     "RateItem",
+    "RateResolutionPolygonItem",
+    "RateResolutionPolygonsRequest",
+    "RateResolutionPolygonsResponse",
     "RateResolutionPreflightRequest",
     "RateResolutionPreflightResponse",
     "RateResolutionRequest",
@@ -791,8 +910,12 @@ __all__ = [
     "SeasonItem",
     "SeasonProductsRequest",
     "SeasonResponse",
+    "SeasonTerritoryResponse",
     "SeasonUpdateRequest",
     "SeasonWithCopiesResponse",
     "SoldMunicipalityItem",
+    "SoldPlaceItem",
+    "SoldStateItem",
     "SoldTerritoryItem",
+    "SoldTerritoryRefreshResponse",
 ]
